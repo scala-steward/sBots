@@ -3,7 +3,6 @@ package com.benkio.integration.integrationmunit.telegrambotinfrastructure.reposi
 import cats.effect.IO
 import cats.effect.Resource
 import com.benkio.integration.DBFixture
-import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.model.show.RandomQuery
 import com.benkio.telegrambotinfrastructure.model.show.ShowQuery
 import com.benkio.telegrambotinfrastructure.model.show.SimpleShowQuery

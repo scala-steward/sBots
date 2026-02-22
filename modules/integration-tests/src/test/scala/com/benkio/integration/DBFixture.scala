@@ -3,13 +3,12 @@ package com.benkio.integration
 import annotation.unused
 import cats.effect.IO
 import cats.effect.Resource
+import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.http.DropboxClient
 import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.db.DBRepository
 import com.benkio.telegrambotinfrastructure.repository.Repository
-import com.benkio.integrationtest.Logger.given
 import doobie.Transactor
-import _root_.log.effect.LogWriter
 import munit.*
 import org.flywaydb.core.api.configuration.FluentConfiguration
 import org.flywaydb.core.Flyway
@@ -20,6 +19,8 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.sql.Connection
 import java.sql.DriverManager
+
+import _root_.log.effect.LogWriter
 
 final case class DBFixtureResources(
     connection: Connection,

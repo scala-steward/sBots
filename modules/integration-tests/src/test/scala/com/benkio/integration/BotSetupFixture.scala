@@ -9,11 +9,12 @@ import com.benkio.telegrambotinfrastructure.initialization.BotSetup
 import com.benkio.telegrambotinfrastructure.repository.db.DBRepository
 import com.benkio.telegrambotinfrastructure.repository.JsonDataRepository
 import com.benkio.telegrambotinfrastructure.BackgroundJobManager
-import _root_.log.effect.LogWriter
 import munit.*
 import org.http4s.ember.client.*
 import org.http4s.implicits.*
 import telegramium.bots.high.BotApi
+
+import _root_.log.effect.LogWriter
 
 /** Test fixture that builds a real BotSetup as close as possible to main: real DBLayer (from DBFixture), DBRepository,
   * DropboxClient, Ember httpClient, BackgroundJobManager, JsonRepliesRepository. Uses a stub token and skips webhook
@@ -33,8 +34,8 @@ trait BotSetupFixture extends DBFixture { self: FunSuite =>
 
   lazy val botSetupFixture: FunFixture[BotSetupFixtureResources] = FunFixture[BotSetupFixtureResources](
     setup = testOptions =>
-      BotSetupFixture.fixtureSetup(dbFixture = this, sBotConfig = botSetupFixtureConfig, testOptions = testOptions)(
-        using log
+      BotSetupFixture.fixtureSetup(sBotConfig = botSetupFixtureConfig, testOptions = testOptions)(using
+        log
       ),
     teardown = BotSetupFixture.teardownFixture
   )
@@ -43,11 +44,10 @@ trait BotSetupFixture extends DBFixture { self: FunSuite =>
 object BotSetupFixture {
 
   def fixtureSetup(
-      dbFixture: DBFixture,
       sBotConfig: SBotConfig,
       testOptions: TestOptions
   )(using log: LogWriter[IO]): BotSetupFixtureResources = {
-    val dbRes    = DBFixture.fixtureSetup(testOptions)(using dbFixture.log)
+    val dbRes    = DBFixture.fixtureSetup(testOptions)
     val resource = botSetupResource(dbRes, sBotConfig)
     BotSetupFixtureResources(
       dbResources = dbRes,

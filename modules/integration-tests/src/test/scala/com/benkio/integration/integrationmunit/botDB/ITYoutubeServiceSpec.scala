@@ -17,7 +17,7 @@ import scala.jdk.CollectionConverters.*
 
 class ITYouTubeServiceSpec extends CatsEffectSuite with Constants {
 
-    val youTubeApiKey     = Files.readAllLines(Paths.get(youTubeTokenFilenamePath)).asScala.headOption.get
+  val youTubeApiKey     = Files.readAllLines(Paths.get(youTubeTokenFilenamePath)).asScala.headOption.get
   val ciEnvVar          = sys.env.get("CI")
   val runTestsCondition =
     (ciEnvVar.contains("false") || ciEnvVar.isEmpty) && youTubeApiKey != "PutYourYouTubeApiKeyHere"

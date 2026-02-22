@@ -4,7 +4,6 @@ import cats.effect.*
 import cats.syntax.all.*
 import cats.Parallel
 import com.benkio.integration.BotSetupFixture
-import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleCommand
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
