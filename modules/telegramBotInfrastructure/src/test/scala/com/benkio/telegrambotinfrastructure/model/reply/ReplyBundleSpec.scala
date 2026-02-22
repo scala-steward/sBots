@@ -35,10 +35,10 @@ class ReplyBundleSpec extends CatsEffectSuite {
       """--------------------------------------------------
         |audio.mp3                 | stringTextTriggerValue
         |picture.jpg               | regexTextTriggerValue
-        |picture.png               |
-        |aGif.mp4                  |
-        |video.mp4                 |
-        |document.pdf              |
+        |picture.png               | 
+        |aGif.mp4                  | 
+        |video.mp4                 | 
+        |document.pdf              | 
         |--------------------------------------------------
         |""".stripMargin
     )
