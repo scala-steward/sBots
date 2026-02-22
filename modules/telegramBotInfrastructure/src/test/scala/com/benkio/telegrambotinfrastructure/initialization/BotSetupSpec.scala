@@ -8,16 +8,13 @@ import com.benkio.telegrambotinfrastructure.mocks.TelegramHttpRoutes
 import com.benkio.telegrambotinfrastructure.model.media.MediaResource
 import com.benkio.telegrambotinfrastructure.model.media.MediaResource.MediaResourceFile
 import com.benkio.telegrambotinfrastructure.repository.Repository
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
+import com.benkio.telegrambotinfrastructure.Logger.given
 import munit.*
 import org.http4s.*
 import org.http4s.client.Client
 import org.http4s.implicits.*
 
 class BotSetupSpec extends CatsEffectSuite {
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   test("deleteWebhook should send the expected request to TelegramApi") {
     val token              = "expectedToken"

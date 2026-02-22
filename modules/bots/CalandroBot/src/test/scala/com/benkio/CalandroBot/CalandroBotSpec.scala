@@ -21,16 +21,12 @@ import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
 import com.benkio.telegrambotinfrastructure.BaseBotSpec
+import com.benkio.telegrambotinfrastructure.Logger.given
 import com.benkio.telegrambotinfrastructure.SBot
 import com.benkio.telegrambotinfrastructure.SBotPolling
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
 
 class CalandroBotSpec extends BaseBotSpec {
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   val calaSBotConfig: SBotConfig            = SBot.buildSBotConfig(CalandroBot.sBotInfo)
   val emptyDBLayer: DBLayer[IO]             = DBLayerMock.mock(calaSBotConfig.sBotInfo.botId)

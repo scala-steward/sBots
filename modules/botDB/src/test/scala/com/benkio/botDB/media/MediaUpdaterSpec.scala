@@ -5,6 +5,7 @@ import cats.effect.IO
 import cats.effect.Resource
 import cats.syntax.all.*
 import com.benkio.botDB.media.MediaUpdater.MediaUpdaterImpl
+import com.benkio.botDB.Logger.given
 import com.benkio.botDB.TestData.*
 import com.benkio.telegrambotinfrastructure.mocks.DBLayerMock
 import com.benkio.telegrambotinfrastructure.mocks.RepositoryMock
@@ -15,9 +16,6 @@ import com.benkio.telegrambotinfrastructure.model.media.MediaResource.MediaResou
 import com.benkio.telegrambotinfrastructure.model.MimeType
 import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotId
 import com.benkio.telegrambotinfrastructure.repository.db.DBMediaData
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
 import org.http4s.syntax.literals.*
 import org.http4s.Uri
@@ -26,7 +24,6 @@ import java.io.File
 
 class MediaUpdaterSpec extends CatsEffectSuite {
 
-  given log: LogWriter[IO]             = consoleLogUpToLevel(LogLevels.Info)
   val mediaEntities: List[DBMediaData] = List(google, amazon, facebook)
   val botId                            = SBotId("testbot")
 

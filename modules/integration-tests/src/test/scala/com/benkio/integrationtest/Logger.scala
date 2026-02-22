@@ -1,4 +1,4 @@
-package com.benkio.main
+package com.benkio.integrationtest
 
 import cats.effect.IO
 import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
@@ -6,5 +6,5 @@ import log.effect.LogLevels
 import log.effect.LogWriter
 
 object Logger {
-  given logWriter: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
+  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 }

@@ -3,6 +3,7 @@ package com.benkio.integration.integrationmunit.telegrambotinfrastructure.reposi
 import cats.effect.IO
 import cats.effect.Resource
 import com.benkio.integration.DBFixture
+import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.repository.db.DBMedia
 import com.benkio.telegrambotinfrastructure.repository.db.DBMediaData
 import com.benkio.telegrambotinfrastructure.SBot

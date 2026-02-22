@@ -19,16 +19,13 @@ import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
 import com.benkio.telegrambotinfrastructure.BaseBotSpec
+import com.benkio.telegrambotinfrastructure.Logger.given
 import com.benkio.telegrambotinfrastructure.SBot
 import com.benkio.telegrambotinfrastructure.SBotPolling
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
 
 class ABarberoBotSpec extends BaseBotSpec {
 
-  given log: LogWriter[IO]                  = consoleLogUpToLevel(LogLevels.Info)
   val abarSBotConfig                        = SBot.buildSBotConfig(ABarberoBot.sBotInfo)
   val emptyDBLayer: DBLayer[IO]             = DBLayerMock.mock(abarSBotConfig.sBotInfo.botId)
   val mediaResource: MediaResourceIFile[IO] =

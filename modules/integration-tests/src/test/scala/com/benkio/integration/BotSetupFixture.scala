@@ -2,13 +2,14 @@ package com.benkio.integration
 
 import cats.effect.IO
 import cats.effect.Resource
+import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import com.benkio.telegrambotinfrastructure.http.DropboxClient
 import com.benkio.telegrambotinfrastructure.initialization.BotSetup
 import com.benkio.telegrambotinfrastructure.repository.db.DBRepository
 import com.benkio.telegrambotinfrastructure.repository.JsonDataRepository
 import com.benkio.telegrambotinfrastructure.BackgroundJobManager
-import log.effect.LogWriter
+import _root_.log.effect.LogWriter
 import munit.*
 import org.http4s.ember.client.*
 import org.http4s.implicits.*
@@ -27,6 +28,8 @@ trait BotSetupFixture extends DBFixture { self: FunSuite =>
 
   /** Override to use a different SBotConfig for the fixture. */
   def botSetupFixtureConfig: SBotConfig
+
+  val log: LogWriter[IO] = summon[LogWriter[IO]]
 
   lazy val botSetupFixture: FunFixture[BotSetupFixtureResources] = FunFixture[BotSetupFixtureResources](
     setup = testOptions =>

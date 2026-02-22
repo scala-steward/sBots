@@ -1,4 +1,4 @@
-package com.benkio.main
+package com.benkio.botDB
 
 import cats.effect.IO
 import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel

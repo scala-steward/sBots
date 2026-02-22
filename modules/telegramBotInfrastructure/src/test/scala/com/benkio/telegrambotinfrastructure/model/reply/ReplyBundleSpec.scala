@@ -1,20 +1,15 @@
 package com.benkio.telegrambotinfrastructure.model.reply
 
-import cats.effect.*
 import com.benkio.telegrambotinfrastructure.messagefiltering.MessageMatches
 import com.benkio.telegrambotinfrastructure.model.RegexTextTriggerValue
 import com.benkio.telegrambotinfrastructure.model.StringTextTriggerValue
 import com.benkio.telegrambotinfrastructure.model.TextTrigger
 import io.circe.parser.decode
 import io.circe.syntax.*
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
 
 class ReplyBundleSpec extends CatsEffectSuite {
 
-  given log: LogWriter[IO]            = consoleLogUpToLevel(LogLevels.Info)
   val inputMediafile: List[MediaFile] = List(
     Mp3File("audio.mp3"),
     PhotoFile("picture.jpg"),
@@ -40,10 +35,10 @@ class ReplyBundleSpec extends CatsEffectSuite {
       """--------------------------------------------------
         |audio.mp3                 | stringTextTriggerValue
         |picture.jpg               | regexTextTriggerValue
-        |picture.png               | 
-        |aGif.mp4                  | 
-        |video.mp4                 | 
-        |document.pdf              | 
+        |picture.png               |
+        |aGif.mp4                  |
+        |video.mp4                 |
+        |document.pdf              |
         |--------------------------------------------------
         |""".stripMargin
     )

@@ -3,6 +3,7 @@ package com.benkio.integration.integrationmunit.telegrambotinfrastructure.http
 import cats.effect.IO
 import cats.syntax.all.*
 import com.benkio.integration.DBFixture
+import com.benkio.integrationtest.Logger.given
 import munit.CatsEffectSuite
 import org.http4s.syntax.literals.*
 import org.http4s.Uri

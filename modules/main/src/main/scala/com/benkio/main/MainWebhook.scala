@@ -1,10 +1,10 @@
 package com.benkio.main
 
-import com.benkio.main.Logger.given
 import cats.effect.ExitCode
 import cats.effect.IO
 import cats.effect.IOApp
 import cats.effect.Resource
+import com.benkio.main.Logger.given
 import org.http4s.server.Server
 import telegramium.bots.high.WebhookBot
 

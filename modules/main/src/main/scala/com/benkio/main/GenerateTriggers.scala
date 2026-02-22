@@ -1,6 +1,5 @@
 package com.benkio.main
 
-import com.benkio.main.Logger.given
 import cats.data.NonEmptyList
 import cats.effect.Async
 import cats.effect.ExitCode
@@ -8,6 +7,7 @@ import cats.effect.IO
 import cats.effect.IOApp
 import cats.effect.Resource
 import cats.implicits.*
+import com.benkio.main.Logger.given
 import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import com.benkio.telegrambotinfrastructure.initialization.BotSetup
 import com.benkio.telegrambotinfrastructure.model.media.MediaResource
@@ -22,6 +22,7 @@ import com.benkio.telegrambotinfrastructure.repository.Repository
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
 import com.benkio.telegrambotinfrastructure.BackgroundJobManager
+import log.effect.LogWriter
 import org.http4s.client.Client
 import org.http4s.implicits.*
 import org.http4s.HttpApp
@@ -32,7 +33,6 @@ import telegramium.bots.high.Api
 
 import java.io.*
 import java.util.UUID
-import log.effect.LogWriter
 
 object GenerateTriggers extends IOApp {
 

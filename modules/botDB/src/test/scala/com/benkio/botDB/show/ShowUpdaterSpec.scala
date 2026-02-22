@@ -4,13 +4,11 @@ import cats.effect.IO
 import cats.implicits.*
 import com.benkio.botDB.mocks.YouTubeServiceMock
 import com.benkio.botDB.show.ShowUpdater.ShowUpdaterImpl
+import com.benkio.botDB.Logger.given
 import com.benkio.telegrambotinfrastructure.mocks.DBLayerMock
 import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotId
 import com.benkio.telegrambotinfrastructure.repository.db.DBShowData
 import com.google.api.services.youtube.model.*
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.*
 
 import java.nio.file.Files
@@ -20,8 +18,6 @@ import scala.jdk.CollectionConverters.*
 class ShowUpdaterSpec extends CatsEffectSuite {
 
   import com.benkio.botDB.TestData.*
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   // Input Data
   val botId: SBotId          = SBotId("testbot")

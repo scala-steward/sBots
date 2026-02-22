@@ -7,10 +7,9 @@ import com.benkio.telegrambotinfrastructure.http.DropboxClient
 import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.db.DBRepository
 import com.benkio.telegrambotinfrastructure.repository.Repository
+import com.benkio.integrationtest.Logger.given
 import doobie.Transactor
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
+import _root_.log.effect.LogWriter
 import munit.*
 import org.flywaydb.core.api.configuration.FluentConfiguration
 import org.flywaydb.core.Flyway
@@ -31,8 +30,6 @@ final case class DBFixtureResources(
 )
 
 trait DBFixture { self: FunSuite =>
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   lazy val databaseFixture: FunFixture[DBFixtureResources] = FunFixture[DBFixtureResources](
     setup = DBFixture.fixtureSetup,

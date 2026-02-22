@@ -3,11 +3,9 @@ package com.benkio.integration.integrationmunit.botDB
 import cats.effect.IO
 import com.benkio.botDB.db.DBMigrator
 import com.benkio.botDB.TestData
+import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.repository.db.DBMedia
 import doobie.Transactor
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
 
 import java.nio.file.Files
@@ -16,8 +14,6 @@ import java.sql.Connection
 import java.sql.DriverManager
 
 class DBSpec extends CatsEffectSuite with Constants {
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   val databaseConnection: FunFixture[Connection] = FunFixture[Connection](
     setup = { _ =>

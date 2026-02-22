@@ -10,9 +10,6 @@ import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import com.benkio.telegrambotinfrastructure.model.reply.TextReply
 import com.benkio.telegrambotinfrastructure.model.CommandInstructionData
 import com.benkio.telegrambotinfrastructure.model.CommandTrigger
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
 import telegramium.bots.Chat
 import telegramium.bots.Message
@@ -20,8 +17,6 @@ import telegramium.bots.Message
 import java.time.Instant
 
 class ISBotSpec extends CatsEffectSuite {
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   test("selectReplyBundle should return all the expected `ReplyBundleMessage` respecting the trigger ordering") {
     val inputMessage: Message = Message(
