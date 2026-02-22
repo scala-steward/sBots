@@ -24,7 +24,6 @@ import com.benkio.PinoScottoBot.PinoScottoBot
 import com.benkio.RichardPHJBensonBot.RichardPHJBensonBot
 import com.benkio.XahLeeBot.XahLeeBot
 import com.benkio.YouTuboAncheI0Bot.YouTuboAncheI0Bot
-import log.effect.LogLevels
 import log.effect.LogWriter
 import telegramium.bots.high.WebhookBot
 import telegramium.bots.Message
@@ -52,7 +51,7 @@ opaque type BotRegistry[F[_]] = List[BotRegistryEntry[F]]
 extension (botRegistry: BotRegistry[IO]) {
   def runPolling(): IO[ExitCode] =
     botRegistry
-      .map(botRegistryEntry => SBotMainPolling.run(logLevel = LogLevels.Info, sBotInfo = botRegistryEntry.sBotInfo))
+      .map(botRegistryEntry => SBotMainPolling.run(sBotInfo = botRegistryEntry.sBotInfo))
       .reduce(op = (botA, botB) => botA &> botB)
   def webhookBots(mainSetup: MainSetup[IO])(using log: LogWriter[IO]): Resource[IO, List[WebhookBot[IO]]] =
     botRegistry

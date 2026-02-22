@@ -21,12 +21,10 @@ import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
 import com.benkio.telegrambotinfrastructure.BaseBotSpec
+import com.benkio.telegrambotinfrastructure.Logger.given
 import com.benkio.telegrambotinfrastructure.SBot
 import com.benkio.telegrambotinfrastructure.SBotPolling
 import com.benkio.RichardPHJBensonBot.RichardPHJBensonBot.commandEffectfulCallback
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import org.scalacheck.effect.PropF
 import org.scalacheck.Gen
 import telegramium.bots.Chat
@@ -38,7 +36,6 @@ class RichardPHJBensonBotSpec extends BaseBotSpec {
 
   override val munitIOTimeout = Duration(1, "m")
 
-  given log: LogWriter[IO]                  = consoleLogUpToLevel(LogLevels.Info)
   val rphjbSBotConfig                       = SBot.buildSBotConfig(RichardPHJBensonBot.sBotInfo)
   val emptyDBLayer: DBLayer[IO]             = DBLayerMock.mock(rphjbSBotConfig.sBotInfo.botId)
   val mediaResource: MediaResourceIFile[IO] =

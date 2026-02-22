@@ -6,11 +6,9 @@ import com.benkio.botDB.config.Config
 import com.benkio.botDB.show.YouTubeBotDBShowDatas
 import com.benkio.botDB.show.YouTubeBotIds
 import com.benkio.botDB.show.YouTubeService
+import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotId
 import com.benkio.telegrambotinfrastructure.repository.db.DBShowData
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
 
 import java.nio.file.Files
@@ -18,8 +16,6 @@ import java.nio.file.Paths
 import scala.jdk.CollectionConverters.*
 
 class ITYouTubeServiceSpec extends CatsEffectSuite with Constants {
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   val youTubeApiKey     = Files.readAllLines(Paths.get(youTubeTokenFilenamePath)).asScala.headOption.get
   val ciEnvVar          = sys.env.get("CI")

@@ -2,14 +2,10 @@ package com.benkio.telegrambotinfrastructure
 
 import cats.effect.IO
 import com.benkio.telegrambotinfrastructure.initialization.Config
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
+import com.benkio.telegrambotinfrastructure.Logger.given
 import munit.CatsEffectSuite
 
 class ConfigSpec extends CatsEffectSuite {
-
-  given LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   test("Config.loadConfig should load the correct configuration with default values") {
     Config.loadConfig[IO]("testInfraDBConf").map { config =>

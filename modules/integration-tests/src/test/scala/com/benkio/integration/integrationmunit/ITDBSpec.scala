@@ -7,6 +7,7 @@ import cats.implicits.*
 import cats.Parallel
 import com.benkio.integration.BotSetupFixture
 import com.benkio.integration.DBFixture
+import com.benkio.integrationtest.Logger.given
 import com.benkio.main.*
 import com.benkio.telegrambotinfrastructure.model.media.MediaFileSource
 import com.benkio.telegrambotinfrastructure.model.reply.MediaFile

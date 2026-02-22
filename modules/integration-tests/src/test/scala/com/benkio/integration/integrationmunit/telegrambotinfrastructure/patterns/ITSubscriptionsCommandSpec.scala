@@ -4,6 +4,7 @@ import cats.effect.IO
 import cats.effect.Resource
 import cats.syntax.all.*
 import com.benkio.integration.DBFixture
+import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.mocks.ApiMock.given
 import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotId
 import com.benkio.telegrambotinfrastructure.patterns.CommandPatterns.SubscribeUnsubscribeCommand

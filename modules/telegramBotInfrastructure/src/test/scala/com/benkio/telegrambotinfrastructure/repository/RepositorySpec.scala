@@ -18,9 +18,7 @@ import com.benkio.telegrambotinfrastructure.repository.db.DBMediaData
 import com.benkio.telegrambotinfrastructure.repository.db.DBRepository
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
+import com.benkio.telegrambotinfrastructure.Logger.given
 import munit.CatsEffectSuite
 
 import java.io.File
@@ -28,8 +26,6 @@ import java.nio.file.*
 import scala.util.Random
 
 class ResourceRepositorySpec extends CatsEffectSuite {
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   val testfile       = "testFile"
   val rootPath: Path = Paths.get("").toAbsolutePath()
@@ -67,7 +63,6 @@ class ResourceRepositorySpec extends CatsEffectSuite {
 
 class DBRepositorySpec extends CatsEffectSuite {
 
-  given log: LogWriter[IO]      = consoleLogUpToLevel(LogLevels.Info)
   val medias: List[DBMediaData] = List(
     DBMediaData(
       media_name = "bot_testMediaName.mp4",
@@ -173,8 +168,6 @@ class DBRepositorySpec extends CatsEffectSuite {
 }
 
 object RepositorySpec {
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   def testFilename(filename: String)(using repository: Repository[IO]): IO[Boolean] =
     repository

@@ -6,11 +6,10 @@ import com.benkio.botDB.db.DBMigrator
 import com.benkio.botDB.media.MediaUpdater
 import com.benkio.botDB.show.ShowUpdater
 import com.benkio.botDB.show.YouTubeService
+import com.benkio.botDB.Logger.given
 import com.benkio.telegrambotinfrastructure.initialization.BotSetup
 import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
 import log.effect.LogWriter
 
 object Main extends IOApp {
@@ -23,27 +22,26 @@ object Main extends IOApp {
   )
 
   val youtubeTokenFilename = "youTubeApiKey.token"
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   private[botDB] def initialization(args: List[String]): Resource[IO, BotDBInitialization] =
     for {
-      _      <- Resource.eval(log.info("[Main - Initialization] Migrating database configuration"))
+      _      <- Resource.eval(LogWriter.info("[Main - Initialization] Migrating database configuration"))
       config <- Resource.eval(Config.loadConfig(args.headOption))
-      _      <- Resource.eval(log.info(s"[Main - Initialization] Input Configuration: $config"))
-      _      <- Resource.eval(log.info("[Main - Initialization] Connect to DB"))
+      _      <- Resource.eval(LogWriter.info(s"[Main - Initialization] Input Configuration: $config"))
+      _      <- Resource.eval(LogWriter.info("[Main - Initialization] Connect to DB"))
       transactor = Config.buildTransactor(config = config)
       dbLayer <- Resource.eval(DBLayer[IO](transactor))
-      _       <- Resource.eval(log.info("[Main - Initialization] Repository"))
+      _       <- Resource.eval(LogWriter.info("[Main - Initialization] Repository"))
       repository = ResourcesRepository.fromResources[IO](args.lastOption)
-      _ <- Resource.eval(log.info("[Main - Initialization] DBMigrator"))
+      _ <- Resource.eval(LogWriter.info("[Main - Initialization] DBMigrator"))
       migrator = DBMigrator[IO]
-      _ <- Resource.eval(log.info("[Main - Initialization] MediaUpdater"))
+      _ <- Resource.eval(LogWriter.info("[Main - Initialization] MediaUpdater"))
       mediaUpdater = MediaUpdater(config = config, dbLayer = dbLayer, repository = repository)
-      _              <- Resource.eval(log.info("[Main - Initialization] Fetch YouTube api key from resources"))
+      _              <- Resource.eval(LogWriter.info("[Main - Initialization] Fetch YouTube api key from resources"))
       youTubeApiKey  <- BotSetup.token(youtubeTokenFilename, repository)
-      _              <- Resource.eval(log.info("[Main - Initialization] Creating YouTube Service"))
+      _              <- Resource.eval(LogWriter.info("[Main - Initialization] Creating YouTube Service"))
       youTubeService <- Resource.eval(YouTubeService(config = config, youTubeApiKey))
-      _              <- Resource.eval(log.info("[Main - Initialization] ShowUpdater"))
+      _              <- Resource.eval(LogWriter.info("[Main - Initialization] ShowUpdater"))
       showUpdater = ShowUpdater[IO](
         config = config,
         dbLayer = dbLayer,
@@ -55,15 +53,15 @@ object Main extends IOApp {
   // Eg ("src/it/resources/app.config", "it")
   def run(args: List[String]): IO[ExitCode] = {
     val program = for {
-      _                   <- Resource.eval(log.info("[Main] Start Initialization"))
+      _                   <- Resource.eval(LogWriter.info("[Main] Start Initialization"))
       botDBInitialization <- initialization(args)
-      _                   <- Resource.eval(log.info("[Main] End Initialization. Migrate DB"))
+      _                   <- Resource.eval(LogWriter.info("[Main] End Initialization. Migrate DB"))
       _                   <- Resource.eval(botDBInitialization.migrator.migrate(botDBInitialization.config))
-      _                   <- Resource.eval(log.info("[Main] Populate Media Table"))
+      _                   <- Resource.eval(LogWriter.info("[Main] Populate Media Table"))
       _                   <- botDBInitialization.mediaUpdater.updateMedia
-      _                   <- Resource.eval(log.info("[Main] Populate Show Table"))
+      _                   <- Resource.eval(LogWriter.info("[Main] Populate Show Table"))
       _                   <- botDBInitialization.showUpdater.updateShow
-      _                   <- Resource.eval(log.info("[Main] Update DB Successful"))
+      _                   <- Resource.eval(LogWriter.info("[Main] Update DB Successful"))
     } yield ()
 
     program.use_.as(ExitCode.Success)

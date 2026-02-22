@@ -5,9 +5,7 @@ import cats.effect.Resource
 import cats.syntax.all.*
 import com.benkio.telegrambotinfrastructure.http.DropboxClient.UnexpectedDropboxResponse
 import com.benkio.telegrambotinfrastructure.mocks.DropboxServerMock
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
+import com.benkio.telegrambotinfrastructure.Logger.given
 import munit.CatsEffectSuite
 import org.http4s.ember.client.*
 import org.http4s.syntax.literals.*
@@ -16,8 +14,6 @@ import org.http4s.Uri
 import java.nio.file.Files
 
 class DropboxClientSpec extends CatsEffectSuite {
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   def buildDropboxClient(): Resource[IO, DropboxClient[IO]] =
     EmberClientBuilder

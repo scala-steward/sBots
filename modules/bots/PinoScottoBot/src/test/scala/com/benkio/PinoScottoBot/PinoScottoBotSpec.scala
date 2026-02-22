@@ -20,16 +20,13 @@ import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
 import com.benkio.telegrambotinfrastructure.BaseBotSpec
+import com.benkio.telegrambotinfrastructure.Logger.given
 import com.benkio.telegrambotinfrastructure.SBot
 import com.benkio.telegrambotinfrastructure.SBotPolling
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
 
 class PinoScottoBotSpec extends BaseBotSpec {
 
-  given log: LogWriter[IO]                  = consoleLogUpToLevel(LogLevels.Info)
   val pinoSBotConfig: SBotConfig            = SBot.buildSBotConfig(PinoScottoBot.sBotInfo)
   val emptyDBLayer: DBLayer[IO]             = DBLayerMock.mock(pinoSBotConfig.sBotInfo.botId)
   val mediaResource: MediaResourceIFile[IO] =

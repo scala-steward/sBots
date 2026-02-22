@@ -22,15 +22,12 @@ import com.benkio.telegrambotinfrastructure.model.CommandTrigger
 import com.benkio.telegrambotinfrastructure.model.StringTextTriggerValue
 import com.benkio.telegrambotinfrastructure.model.TextTrigger
 import com.benkio.telegrambotinfrastructure.repository.db.DBMediaData
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
+import com.benkio.telegrambotinfrastructure.Logger.given
 import munit.*
 import telegramium.bots.Chat
 import telegramium.bots.Message
 
 class EffectfulKeyReplySpec extends CatsEffectSuite {
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   val sBotInfo             = SampleWebhookBot.sBotInfo
   val message              = Message(0, date = 0, chat = Chat(0, `type` = "private"), text = Some("test message"))

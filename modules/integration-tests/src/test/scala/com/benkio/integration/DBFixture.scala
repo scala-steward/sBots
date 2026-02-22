@@ -3,14 +3,12 @@ package com.benkio.integration
 import annotation.unused
 import cats.effect.IO
 import cats.effect.Resource
+import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.http.DropboxClient
 import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.db.DBRepository
 import com.benkio.telegrambotinfrastructure.repository.Repository
 import doobie.Transactor
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.*
 import org.flywaydb.core.api.configuration.FluentConfiguration
 import org.flywaydb.core.Flyway
@@ -22,6 +20,8 @@ import java.nio.file.Paths
 import java.sql.Connection
 import java.sql.DriverManager
 
+import _root_.log.effect.LogWriter
+
 final case class DBFixtureResources(
     connection: Connection,
     transactor: Transactor[IO],
@@ -31,8 +31,6 @@ final case class DBFixtureResources(
 )
 
 trait DBFixture { self: FunSuite =>
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   lazy val databaseFixture: FunFixture[DBFixtureResources] = FunFixture[DBFixtureResources](
     setup = DBFixture.fixtureSetup,

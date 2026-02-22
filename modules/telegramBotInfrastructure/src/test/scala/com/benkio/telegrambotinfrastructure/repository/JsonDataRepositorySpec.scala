@@ -5,15 +5,10 @@ import com.benkio.telegrambotinfrastructure.mocks.ApiMock.given
 import com.benkio.telegrambotinfrastructure.mocks.SampleWebhookBot
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
+import com.benkio.telegrambotinfrastructure.Logger.given
 import io.circe.syntax.*
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import munit.CatsEffectSuite
-
 class JsonDataRepositorySpec extends CatsEffectSuite {
-
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   private def assertLoadedMatchesExpected(
       loaded: List[ReplyBundleMessage],

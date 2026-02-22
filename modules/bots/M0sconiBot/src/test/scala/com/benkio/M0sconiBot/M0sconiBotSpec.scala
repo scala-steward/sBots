@@ -19,16 +19,13 @@ import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
 import com.benkio.telegrambotinfrastructure.BaseBotSpec
+import com.benkio.telegrambotinfrastructure.Logger.given
 import com.benkio.telegrambotinfrastructure.SBot
 import com.benkio.telegrambotinfrastructure.SBotPolling
 import com.benkio.M0sconiBot.M0sconiBot
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 
 class M0sconiBotSpec extends BaseBotSpec {
 
-  given log: LogWriter[IO]                  = consoleLogUpToLevel(LogLevels.Info)
   val mosSBotConfig                         = SBot.buildSBotConfig(M0sconiBot.sBotInfo)
   val emptyDBLayer: DBLayer[IO]             = DBLayerMock.mock(mosSBotConfig.sBotInfo.botId)
   val mediaResource: MediaResourceIFile[IO] =

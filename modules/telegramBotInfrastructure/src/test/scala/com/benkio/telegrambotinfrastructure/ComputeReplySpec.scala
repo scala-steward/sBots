@@ -13,16 +13,13 @@ import com.benkio.telegrambotinfrastructure.model.media.MediaResource.MediaResou
 import com.benkio.telegrambotinfrastructure.model.StringTextTriggerValue
 import com.benkio.telegrambotinfrastructure.model.TextTrigger
 import com.benkio.telegrambotinfrastructure.ComputeReply
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
+import com.benkio.telegrambotinfrastructure.Logger.given
 import munit.CatsEffectSuite
 import telegramium.bots.Chat
 import telegramium.bots.Message
 
 class ComputeReplySpec extends CatsEffectSuite {
 
-  given log: LogWriter[IO]            = consoleLogUpToLevel(LogLevels.Info)
   val inputMediafile: List[MediaFile] = List(
     Mp3File("audio.mp3"),
     PhotoFile("picture.jpg"),

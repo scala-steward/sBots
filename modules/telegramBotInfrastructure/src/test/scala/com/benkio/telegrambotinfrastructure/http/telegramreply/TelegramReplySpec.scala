@@ -13,9 +13,7 @@ import com.benkio.telegrambotinfrastructure.model.reply.Mp3File
 import com.benkio.telegrambotinfrastructure.model.reply.PhotoFile
 import com.benkio.telegrambotinfrastructure.model.reply.Text
 import com.benkio.telegrambotinfrastructure.model.reply.VideoFile
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
+import com.benkio.telegrambotinfrastructure.Logger.given
 import munit.*
 import telegramium.bots.Chat
 import telegramium.bots.Message
@@ -23,7 +21,6 @@ import telegramium.bots.Message
 import scala.concurrent.duration.*
 
 class TelegramReplySpec extends CatsEffectSuite {
-  given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
 
   test("TextReply.sendText reply should work as expected") {
     val message = Message(0, date = 0, chat = Chat(0, `type` = "private"), text = Some("test message"))

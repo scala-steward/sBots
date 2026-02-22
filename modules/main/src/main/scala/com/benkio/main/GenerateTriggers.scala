@@ -7,6 +7,7 @@ import cats.effect.IO
 import cats.effect.IOApp
 import cats.effect.Resource
 import cats.implicits.*
+import com.benkio.main.Logger.given
 import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import com.benkio.telegrambotinfrastructure.initialization.BotSetup
 import com.benkio.telegrambotinfrastructure.model.media.MediaResource
@@ -21,8 +22,6 @@ import com.benkio.telegrambotinfrastructure.repository.Repository
 import com.benkio.telegrambotinfrastructure.repository.Repository.RepositoryError
 import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
 import com.benkio.telegrambotinfrastructure.BackgroundJobManager
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
 import log.effect.LogWriter
 import org.http4s.client.Client
 import org.http4s.implicits.*
@@ -192,12 +191,11 @@ object GenerateTriggers extends IOApp {
   }
 
   def run(args: List[String]): IO[ExitCode] = {
-    given log: LogWriter[IO] = consoleLogUpToLevel(LogLevels.Info)
     BotRegistry
       .toList(BotRegistry.value)
       .traverse_((botRegistryEntry: com.benkio.main.BotRegistryEntry[IO]) =>
         for {
-          botSetup <- Resource.eval(forTriggerGeneration(botRegistryEntry.sBotConfig)(using log))
+          botSetup <- Resource.eval(forTriggerGeneration(botRegistryEntry.sBotConfig))
           botData  <- Resource.eval(
             botSetup.jsonDataRepository.loadData[ReplyBundleMessage](botRegistryEntry.sBotConfig.repliesJsonFilename)
           )

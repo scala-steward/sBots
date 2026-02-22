@@ -10,6 +10,7 @@ import com.benkio.integration.BotSetupFixture
 import com.benkio.integration.DBFixture
 import com.benkio.integration.DBFixtureResources
 import com.benkio.integration.SlowTest
+import com.benkio.integrationtest.Logger.given
 import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import com.benkio.telegrambotinfrastructure.initialization.BotSetup
 import com.benkio.telegrambotinfrastructure.model.media.getMediaResourceFile
@@ -26,9 +27,6 @@ import com.benkio.M0sconiBot.M0sconiBot
 import com.benkio.RichardPHJBensonBot.RichardPHJBensonBot
 import com.benkio.XahLeeBot.XahLeeBot
 import com.benkio.YouTuboAncheI0Bot.YouTuboAncheI0Bot
-import log.effect.fs2.SyncLogWriter.consoleLogUpToLevel
-import log.effect.LogLevels
-import log.effect.LogWriter
 import org.scalatest.*
 import org.scalatest.funsuite.FixtureAnyFunSuite
 
@@ -36,7 +34,6 @@ class MediaIntegritySpec extends FixtureAnyFunSuite with ParallelTestExecution {
 
   case class FixtureParam(fixture: DBFixtureResources)
 
-  given log: LogWriter[IO]               = consoleLogUpToLevel(LogLevels.Info)
   val initialFixture: DBFixtureResources = DBFixture.fixtureSetup(null)
 
   def mediaFilesFromBot(
