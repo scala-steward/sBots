@@ -74,16 +74,17 @@ object Dependencies {
     val http4sEmberServer = "org.http4s"             %% "http4s-ember-server"         % versions.http4s
     val logEffectsCore    = "io.laserdisc"           %% "log-effect-core"             % versions.logEffects
     val logEffectsFs2     = "io.laserdisc"           %% "log-effect-fs2"              % versions.logEffects
-    val logbackClassic  = "ch.qos.logback"         % "logback-classic"          % versions.logbackClassic  % Runtime
-    val logbackLogstash = "net.logstash.logback"   % "logstash-logback-encoder" % versions.logbackLogstash % Runtime
-    val mules           = "io.chrisdavenport"     %% "mules"                    % versions.mules
-    val mulesHttp4s     = "io.chrisdavenport"     %% "mules-http4s"             % versions.mulesHttp4s
-    val munit           = "org.scalameta"         %% "munit"                    % versions.munit           % "test"
-    val munitCatsEffect = "org.typelevel"         %% "munit-cats-effect"        % versions.munitCatsEffect % "test"
-    val munitScalacheck = "org.scalameta"         %% "munit-scalacheck"         % versions.munit           % "test"
-    val pureConfig      = "com.github.pureconfig" %% "pureconfig"               % versions.pureConfig
-    val pureConfigCore  = "com.github.pureconfig" %% "pureconfig-core"          % versions.pureConfig
-    val scalacheck      = "org.scalacheck"        %% "scalacheck"               % versions.scalacheck
+    val logbackClassic   = "ch.qos.logback"         % "logback-classic"          % versions.logbackClassic  % Runtime
+    val logbackLogstash  = "net.logstash.logback"   % "logstash-logback-encoder" % versions.logbackLogstash % Runtime
+    val mules            = "io.chrisdavenport"     %% "mules"                    % versions.mules
+    val mulesHttp4s      = "io.chrisdavenport"     %% "mules-http4s"             % versions.mulesHttp4s
+    val munit            = "org.scalameta"         %% "munit"                    % versions.munit           % "test"
+    val munitCatsEffect  = "org.typelevel"         %% "munit-cats-effect"        % versions.munitCatsEffect % "test"
+    val munitScalacheck  = "org.scalameta"         %% "munit-scalacheck"         % versions.munit           % "test"
+    val pureConfig       = "com.github.pureconfig" %% "pureconfig"               % versions.pureConfig
+    val pureConfigHttp4s = "com.github.pureconfig" %% "pureconfig-http4s"        % versions.pureConfig
+    val pureConfigCore   = "com.github.pureconfig" %% "pureconfig-core"          % versions.pureConfig
+    val scalacheck       = "org.scalacheck"        %% "scalacheck"               % versions.scalacheck
     val scalacheckEffectMunit = "org.typelevel"         %% "scalacheck-effect-munit" % versions.scalacheckEffectMunit
     val scalacheckGenRegexp   = "io.github.wolfendale"  %% "scalacheck-gen-regexp"   % versions.scalacheckGenRegexp
     val scalatest             = "org.scalatest"         %% "scalatest"               % versions.scalatest % "test"
@@ -150,9 +151,11 @@ object Dependencies {
   val MainDependencies: Seq[ModuleID] =
     CommonDependencies ++
       Seq(
+        libs.cron4s,
         libs.doobieMunit,
         libs.fs2Core,
         libs.pureConfigCore,
+        libs.pureConfigHttp4s,
         libs.vault
       )
 
