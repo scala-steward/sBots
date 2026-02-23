@@ -155,6 +155,8 @@ object Dependencies {
         libs.cron4s,
         libs.doobieMunit,
         libs.fs2Core,
+        libs.fs2Cron,
+        libs.fs2CronCore,
         libs.pureConfigCore,
         libs.pureConfigHttp4s,
         libs.pureConfigCron4s,
