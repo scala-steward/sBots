@@ -10,5 +10,7 @@ object HealthcheckPing {
   // Get the config from outside for the cron.
   // Spawn a non-cancellable fiber
   // Add it to the webhook main
-  def healthcheckPing[F[_]](client: Client[F], healthcheckEndpoint: Uri, healthcheckCron: CronExpr): F[Unit] = ???
+  def healthcheckPing[F[_]](client: Client[F], healthcheckEndpoint: Uri, healthcheckCron: CronExpr): F[Unit] = {
+    ???
+  }
 }

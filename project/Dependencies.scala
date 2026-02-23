@@ -83,6 +83,7 @@ object Dependencies {
     val munitScalacheck  = "org.scalameta"         %% "munit-scalacheck"         % versions.munit           % "test"
     val pureConfig       = "com.github.pureconfig" %% "pureconfig"               % versions.pureConfig
     val pureConfigHttp4s = "com.github.pureconfig" %% "pureconfig-http4s"        % versions.pureConfig
+    val pureConfigCron4s = "com.github.pureconfig" %% "pureconfig-cron4s"        % versions.pureConfig
     val pureConfigCore   = "com.github.pureconfig" %% "pureconfig-core"          % versions.pureConfig
     val scalacheck       = "org.scalacheck"        %% "scalacheck"               % versions.scalacheck
     val scalacheckEffectMunit = "org.typelevel"         %% "scalacheck-effect-munit" % versions.scalacheckEffectMunit
@@ -156,6 +157,7 @@ object Dependencies {
         libs.fs2Core,
         libs.pureConfigCore,
         libs.pureConfigHttp4s,
+        libs.pureConfigCron4s,
         libs.vault
       )
 

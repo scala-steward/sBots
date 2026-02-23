@@ -4,7 +4,6 @@ import cats.effect.Async
 import cats.effect.Resource
 import com.benkio.telegrambotinfrastructure.initialization.BotSetup
 import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
-import cron4s.Cron
 import cron4s.CronExpr
 import fs2.io.net.Network
 import log.effect.LogWriter
@@ -31,17 +30,14 @@ final case class MainSetup[F[_]](
 object MainSetup {
 
   def apply[F[_]: Async: Network]()(using log: LogWriter[F]): Resource[F, MainSetup[F]] = for {
-    config          <- Resource.eval(Config.loadConfig[F])
-    _               <- Resource.eval(log.info(s"[Main] Configuration: $config"))
-    httpClient      <- EmberClientBuilder.default[F].withMaxResponseHeaderSize(8192).build
-    _               <- Resource.eval(log.info("[Main] httpClient"))
-    dbLayer         <- BotSetup.loadDB[F](config.mainDB)
-    _               <- Resource.eval(log.info("[Main] dbLayer"))
-    certificate     <- Resource.eval(Async[F].pure(config.webhookCertificate.map(fp => InputPartFile(new File(fp)))))
-    _               <- Resource.eval(log.info("[Main] webhook certificate"))
-    healthcheckCron <- Resource.eval(Async[F].fromEither(Cron(config.healthcheckPing.cron)))
-    _               <- Resource.eval(log.info("[Main] healthcheck cron value"))
-
+    config      <- Resource.eval(Config.loadConfig[F])
+    _           <- Resource.eval(log.info(s"[Main] Configuration: $config"))
+    httpClient  <- EmberClientBuilder.default[F].withMaxResponseHeaderSize(8192).build
+    _           <- Resource.eval(log.info("[Main] httpClient"))
+    dbLayer     <- BotSetup.loadDB[F](config.mainDB)
+    _           <- Resource.eval(log.info("[Main] dbLayer"))
+    certificate <- Resource.eval(Async[F].pure(config.webhookCertificate.map(fp => InputPartFile(new File(fp)))))
+    _           <- Resource.eval(log.info("[Main] webhook certificate"))
   } yield MainSetup(
     httpClient = httpClient,
     dbLayer = dbLayer,
@@ -52,6 +48,6 @@ object MainSetup {
     keystorePath = config.keystorePath,
     keystorePassword = config.keystorePassword,
     healthcheckEndpoint = config.healthcheckPing.endpoint,
-    healthcheckCron = healthcheckCron
+    healthcheckCron = config.healthcheckPing.cron
   )
 }
