@@ -21,7 +21,6 @@ import com.benkio.telegrambotinfrastructure.repository.ResourcesRepository
 import com.benkio.telegrambotinfrastructure.Logger.given
 import munit.CatsEffectSuite
 
-import java.io.File
 import java.nio.file.*
 import scala.util.Random
 
@@ -42,9 +41,9 @@ class ResourceRepositorySpec extends CatsEffectSuite {
     val obtainedResource = Repository.toTempFile[IO](inputFileName, inputContent)
     obtainedResource.use(obtained =>
       IO {
-        assert(obtained.getName().startsWith("test"))
-        assert(obtained.getName().endsWith(".txt"))
-        assertEquals(Files.readAllBytes(obtained.toPath).toSeq, inputContent.toSeq)
+        assert(obtained.getFileName().toString().startsWith("test"))
+        assert(obtained.getFileName().toString().endsWith(".txt"))
+        assertEquals(Files.readAllBytes(obtained).toSeq, inputContent.toSeq)
       }
     )
   }
@@ -85,12 +84,12 @@ class DBRepositorySpec extends CatsEffectSuite {
   )
   val emptyDBLayer: DBLayer[IO] = DBLayerMock.mock(SBotId("bot"))
   val fullDBLayer: DBLayer[IO]  = DBLayerMock.mock(SBotId("bot"), medias = medias)
-  val testFile: File            = File("test.mp4")
+  val testPath: Path            = Path.of("test.mp4")
   def dropboxClientMockBuild(expectedFileName: String): DropboxClient[IO] = DropboxClientMock.mock((inputFileName, _) =>
     Resource.eval(
       IO.raiseUnless(inputFileName == expectedFileName)(
         Throwable(s"[DBRepositorySpec] Error DropboxClientMock. $inputFileName ≠ $expectedFileName")
-      ).as(testFile)
+      ).as(testPath)
     )
   )
 
@@ -162,7 +161,7 @@ class DBRepositorySpec extends CatsEffectSuite {
           case _ => Resource.eval(IO.raiseError(Throwable("[RepositorySpec] getResourceKind didn't return anything")))
         }
       )
-      .use(result => IO.pure(result == List(testFile.some)))
+      .use(result => IO.pure(result == List(testPath.some)))
     assertIO(check, true)
   }
 }

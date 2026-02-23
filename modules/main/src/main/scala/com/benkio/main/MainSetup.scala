@@ -12,7 +12,7 @@ import org.http4s.ember.client.*
 import org.http4s.Uri
 import telegramium.bots.InputPartFile
 
-import java.io.File
+import java.nio.file.Paths
 
 final case class MainSetup[F[_]](
     httpClient: Client[F],
@@ -36,8 +36,10 @@ object MainSetup {
     _           <- Resource.eval(log.info("[Main] httpClient"))
     dbLayer     <- BotSetup.loadDB[F](config.mainDB)
     _           <- Resource.eval(log.info("[Main] dbLayer"))
-    certificate <- Resource.eval(Async[F].pure(config.webhookCertificate.map(fp => InputPartFile(new File(fp)))))
-    _           <- Resource.eval(log.info("[Main] webhook certificate"))
+    certificate <- Resource.eval(
+      Async[F].pure(config.webhookCertificate.map(fp => InputPartFile(Paths.get(fp).toFile)))
+    )
+    _ <- Resource.eval(log.info("[Main] webhook certificate"))
   } yield MainSetup(
     httpClient = httpClient,
     dbLayer = dbLayer,

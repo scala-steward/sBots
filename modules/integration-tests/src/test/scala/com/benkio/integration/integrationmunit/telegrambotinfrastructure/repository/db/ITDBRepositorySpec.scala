@@ -50,7 +50,7 @@ class ITDBRepositorySpec extends CatsEffectSuite with DBFixture {
       initialMedia <- Resource.eval(dbMedia.getMedia(testMediaName, false))
     } yield {
       val assert1 = postMedia == preMedia.map(x => x.copy(media_count = x.media_count + 1))
-      val assert2 = mediaSources.exists(_.fold(false)(f => Files.readAllBytes(f.toPath).length >= (1024 * 5)))
+      val assert2 = mediaSources.exists(_.fold(false)(f => Files.readAllBytes(f).length >= (1024 * 5)))
       val assert3 = preMedia == initialMedia
       assert1 && assert2 && assert3
     }
@@ -109,7 +109,9 @@ class ITDBRepositorySpec extends CatsEffectSuite with DBFixture {
         _.reduce.toList.mapFilter(_.getMediaResourceFile).sequence
       )
     } yield files
-      .map(file => expectedFilenames.exists(matchFile => matchFile.toList.diff(file.getName().toList).isEmpty))
+      .map(file =>
+        expectedFilenames.exists(matchFile => matchFile.toList.diff(file.getFileName().toString().toList).isEmpty)
+      )
       .foldLeft(true)(_ && _)
     resourceAssert.use(IO.pure).assert
   }

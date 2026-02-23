@@ -14,7 +14,6 @@ import org.flywaydb.core.api.configuration.FluentConfiguration
 import org.flywaydb.core.Flyway
 import org.http4s.ember.client.*
 
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.sql.Connection
@@ -41,7 +40,7 @@ trait DBFixture { self: FunSuite =>
 object DBFixture {
 
   val dbName: String         = "botDB.sqlite3"
-  val resourcePath: String   = new File("./..").getCanonicalPath
+  val resourcePath: String   = Paths.get(".").resolve("..").toAbsolutePath().normalize().toString
   val dbPath: String         = s"$resourcePath/../$dbName"
   val dbUrl: String          = s"jdbc:sqlite:$dbPath";
   val deleteDB: Boolean      = false

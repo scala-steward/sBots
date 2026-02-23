@@ -20,7 +20,10 @@ import munit.CatsEffectSuite
 import org.http4s.syntax.literals.*
 import org.http4s.Uri
 
-import java.io.File
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.Paths
+import scala.jdk.CollectionConverters.*
 
 class MediaUpdaterSpec extends CatsEffectSuite {
 
@@ -35,8 +38,11 @@ class MediaUpdaterSpec extends CatsEffectSuite {
         NonEmptyList
           .one(
             NonEmptyList.fromListUnsafe(
-              File(getClass.getResource(location).toURI).listFiles
-                .map(f => MediaResourceFile(Resource.pure(f)): MediaResource[IO])
+              Files
+                .list(Paths.get(getClass.getResource(location).toURI))
+                .iterator()
+                .asScala
+                .map(p => MediaResourceFile(Resource.pure(p)): MediaResource[IO])
                 .toList
             )
           )
@@ -56,9 +62,9 @@ class MediaUpdaterSpec extends CatsEffectSuite {
     assertIO(
       mediaUpdater.fetchRootBotFiles
         .flatMap(_.map(_.getMediaResourceFile).flatten.sequence)
-        .use(_.map(_.getPath()).pure[IO]),
+        .use(_.pure[IO]),
       config.jsonLocation.flatMap(location =>
-        File(getClass.getResource(location.value).toURI).listFiles.map(_.getPath())
+        Files.list(Paths.get(getClass.getResource(location.value).toURI)).iterator().asScala.toList
       )
     )
   }
@@ -66,12 +72,12 @@ class MediaUpdaterSpec extends CatsEffectSuite {
   test("MediaUpdater.filterMediaJsonFiles should return the expected json files") {
     assertIO(
       mediaUpdater.fetchRootBotFiles.flatMap(roots => mediaUpdater.filterMediaJsonFiles(roots)).use(_.pure[IO]),
-      List(File(getClass.getResource("/testdata/test_list.json").toURI))
+      List(Paths.get(getClass.getResource("/testdata/test_list.json").toURI))
     )
   }
 
   test("MediaUpdater.parseMediaJsonFiles should parse valid json file") {
-    val input: List[File]               = List(File(getClass.getResource("/testdata/test_list.json").toURI))
+    val input: List[Path]               = List(Paths.get(getClass.getResource("/testdata/test_list.json").toURI))
     val expected: List[MediaFileSource] = List(
       MediaFileSource(
         filename = "test_testData.mp3",

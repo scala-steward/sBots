@@ -7,8 +7,8 @@ import munit.CatsEffectSuite
 import org.http4s.syntax.literals.*
 import org.http4s.Uri
 
-import java.io.File
 import java.nio.file.Files
+import java.nio.file.Path
 
 class ITDropboxClientSpec extends CatsEffectSuite with DBFixture {
 
@@ -25,7 +25,7 @@ class ITDropboxClientSpec extends CatsEffectSuite with DBFixture {
     val result = for {
       dropboxClient <- fixture.dropboxClientResource
       files         <- input.parTraverse { case (url, filename) => dropboxClient.fetchFile(filename, url) }
-      bytess = files.map((file: File) => Files.readAllBytes(file.toPath).length)
+      bytess = files.map((path: Path) => Files.readAllBytes(path).length)
     } yield bytess.forall(bytes => bytes > (1024 * 5))
 
     result.use(IO.pure).assert

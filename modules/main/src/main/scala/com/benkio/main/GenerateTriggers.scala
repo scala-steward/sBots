@@ -31,8 +31,10 @@ import org.http4s.Status
 import telegramium.bots.client.Method
 import telegramium.bots.high.Api
 
-import java.io.*
+import java.nio.file.Files
+import java.nio.file.Path
 import java.util.UUID
+import scala.jdk.CollectionConverters.*
 
 object GenerateTriggers extends IOApp {
 
@@ -180,14 +182,14 @@ object GenerateTriggers extends IOApp {
       triggerFilename: String,
       triggers: List[ReplyBundleMessage]
   ): Resource[IO, Unit] = {
-    val triggerFilesPath = new File(botModuleRelativeFolderPath).getCanonicalPath + s"/$triggerFilename"
+    val triggerFilesPath = Path.of(botModuleRelativeFolderPath + s"/$triggerFilename")
 
     for {
       _ <- Resource.eval(IO.println(s"[GenerateTriggers] Generate $botModuleRelativeFolderPath Trigger file"))
-      triggersStringList = triggers.map(_.prettyPrint())
-      _  <- Resource.eval(IO.println(s"[GenerateTriggers] Generate $botModuleRelativeFolderPath done"))
-      pw <- Resource.fromAutoCloseable(IO(new PrintWriter(triggerFilesPath)))
-    } yield pw.write(triggersStringList.mkString(""))
+      triggersStringList = triggers.map(s => s.prettyPrint().stripLineEnd)
+      _ <- Resource.eval(IO.println(s"[GenerateTriggers] Generate $botModuleRelativeFolderPath done"))
+      _ = Files.write(triggerFilesPath, triggersStringList.asJava)
+    } yield ()
   }
 
   def run(args: List[String]): IO[ExitCode] = {

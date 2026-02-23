@@ -17,14 +17,13 @@ import io.circe.*
 import io.circe.parser.*
 import log.effect.LogWriter
 
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import scala.jdk.CollectionConverters.*
 import scala.sys.process.*
 import scala.util.Try
 
-final case class YouTubeBotFile(botId: SBotId, captionLanguage: String, file: File)
+final case class YouTubeBotFile(botId: SBotId, captionLanguage: String, file: Path)
 final case class YouTubeBotIds(botId: SBotId, outputFilePath: String, captionLanguage: String, videoIds: List[String])
 final case class YouTubeBotVideos(botId: SBotId, outputFilePath: String, captionLanguage: String, videos: List[Video])
 final case class YouTubeBotDBShowDatas(

@@ -9,6 +9,7 @@ import com.benkio.integration.BotSetupFixture
 import com.benkio.integration.DBFixture
 import com.benkio.integrationtest.Logger.given
 import com.benkio.main.*
+import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import com.benkio.telegrambotinfrastructure.model.media.MediaFileSource
 import com.benkio.telegrambotinfrastructure.model.reply.MediaFile
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleCommand
@@ -19,8 +20,8 @@ import doobie.implicits.*
 import io.circe.parser.decode
 import munit.CatsEffectSuite
 
-import java.io.File
-import scala.io.Source
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /** Unified IT DB spec: runs the same DB/media checks for every bot in the registry. */
 class ITDBSpec extends CatsEffectSuite with DBFixture {
@@ -135,16 +136,22 @@ class ITDBSpec extends CatsEffectSuite with DBFixture {
     } yield checks.foldLeft(true)(_ && _)
   }
 
+  private def getBotListContent(sBotConfig: SBotConfig): Either[Throwable, List[String]] = {
+    val listPath = Paths
+      .get(s"../bots/${sBotConfig.sBotInfo.botName.value}/${sBotConfig.sBotInfo.botId.value}_list.json")
+      .toAbsolutePath()
+      .normalize()
+    scala.util.Try(Files.readString(listPath)).toEither.flatMap { jsonContent =>
+      decode[List[MediaFileSource]](jsonContent).map(_.map(_.filename))
+    }
+  }
+
   private def runCommandRepliesJsonContainmentCheck(
       dbRes: com.benkio.integration.DBFixtureResources,
       entry: com.benkio.main.BotRegistryEntry[IO]
   ): Resource[IO, Boolean] = {
     val sBotConfig = entry.sBotConfig
-    val listPath   = new File(
-      s"./../bots/${sBotConfig.sBotInfo.botName.value}"
-    ).getCanonicalPath + s"/${sBotConfig.sBotInfo.botId.value}_list.json"
-    val jsonContent = Source.fromFile(listPath).getLines().mkString("\n")
-    val json        = decode[List[MediaFileSource]](jsonContent).map(_.map(_.filename))
+    val json       = getBotListContent(sBotConfig)
     for {
       botSetup           <- BotSetupFixture.botSetupResource(dbRes, sBotConfig)(using log)
       messageRepliesData <- Resource.eval(
@@ -164,16 +171,9 @@ class ITDBSpec extends CatsEffectSuite with DBFixture {
         mediaFiles
           .map((mediaFile: MediaFile) =>
             json.fold(
-              e => fail("test failed", e),
-              jsonMediaFileSources => {
-                val result = jsonMediaFileSources.exists((mediaFilenameSource: String) =>
-                  mediaFilenameSource == mediaFile.filename
-                )
-                if !result then {
-                  println(s"${mediaFile.filename} is not contained in the json file")
-                }
-                result
-              }
+              e => { fail("test failed", e); false },
+              jsonMediaFileSources =>
+                jsonMediaFileSources.exists(mediaFilenameSource => mediaFilenameSource == mediaFile.filename)
             )
           )
       )
@@ -185,11 +185,7 @@ class ITDBSpec extends CatsEffectSuite with DBFixture {
       entry: com.benkio.main.BotRegistryEntry[IO]
   ): Resource[IO, Boolean] = {
     val sBotConfig = entry.sBotConfig
-    val listPath   = new File(
-      s"./../bots/${sBotConfig.sBotInfo.botName.value}"
-    ).getCanonicalPath + s"/${sBotConfig.sBotInfo.botId.value}_list.json"
-    val jsonContent = Source.fromFile(listPath).getLines().mkString("\n")
-    val json        = decode[List[MediaFileSource]](jsonContent).map(_.map(_.filename))
+    val json       = getBotListContent(sBotConfig)
     for {
       botSetup           <- BotSetupFixture.botSetupResource(dbRes, sBotConfig)(using log)
       messageRepliesData <- Resource.eval(
@@ -209,16 +205,9 @@ class ITDBSpec extends CatsEffectSuite with DBFixture {
         mediaFiles
           .map((mediaFile: MediaFile) =>
             json.fold(
-              e => fail("test failed", e),
-              jsonMediaFileSources => {
-                val result = jsonMediaFileSources.exists((mediaFilenameSource: String) =>
-                  mediaFilenameSource == mediaFile.filename
-                )
-                if !result then {
-                  println(s"${mediaFile.filename} is not contained in the json file")
-                }
-                result
-              }
+              e => { fail("test failed", e); false },
+              jsonMediaFileSources =>
+                jsonMediaFileSources.exists(mediaFilenameSource => mediaFilenameSource == mediaFile.filename)
             )
           )
       )

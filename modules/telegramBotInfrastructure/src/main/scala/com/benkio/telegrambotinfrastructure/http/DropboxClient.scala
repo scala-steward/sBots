@@ -13,11 +13,11 @@ import org.http4s.client.Client
 import org.http4s.Method.GET
 import org.typelevel.ci.*
 
-import java.io.File
+import java.nio.file.Path
 import scala.concurrent.duration.*
 
 trait DropboxClient[F[_]] {
-  def fetchFile(filename: String, url: Uri): Resource[F, File]
+  def fetchFile(filename: String, url: Uri): Resource[F, Path]
 }
 
 object DropboxClient {
@@ -35,18 +35,18 @@ object DropboxClient {
 
   private class DropboxClientImpl[F[_]: Async: LogWriter](httpClient: Client[F]) extends DropboxClient[F] {
 
-    def fetchFile(filename: String, url: Uri): Resource[F, File] = {
+    def fetchFile(filename: String, url: Uri): Resource[F, Path] = {
       val req = Request[F](GET, url)
       httpClient
         .run(req)
         .flatMap(response => {
-          val followup: Resource[F, File] = (
+          val followup: Resource[F, Path] = (
             response.status,
             response.headers.get(ci"Location").flatMap(hl => Uri.fromString(hl.head.value).toOption)
           ) match { // non standard redirect because dropbox
             case (Status.Found, Some(locationUri)) => fetchFile(filename, locationUri)
             case (Status.Found, None)              =>
-              Resource.raiseError[F, File, Throwable](DropboxLocationHeaderNotFound[F](response))
+              Resource.raiseError[F, Path, Throwable](DropboxLocationHeaderNotFound[F](response))
             case _ =>
               for {
                 content <- Resource.eval(response.body.compile.toList)

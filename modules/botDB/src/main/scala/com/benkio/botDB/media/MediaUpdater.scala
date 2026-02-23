@@ -19,7 +19,7 @@ import io.circe.parser.decode
 import io.circe.syntax.*
 import log.effect.LogWriter
 
-import java.io.File
+import java.nio.file.Path
 import java.time.Instant
 import scala.io.Source
 
@@ -53,17 +53,17 @@ object MediaUpdater {
             .map(_.map(_.reduce.toList).getOrElse(List()))
         )
 
-    private[media] def filterMediaJsonFiles(allFiles: List[MediaResource[F]]): Resource[F, List[File]] = {
+    private[media] def filterMediaJsonFiles(allFiles: List[MediaResource[F]]): Resource[F, List[Path]] = {
       allFiles
         .mapFilter(_.getMediaResourceFile)
         .traverseFilter(resourceFile =>
-          resourceFile.map(f => if f.getName.endsWith("_list.json") then Some(f) else None)
+          resourceFile.map(f => if f.toString.endsWith("_list.json") then Some(f) else None)
         )
     }
 
-    private[media] def parseMediaJsonFiles(jsons: List[File]): Resource[F, List[MediaFileSource]] = {
+    private[media] def parseMediaJsonFiles(jsons: List[Path]): Resource[F, List[MediaFileSource]] = {
       Resource.eval(Async[F].fromEither(jsons.flatTraverse(json => {
-        val fileContent = Source.fromFile(json).getLines().mkString("\n")
+        val fileContent = Source.fromFile(json.toFile()).getLines().mkString("\n")
         decode[List[MediaFileSource]](fileContent).leftMap(e => Throwable(e.show))
       })))
     }

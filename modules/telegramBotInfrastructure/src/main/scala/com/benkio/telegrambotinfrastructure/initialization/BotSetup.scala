@@ -21,7 +21,7 @@ import org.http4s.client.Client
 import telegramium.bots.high.Api
 import telegramium.bots.high.BotApi
 
-import java.io.File
+import java.nio.file.Path
 
 final case class BotSetup[F[_]](
     token: String,
@@ -70,11 +70,10 @@ object BotSetup {
         .map(_.collect { case MediaResourceFile(rf) =>
           rf
         }.sequence)
-        .getOrElse(Resource.eval[F, List[File]](Async[F].raiseError(BotSetupError.TokenNotFound(tokenFilename))))
+        .getOrElse(Resource.eval[F, List[Path]](Async[F].raiseError(BotSetupError.TokenNotFound(tokenFilename))))
       tokenFileContent <-
-        tokenFiles.headOption.fold(Resource.eval(Async[F].raiseError(BotSetupError.TokenNotFound(tokenFilename))))(f =>
-          Repository.fileToString(f)
-        )
+        tokenFiles.headOption
+          .fold(Resource.eval(Async[F].raiseError(BotSetupError.TokenNotFound(tokenFilename))))(Repository.fileToString)
       _ <- Resource.eval(
         Async[F].raiseWhen(tokenFileContent.isEmpty)(
           BotSetupError.TokenIsEmpty(tokenFilename)

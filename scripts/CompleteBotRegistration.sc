@@ -15,6 +15,9 @@
   * (newBot does not edit main application.conf or healthcheck; only this script does.)
   */
 
+import java.nio.file.Paths
+import java.nio.file.Path
+
 if args.length < 2 then {
   println("Usage: ./scripts/CompleteBotRegistration.sc <BotName> <id> [projectRoot]")
   println("Example: ./scripts/CompleteBotRegistration.sc MyNewBot mynew")
@@ -23,24 +26,24 @@ if args.length < 2 then {
 
 val botName      = args(0)
 val id           = args(1)
-val root         = if args.length >= 3 then new java.io.File(args(2)) else new java.io.File(".")
-val rootAbs      = root.getAbsoluteFile
-val projectDir   = new java.io.File(rootAbs, "project")
-val buildSbt     = new java.io.File(rootAbs, "build.sbt")
-val botsRegistry = new java.io.File(rootAbs, "modules/main/src/main/scala/com/benkio/main/BotsRegistry.scala")
+val root         = if args.length >= 3 then Paths.get(args(2)) else Paths.get(".")
+val rootAbs      = root.toAbsolutePath.normalize
+val projectDir   = rootAbs.resolve("project")
+val buildSbt     = rootAbs.resolve("build.sbt")
+val botsRegistry = rootAbs.resolve("modules/main/src/main/scala/com/benkio/main/BotsRegistry.scala")
 
-if !projectDir.isDirectory || !buildSbt.isFile || !botsRegistry.isFile then {
+if !java.nio.file.Files.isDirectory(projectDir) || !java.nio.file.Files.isRegularFile(buildSbt) || !java.nio.file.Files.isRegularFile(botsRegistry) then {
   println(
-    s"Error: run from sBots project root, or pass project root as third argument. Looked at: ${rootAbs.getAbsolutePath}"
+    s"Error: run from sBots project root, or pass project root as third argument. Looked at: $rootAbs"
   )
   sys.exit(1)
 }
 
-def read(path: java.io.File): String =
-  scala.io.Source.fromFile(path, "UTF-8").mkString
+def read(path: Path): String =
+  java.nio.file.Files.readString(path, java.nio.charset.StandardCharsets.UTF_8)
 
-def write(path: java.io.File, content: String): Unit =
-  java.nio.file.Files.write(path.toPath, content.getBytes(java.nio.charset.StandardCharsets.UTF_8))
+def write(path: Path, content: String): Unit =
+  java.nio.file.Files.write(path, content.getBytes(java.nio.charset.StandardCharsets.UTF_8))
 
 // 1. build.sbt: add to botProjects seq and add project definition
 val buildContent = read(buildSbt)
@@ -77,7 +80,7 @@ Project("$botName", file("modules/bots/$botName"))
   }
   newBuild = newBuild.patch(idx, projectBlock + mainAnchor, mainAnchor.length)
   write(buildSbt, newBuild)
-  println(s"Updated ${buildSbt.getPath}")
+  println(s"Updated $buildSbt")
 }
 
 // 2. BotsRegistry.scala: add import and BotRegistryEntry
@@ -112,12 +115,12 @@ if registryContent.contains(s"$pkg.$botName") then {
     }
   }
   write(botsRegistry, newRegistry)
-  println(s"Updated ${botsRegistry.getPath}")
+  println(s"Updated $botsRegistry")
 }
 
 // 3. main application.conf: add new bot db block
-val mainAppConf = new java.io.File(rootAbs, "modules/main/src/main/resources/application.conf")
-if mainAppConf.isFile then {
+val mainAppConf = rootAbs.resolve("modules/main/src/main/resources/application.conf")
+if java.nio.file.Files.isRegularFile(mainAppConf) then {
   var mainConfContent = read(mainAppConf)
   if mainConfContent.contains(s"main.$id.") then
     println(s"main application.conf already contains $id, skipping.")
@@ -161,14 +164,14 @@ if mainAppConf.isFile then {
     mainConfContent = mainConfContent.replace(mosStripped, replacement)
     if mainConfContent != read(mainAppConf) then {
       write(mainAppConf, mainConfContent)
-      println(s"Updated ${mainAppConf.getPath} with $botName ($id)")
+      println(s"Updated $mainAppConf with $botName ($id)")
     } else println("Could not find insertion point in main application.conf")
   }
-} else println(s"main application.conf not found at ${mainAppConf.getPath}, skipping.")
+} else println(s"main application.conf not found at $mainAppConf, skipping.")
 
 // 4. Healthcheck workflow: add new bot token to BOT_TOKENS
-val healthcheckYml = new java.io.File(rootAbs, ".github/workflows/healthcheck.yml")
-if healthcheckYml.isFile then {
+val healthcheckYml = rootAbs.resolve(".github/workflows/healthcheck.yml")
+if java.nio.file.Files.isRegularFile(healthcheckYml) then {
   val secretName = s"${id.toUpperCase}_TOKEN"
   if secretName != "TOKEN" then {
     var hcContent = read(healthcheckYml)
@@ -181,11 +184,11 @@ if healthcheckYml.isFile then {
       println(s"Updated .github/workflows/healthcheck.yml with $secretName")
     } else println(s"Healthcheck already contains $secretName, skipping.")
   }
-} else println(s"Healthcheck workflow not found at ${healthcheckYml.getPath}, skipping.")
+} else println(s"Healthcheck workflow not found at $healthcheckYml, skipping.")
 
 // 5. copyTokensFromDropbox.sh: add new bot to the list
-val copyTokensScript = new java.io.File(rootAbs, "scripts/copyTokensFromDropbox.sh")
-if copyTokensScript.isFile then {
+val copyTokensScript = rootAbs.resolve("scripts/copyTokensFromDropbox.sh")
+if java.nio.file.Files.isRegularFile(copyTokensScript) then {
   var ctContent = read(copyTokensScript)
   if !ctContent.contains(botName) then {
     ctContent = ctContent.replace("; do", s" $botName; do")
@@ -194,7 +197,7 @@ if copyTokensScript.isFile then {
       println(s"Updated scripts/copyTokensFromDropbox.sh with $botName")
     } else println("Could not find insertion point in copyTokensFromDropbox.sh")
   } else println(s"copyTokensFromDropbox.sh already contains $botName, skipping.")
-} else println(s"copyTokensFromDropbox.sh not found at ${copyTokensScript.getPath}, skipping.")
+} else println(s"copyTokensFromDropbox.sh not found at $copyTokensScript, skipping.")
 
 // 6. build.sbt: add data-entry alias
 val buildContentNow = read(buildSbt)
