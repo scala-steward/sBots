@@ -9,14 +9,14 @@ import munit.*
 import telegramium.bots.InputLinkFile
 import telegramium.bots.InputPartFile
 
-import java.io.File
 import java.nio.file.Path
+import java.nio.file.Paths
 
 class MediaResourceSpec extends CatsEffectSuite {
   test("toTelegramApi should return the expected Telegram Type") {
-    val file      = File(".")
-    val actual1   = MediaResourceFile(Resource.pure[IO, Path](file.toPath())).toTelegramApi
-    val expected1 = InputPartFile(file)
+    val path      = Paths.get(".")
+    val actual1   = MediaResourceFile(Resource.pure[IO, Path](path)).toTelegramApi
+    val expected1 = InputPartFile(path.toFile())
     // --------------------------------------------------
     val ifile                            = "ifile"
     val mediaResource: MediaResource[IO] = MediaResourceIFile(ifile)
@@ -25,10 +25,10 @@ class MediaResourceSpec extends CatsEffectSuite {
     actual1.use(assertEquals(_, expected1).pure[IO]) *>
       actual2.use(assertEquals(_, expected2).pure[IO])
   }
-  test("getMediaResourceFile should extrac the file or return None") {
-    val file      = File(".")
-    val actual1   = MediaResourceFile(Resource.pure[IO, Path](file.toPath())).getMediaResourceFile.sequence
-    val expected1 = Some(file.toPath())
+  test("getMediaResourceFile should extract the file or return None") {
+    val path      = Paths.get(".")
+    val actual1   = MediaResourceFile(Resource.pure[IO, Path](path)).getMediaResourceFile.sequence
+    val expected1 = Some(path)
 
     val ifile                            = "ifile"
     val mediaResource: MediaResource[IO] = MediaResourceIFile(ifile)

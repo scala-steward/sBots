@@ -16,9 +16,9 @@ import io.circe.parser.*
 import io.circe.syntax.*
 import log.effect.LogWriter
 
-import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.Duration
 import scala.io.Source
@@ -180,7 +180,7 @@ object ShowUpdater {
         config.showConfig.showSources
           .traverse(showSource =>
             Resource
-              .make(Async[F].delay(File(showSource.outputFilePath)))(f =>
+              .make(Async[F].delay(Path.of(showSource.outputFilePath)))(f =>
                 LogWriter.info(s"[ShowUpdater] Closing file $f")
               )
               .map(file =>
@@ -195,7 +195,7 @@ object ShowUpdater {
         showFilesResource.use(showFiles =>
           for {
             _ <- LogWriter.info(s"[ShowUpdater] ✓ Dry Run. Delete show files: ${showFiles.map(_.file)}")
-            _ <- showFiles.traverse(showFile => Async[F].delay(showFile.file.delete))
+            _ <- showFiles.traverse(showFile => Async[F].delay(Files.delete(showFile.file)))
           } yield List.empty
         )
       val getStoredDbShowDatas: F[List[YouTubeBotDBShowDatas]] =
@@ -205,7 +205,7 @@ object ShowUpdater {
               for {
                 _                   <- LogWriter.info(s"[ShowUpdater] Parse show file content: ${showFile.file}")
                 showFileContentJson <- Async[F]
-                  .fromEither(parse(Source.fromFile(showFile.file).mkString))
+                  .fromEither(parse(Source.fromFile(showFile.file.toFile()).mkString))
                   .onError(e => LogWriter.error(s"[ShowUpdater] Error Reading File $showFile: $e"))
                 dbShowDatas <- Async[F]
                   .fromEither(showFileContentJson.as[List[DBShowData]])
