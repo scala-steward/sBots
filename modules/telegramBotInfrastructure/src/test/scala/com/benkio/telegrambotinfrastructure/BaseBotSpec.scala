@@ -33,7 +33,6 @@ import telegramium.bots.Chat
 import telegramium.bots.Message
 import wolfendale.scalacheck.regexp.RegexpGen
 
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -73,16 +72,17 @@ trait BaseBotSpec extends CatsEffectSuite with ScalaCheckEffectSuite {
   def botJsonsAreValid(
       sBotConfig: SBotConfig
   ): Unit = {
+    val basePath                  = Paths.get(".").toAbsolutePath().normalize()
     val jsonRootPaths: List[Path] =
       List(
         sBotConfig.listJsonFilename,
         sBotConfig.showFilename
-      ).map(p => Paths.get(new File(".").getCanonicalPath, "/" + p))
+      ).map(p => basePath.resolve(p.stripPrefix("/")))
     val jsonResourcePaths: List[Path] =
       List(
         sBotConfig.repliesJsonFilename,
         sBotConfig.commandsJsonFilename
-      ).map(p => Paths.get(new File(".").getCanonicalPath, "src", "main", "resources", p))
+      ).map(p => basePath.resolve("src").resolve("main").resolve("resources").resolve(p))
     (jsonRootPaths ++ jsonResourcePaths).foreach((jsonPath: Path) => {
       test(s"Check Json is valid: `$jsonPath`") {
         if !Files.exists(jsonPath) then {
@@ -103,8 +103,8 @@ trait BaseBotSpec extends CatsEffectSuite with ScalaCheckEffectSuite {
       botData: IO[List[String]]
   ): Unit =
     test(s"the `$jsonFilename` should contain all the triggers of the bot") {
-      val listPath            = new File(".").getCanonicalPath + s"/$jsonFilename"
-      val jsonContent         = Source.fromFile(listPath).getLines().mkString("\n")
+      val listPath            = Paths.get(".").toAbsolutePath().normalize().resolve(jsonFilename)
+      val jsonContent         = Files.readString(listPath)
       val jsonMediaFileSource = decode[List[MediaFileSource]](jsonContent)
 
       for {
@@ -149,8 +149,8 @@ trait BaseBotSpec extends CatsEffectSuite with ScalaCheckEffectSuite {
       botTriggersIO: IO[List[String]]
   ): Unit =
     test(s"the `$triggerFilename` should contain all the triggers of the bot") {
-      val listPath: String       = new File(".").getCanonicalPath + s"/$triggerFilename"
-      val triggerContent: String = Source.fromFile(listPath).getLines().mkString("\n")
+      val listPath               = Paths.get(".").toAbsolutePath().normalize().resolve(triggerFilename)
+      val triggerContent: String = Files.readString(listPath)
 
       for {
         mediaFileStrings <- botMediaFiles
@@ -165,9 +165,9 @@ trait BaseBotSpec extends CatsEffectSuite with ScalaCheckEffectSuite {
 
   def inputFileShouldRespondAsExpected(replyBundleMessages: List[ReplyBundleMessage]): Unit =
     test("The inputs in the `inputTest.txt` file returns the expected values") {
-      val inputTextTxt: String = new File("./src/test/resources/inputTest.txt").getCanonicalPath
+      val inputTextTxt = Paths.get("./src/test/resources/inputTest.txt").toAbsolutePath().normalize()
       val inputTextTxtContent: List[(String, List[String])] = Source
-        .fromFile(inputTextTxt)
+        .fromFile(inputTextTxt.toFile())
         .getLines()
         .map(inputLine => {
           val splitValue = inputLine.split(" -> ")

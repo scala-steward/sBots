@@ -13,6 +13,7 @@ import log.effect.LogWriter
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
+import java.nio.file.Paths
 import java.util.jar.JarFile
 import scala.collection.mutable.ArrayBuffer
 import scala.jdk.CollectionConverters.*
@@ -28,12 +29,12 @@ class ResourceRepository[F[_]: Async: LogWriter](stage: Option[String] = None) e
       criteria: String,
       botId: SBotId
   ): Resource[F, Either[Repository.RepositoryError, NonEmptyList[NonEmptyList[MediaResource[F]]]]] = {
-    val jarFile                     = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath())
+    val jarPath                     = Paths.get(getClass().getProtectionDomain().getCodeSource().getLocation().toURI())
     val result: ArrayBuffer[String] = new ArrayBuffer();
 
     // from https://stackoverflow.com/questions/11012819/how-can-i-get-a-resource-folder-from-inside-my-jar-file
-    if jarFile.isFile() then { // Run with JAR file
-      val jar     = new JarFile(jarFile)
+    if Files.isRegularFile(jarPath) then { // Run with JAR file
+      val jar     = new JarFile(jarPath.toFile())
       val entries = jar.entries() // gives ALL entries in jar
       while entries.hasMoreElements() do {
         val name = entries.nextElement().getName()
@@ -78,7 +79,7 @@ class ResourceRepository[F[_]: Async: LogWriter](stage: Option[String] = None) e
                     MediaResourceFile(
                       Resource
                         .pure[F, File](
-                          File(Repository.buildPath(criteria, stage).toString + "/" + fl.getFileName.toString)
+                          Repository.buildPath(criteria, stage).resolve(fl.getFileName).toFile()
                         )
                     )
                   )

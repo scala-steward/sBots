@@ -48,19 +48,20 @@ object Repository {
         )
   }
 
-  def toTempFile[F[_]: Async](fileName: String, content: Array[Byte]): Resource[F, File] = Resource.make(
-    Async[F].delay {
-      val (name, ext) = fileName.span(_ != '.')
-      val tempFile    = File.createTempFile(name, ext)
-      Files.write(tempFile.toPath(), content)
-      tempFile.deleteOnExit()
-      tempFile
-    }
-  )(f => Async[F].delay(f.delete()).void)
+  def toTempFile[F[_]: Async](fileName: String, content: Array[Byte]): Resource[F, File] = {
+    val (name, ext) = fileName.span(_ != '.')
+    Resource.make(
+      Async[F].delay {
+        val path = Files.createTempFile(name, ext)
+        Files.write(path, content)
+        path.toFile()
+      }
+    )(f => Async[F].delay(Files.deleteIfExists(f.toPath())).void)
+  }
 
-  def fileToString[F[_]: Async: LogWriter](file: File): Resource[F, String] =
+  def fileToString[F[_]: Async: LogWriter](path: Path): Resource[F, String] =
     Resource
-      .make(Async[F].delay(Source.fromFile(file)))(bs => Async[F].delay(bs.close))
+      .make(Async[F].delay(Source.fromFile(path.toFile())))(bs => Async[F].delay(bs.close))
       .map(_.getLines.mkString("\n"))
       .handleErrorWith((e: Throwable) =>
         Resource.eval(LogWriter.error(s"[Repository] `fileToString` failed with $e")) >>
