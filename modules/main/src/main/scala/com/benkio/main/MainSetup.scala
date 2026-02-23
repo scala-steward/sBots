@@ -4,10 +4,12 @@ import cats.effect.Async
 import cats.effect.Resource
 import com.benkio.telegrambotinfrastructure.initialization.BotSetup
 import com.benkio.telegrambotinfrastructure.repository.db.DBLayer
+import cron4s.CronExpr
 import fs2.io.net.Network
 import log.effect.LogWriter
 import org.http4s.client.Client
 import org.http4s.ember.client.*
+import org.http4s.Uri
 import telegramium.bots.InputPartFile
 
 import java.io.File
@@ -20,7 +22,9 @@ final case class MainSetup[F[_]](
     port: Int,
     webhookCertificate: Option[InputPartFile],
     keystorePath: Option[String],
-    keystorePassword: Option[String]
+    keystorePassword: Option[String],
+    healthcheckEndpoint: Uri,
+    healthcheckCron: CronExpr
 )
 
 object MainSetup {
@@ -42,6 +46,8 @@ object MainSetup {
     port = config.port,
     webhookCertificate = certificate,
     keystorePath = config.keystorePath,
-    keystorePassword = config.keystorePassword
+    keystorePassword = config.keystorePassword,
+    healthcheckEndpoint = config.healthcheckPing.endpoint,
+    healthcheckCron = config.healthcheckPing.cron
   )
 }

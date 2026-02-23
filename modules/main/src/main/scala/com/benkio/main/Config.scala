@@ -2,7 +2,11 @@ package com.benkio.main
 
 import cats.effect.Async
 import com.benkio.telegrambotinfrastructure.initialization.DBConfig
+import cron4s.expr.CronExpr
+import org.http4s.Uri
 import pureconfig.*
+import pureconfig.module.cron4s.*
+import pureconfig.module.http4s.*
 
 final case class Config(
     webhookBaseUrl: String,
@@ -11,7 +15,13 @@ final case class Config(
     webhookCertificate: Option[String],
     keystorePath: Option[String],
     keystorePassword: Option[String],
-    mainDB: DBConfig
+    mainDB: DBConfig,
+    healthcheckPing: HealthcheckPingConfig
+) derives ConfigReader
+
+final case class HealthcheckPingConfig(
+    endpoint: Uri,
+    cron: CronExpr
 ) derives ConfigReader
 
 object Config {
