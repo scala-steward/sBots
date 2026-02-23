@@ -5,15 +5,15 @@ import cats.effect.Resource
 import com.benkio.telegrambotinfrastructure.http.DropboxClient
 import org.http4s.Uri
 
-import java.io.File
+import java.nio.file.Path
 
 object DropboxClientMock {
 
   def mock(
-      handler: (String, Uri) => Resource[IO, File]
+      handler: (String, Uri) => Resource[IO, Path]
   ): DropboxClient[IO] = new DropboxClient[IO] {
 
-    override def fetchFile(filename: String, url: Uri): Resource[IO, File] =
+    override def fetchFile(filename: String, url: Uri): Resource[IO, Path] =
       handler(filename, url)
 
   }

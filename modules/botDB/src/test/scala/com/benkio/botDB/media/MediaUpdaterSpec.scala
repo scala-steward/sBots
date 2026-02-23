@@ -21,6 +21,7 @@ import org.http4s.syntax.literals.*
 import org.http4s.Uri
 
 import java.io.File
+import java.nio.file.Path
 
 class MediaUpdaterSpec extends CatsEffectSuite {
 
@@ -36,7 +37,7 @@ class MediaUpdaterSpec extends CatsEffectSuite {
           .one(
             NonEmptyList.fromListUnsafe(
               File(getClass.getResource(location).toURI).listFiles
-                .map(f => MediaResourceFile(Resource.pure(f)): MediaResource[IO])
+                .map(f => MediaResourceFile(Resource.pure(f.toPath())): MediaResource[IO])
                 .toList
             )
           )
@@ -56,9 +57,9 @@ class MediaUpdaterSpec extends CatsEffectSuite {
     assertIO(
       mediaUpdater.fetchRootBotFiles
         .flatMap(_.map(_.getMediaResourceFile).flatten.sequence)
-        .use(_.map(_.getPath()).pure[IO]),
+        .use(_.pure[IO]),
       config.jsonLocation.flatMap(location =>
-        File(getClass.getResource(location.value).toURI).listFiles.map(_.getPath())
+        File(getClass.getResource(location.value).toURI).listFiles.map(_.toPath())
       )
     )
   }
@@ -66,12 +67,12 @@ class MediaUpdaterSpec extends CatsEffectSuite {
   test("MediaUpdater.filterMediaJsonFiles should return the expected json files") {
     assertIO(
       mediaUpdater.fetchRootBotFiles.flatMap(roots => mediaUpdater.filterMediaJsonFiles(roots)).use(_.pure[IO]),
-      List(File(getClass.getResource("/testdata/test_list.json").toURI))
+      List(File(getClass.getResource("/testdata/test_list.json").toURI).toPath)
     )
   }
 
   test("MediaUpdater.parseMediaJsonFiles should parse valid json file") {
-    val input: List[File]               = List(File(getClass.getResource("/testdata/test_list.json").toURI))
+    val input: List[Path]               = List(File(getClass.getResource("/testdata/test_list.json").toURI).toPath())
     val expected: List[MediaFileSource] = List(
       MediaFileSource(
         filename = "test_testData.mp3",

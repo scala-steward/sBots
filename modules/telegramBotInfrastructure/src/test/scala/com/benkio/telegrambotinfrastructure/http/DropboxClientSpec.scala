@@ -35,7 +35,7 @@ class DropboxClientSpec extends CatsEffectSuite {
 
     result.use(f =>
       assertEquals(
-        Files.readAllBytes(f.toPath.toAbsolutePath).toList,
+        Files.readAllBytes(f.toAbsolutePath).toList,
         expected.getBytes.toList
       ).pure[IO]
     )

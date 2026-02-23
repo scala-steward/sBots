@@ -30,6 +30,8 @@ import com.benkio.YouTuboAncheI0Bot.YouTuboAncheI0Bot
 import org.scalatest.*
 import org.scalatest.funsuite.FixtureAnyFunSuite
 
+import java.nio.file.Files
+
 class MediaIntegritySpec extends FixtureAnyFunSuite with ParallelTestExecution {
 
   case class FixtureParam(fixture: DBFixtureResources)
@@ -127,7 +129,7 @@ class MediaIntegritySpec extends FixtureAnyFunSuite with ParallelTestExecution {
               mr.getMediaResourceFile.getOrElse(Resource.eval(IO.raiseError(new Exception("expect a file"))))
             )
         )
-      } yield assert(files.forall(_.length() > 5 * 1024))).use_
+      } yield assert(files.forall(Files.readAllBytes(_).length > 5 * 1024))).use_
     }.pure[IO]
 
   allMessageMediaFiles.use(files => files.sortBy(_.filename).traverse(file => checkFile(file))).void.unsafeRunSync()

@@ -10,7 +10,6 @@ import com.benkio.telegrambotinfrastructure.model.reply.MediaFile
 import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotId
 import log.effect.LogWriter
 
-import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -78,8 +77,8 @@ class ResourceRepository[F[_]: Async: LogWriter](stage: Option[String] = None) e
                   .one(
                     MediaResourceFile(
                       Resource
-                        .pure[F, File](
-                          Repository.buildPath(criteria, stage).resolve(fl.getFileName).toFile()
+                        .pure[F, Path](
+                          Repository.buildPath(criteria, stage).resolve(fl.getFileName)
                         )
                     )
                   )

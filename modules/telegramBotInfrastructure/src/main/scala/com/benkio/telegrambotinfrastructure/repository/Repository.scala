@@ -11,7 +11,6 @@ import com.benkio.telegrambotinfrastructure.repository.db.DBMediaData
 import log.effect.LogWriter
 
 import java.io.ByteArrayOutputStream
-import java.io.File
 import java.io.FileInputStream
 import java.nio.file.Files
 import java.nio.file.Path
@@ -48,15 +47,15 @@ object Repository {
         )
   }
 
-  def toTempFile[F[_]: Async](fileName: String, content: Array[Byte]): Resource[F, File] = {
+  def toTempFile[F[_]: Async](fileName: String, content: Array[Byte]): Resource[F, Path] = {
     val (name, ext) = fileName.span(_ != '.')
     Resource.make(
       Async[F].delay {
         val path = Files.createTempFile(name, ext)
         Files.write(path, content)
-        path.toFile()
+        path
       }
-    )(f => Async[F].delay(Files.deleteIfExists(f.toPath())).void)
+    )(f => Async[F].delay(Files.deleteIfExists(f)).void)
   }
 
   def fileToString[F[_]: Async: LogWriter](path: Path): Resource[F, String] =
