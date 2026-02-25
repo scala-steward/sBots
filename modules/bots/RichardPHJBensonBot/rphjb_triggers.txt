@@ -98,7 +98,8 @@ rphjb_AncoraVoi.mp3       | ancora voi
 --------------------------------------------------
 --------------------------------------------------
 rphjb_Sborrata.mp3        | sborrata
-                          | scopare
+                          | in bocca
+                          | cazzo nella sorca
 --------------------------------------------------
 --------------------------------------------------
 rphjb_FinireMale.mp3      | finire male
@@ -4895,6 +4896,8 @@ rphjb_DonneDiUnaVoltaSeniCuomoMadonna.mp3 | katy monique cuomo
 rphjb_IlPubblicoDavanti.mp4 | (pubblico|gente) davanti
 rphjb_IlPubblicoDavanti.mp3 | \ba fro(ci|sh)o\b
                           | facc[ei] ved(e|ere) (il|er) culo
+                          | scopato (il|er) baffo
+                          | gocce d[ei] sperma
                           | quando scopi
                           | te lo faccio vedere
                           | oxford

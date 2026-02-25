@@ -766,7 +766,10 @@
             "StringTextTriggerValue": "sborrata"
           },
           {
-            "StringTextTriggerValue": "scopare"
+            "StringTextTriggerValue": "in bocca"
+          },
+          {
+            "StringTextTriggerValue": "cazzo nella sorca"
           }
         ]
       }
@@ -34628,6 +34631,18 @@
             "RegexTextTriggerValue": {
               "trigger": "facc[ei] ved(e|ere) (il|er) culo",
               "regexLength": 18
+            }
+          },
+          {
+            "RegexTextTriggerValue": {
+              "trigger": "scopato (il|er) baffo",
+              "regexLength": 16
+            }
+          },
+          {
+            "RegexTextTriggerValue": {
+              "trigger": "gocce d[ei] sperma",
+              "regexLength": 15
             }
           },
           {
