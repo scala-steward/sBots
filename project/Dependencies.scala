@@ -1,6 +1,7 @@
 import sbt.*
 
 import Keys.*
+import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport.*
 
 object Dependencies {
 
@@ -26,9 +27,10 @@ object Dependencies {
     val logbackLogstash       = "9.0"
     val mules                 = "0.7.0"
     val mulesHttp4s           = "0.4.0"
-    val munit                 = "1.2.3"
+    val munit                 = "1.2.0"
     val munitCatsEffect       = "2.1.0"
     val pureConfig            = "0.17.10"
+    val scalajsDom            = "2.8.0"
     val scalacheck            = "1.19.0"
     val scalacheckEffectMunit = "1.0.4"
     val scalacheckGenRegexp   = "1.1.0"
@@ -37,6 +39,7 @@ object Dependencies {
     val sqlite                = "3.41.2.1"
     val telegramiumVersion    = "10.904.0"
     val vault                 = "3.6.0"
+    val laminar               = "17.2.1"
   }
 
   lazy val libs = new {
@@ -85,6 +88,7 @@ object Dependencies {
     val pureConfigHttp4s = "com.github.pureconfig" %% "pureconfig-http4s"        % versions.pureConfig
     val pureConfigCron4s = "com.github.pureconfig" %% "pureconfig-cron4s"        % versions.pureConfig
     val pureConfigCore   = "com.github.pureconfig" %% "pureconfig-core"          % versions.pureConfig
+    val scalajsDom       = Def.setting("org.scala-js" %%% "scalajs-dom" % versions.scalajsDom)
     val scalacheck       = "org.scalacheck"        %% "scalacheck"               % versions.scalacheck
     val scalacheckEffectMunit = "org.typelevel"         %% "scalacheck-effect-munit" % versions.scalacheckEffectMunit
     val scalacheckGenRegexp   = "io.github.wolfendale"  %% "scalacheck-gen-regexp"   % versions.scalacheckGenRegexp
@@ -93,6 +97,7 @@ object Dependencies {
     val telegramiumCore       = "io.github.apimorphism" %% "telegramium-core"        % versions.telegramiumVersion
     val telegramiumHigh       = "io.github.apimorphism" %% "telegramium-high"        % versions.telegramiumVersion
     val vault                 = "org.typelevel"         %% "vault"                   % versions.vault
+    val laminar               = Def.setting("com.raquo" %%% "laminar" % versions.laminar)
   }
 
   private val CommonDependencies: Seq[ModuleID] = Seq(
@@ -187,6 +192,24 @@ object Dependencies {
     libs.munit,
     libs.pureConfigCore
   )
+
+  val RepliesEditorServerDependencies: Seq[ModuleID] =
+    CommonDependencies ++ Seq(
+      libs.circeGeneric,
+      libs.http4sDsl,
+      libs.http4sEmberServer
+    )
+
+  val RepliesEditorUiDependencies: Def.Initialize[Seq[ModuleID]] =
+    Def.setting(
+      Seq(
+        libs.laminar.value,
+        libs.scalajsDom.value,
+        "io.circe" %%% "circe-core"    % versions.circe,
+        "io.circe" %%% "circe-generic" % versions.circe,
+        "io.circe" %%% "circe-parser"  % versions.circe
+      )
+    )
 
   val IntegrationDependencies: Seq[ModuleID] =
     Seq(

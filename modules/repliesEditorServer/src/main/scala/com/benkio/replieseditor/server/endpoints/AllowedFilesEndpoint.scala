@@ -1,0 +1,21 @@
+package com.benkio.replieseditor.server.endpoints
+
+import cats.effect.IO
+import com.benkio.replieseditor.server.module.ApiError
+import com.benkio.replieseditor.server.store.BotStore
+import io.circe.syntax.*
+import org.http4s.*
+import org.http4s.circe.CirceEntityCodec.*
+import org.http4s.dsl.io.*
+
+final class AllowedFilesEndpoint(botStore: BotStore) {
+  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / "api" / "bot" / botId / "allowed-files" =>
+    botStore.getAllowedFiles(botId).flatMap {
+      case Left(err) =>
+        if (err.error.startsWith("Unknown botId")) NotFound(err.asJson)
+        else InternalServerError(err.asJson)
+      case Right(files) => Ok(files.asJson)
+    }
+  }
+}
+
