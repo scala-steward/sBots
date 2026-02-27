@@ -18,7 +18,11 @@ import scala.jdk.CollectionConverters.*
 final class BotStore private (ref: Ref[IO, BotStore.State]) {
 
   def listBots: IO[Vector[ApiBot]] =
-    ref.get.map(_.bots.map(b => ApiBot(b.files.botId, b.files.botName)))
+    ref.get.map(
+      _.bots
+        .filter(b => b.files.botName.endsWith("Bot"))
+        .map(b => ApiBot(b.files.botId, b.files.botName))
+    )
 
   def getReplies(botId: String): IO[Either[ApiError, Json]] =
     ref.get.map(_.byId.get(botId) match {
