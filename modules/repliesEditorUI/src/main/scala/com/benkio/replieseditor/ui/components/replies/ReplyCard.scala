@@ -2,6 +2,7 @@ package com.benkio.replieseditor.ui.components.replies
 
 import com.benkio.replieseditor.module.*
 import com.benkio.replieseditor.ui.components.replies.files.FilesEditor
+import com.benkio.replieseditor.ui.components.replies.texts.TextsEditor
 import com.benkio.replieseditor.ui.components.replies.triggers.TriggersEditor
 import com.raquo.laminar.api.L.*
 
@@ -59,12 +60,20 @@ object ReplyCard {
 
               div(
                 syncEditableToOuter,
-                FilesEditor.render(
-                  idx = idx,
-                  editableVar = editableVar,
-                  allowedFilesVar = allowedFilesVar,
-                  update = update
-                ),
+                child <-- editableVar.signal.map(_.replyKind).map {
+                  case ReplyKind.Media =>
+                    FilesEditor.render(
+                      idx = idx,
+                      editableVar = editableVar,
+                      allowedFilesVar = allowedFilesVar,
+                      update = update
+                    )
+                  case ReplyKind.Text =>
+                    TextsEditor.render(
+                      editableVar = editableVar,
+                      update = update
+                    )
+                },
                 TriggersEditor.render(
                   editableVar = editableVar,
                   update = update

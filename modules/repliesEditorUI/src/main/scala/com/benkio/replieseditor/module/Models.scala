@@ -15,8 +15,14 @@ enum TriggerKind {
 
 final case class TriggerEdit(kind: TriggerKind, value: String, regexLength: Option[Int])
 
+enum ReplyKind {
+  case Media, Text
+}
+
 final case class EditableEntry(
+    replyKind: ReplyKind,
     files: Vector[String],
+    texts: Vector[String],
     triggers: Vector[TriggerEdit],
     matcher: String
 )

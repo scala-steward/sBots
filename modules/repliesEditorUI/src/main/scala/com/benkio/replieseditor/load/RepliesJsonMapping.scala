@@ -32,21 +32,42 @@ object RepliesJsonMapping {
           )
       }
 
+    val replyObjOpt = c.downField("reply").focus
+
     val files: Option[Vector[String]] =
-      for {
-        replyObj <- c.downField("reply").focus
-        mediaReply <- replyObj.hcursor.downField("MediaReply").focus
-        mediaFilesArr <- mediaReply.hcursor.downField("mediaFiles").as[Vector[Json]].toOption
-      } yield mediaFilesArr.flatMap { mf =>
-        val mc = mf.hcursor
-        val fileKinds = List("Mp3File", "GifFile", "VideoFile", "PhotoFile", "Document", "Sticker")
-        fileKinds.view.flatMap(k => mc.downField(k).downField("filepath").as[String].toOption).headOption
+      replyObjOpt.flatMap { replyObj =>
+        for {
+          mediaReply <- replyObj.hcursor.downField("MediaReply").focus
+          mediaFilesArr <- mediaReply.hcursor.downField("mediaFiles").as[Vector[Json]].toOption
+        } yield mediaFilesArr.flatMap { mf =>
+          val mc = mf.hcursor
+          val fileKinds = List("Mp3File", "GifFile", "VideoFile", "PhotoFile", "Document", "Sticker")
+          fileKinds.view.flatMap(k => mc.downField(k).downField("filepath").as[String].toOption).headOption
+        }
+      }
+
+    val texts: Option[Vector[String]] =
+      replyObjOpt.flatMap { replyObj =>
+        replyObj.hcursor
+          .downField("TextReply")
+          .downField("text")
+          .as[Vector[String]]
+          .toOption
+          .orElse(
+            replyObj.hcursor
+              .downField("TextReply")
+              .downField("text")
+              .as[String]
+              .toOption
+              .map(s => Vector(s))
+          )
       }
 
     for {
-      f <- files
       t <- triggers
-    } yield EditableEntry(files = f, triggers = t, matcher = matcher)
+      res <- files.map(f => EditableEntry(replyKind = ReplyKind.Media, files = f, texts = Vector.empty, triggers = t, matcher = matcher))
+        .orElse(texts.map(tt => EditableEntry(replyKind = ReplyKind.Text, files = Vector.empty, texts = tt, triggers = t, matcher = matcher)))
+    } yield res
   }
 
   private def mediaFileWrapper(filename: String): String =
@@ -82,15 +103,32 @@ object RepliesJsonMapping {
     }
 
     triggersJsonE.map { triggersJson =>
-      val mediaFilesJson: Vector[Json] =
-        e.files.map { f =>
-          val wrapper = mediaFileWrapper(f)
-          Json.obj(
-            wrapper -> Json.obj(
-              "filepath" -> Json.fromString(f),
-              "replyToMessage" -> Json.fromBoolean(false)
+      val replyJson: Json =
+        e.replyKind match {
+          case ReplyKind.Media =>
+            val mediaFilesJson: Vector[Json] =
+              e.files.map { f =>
+                val wrapper = mediaFileWrapper(f)
+                Json.obj(
+                  wrapper -> Json.obj(
+                    "filepath" -> Json.fromString(f),
+                    "replyToMessage" -> Json.fromBoolean(false)
+                  )
+                )
+              }
+            Json.obj(
+              "MediaReply" -> Json.obj(
+                "mediaFiles" -> Json.fromValues(mediaFilesJson),
+                "replyToMessage" -> Json.fromBoolean(false)
+              )
             )
-          )
+          case ReplyKind.Text =>
+            Json.obj(
+              "TextReply" -> Json.obj(
+                "text" -> Json.fromValues(e.texts.map(Json.fromString)),
+                "replyToMessage" -> Json.fromBoolean(false)
+              )
+            )
         }
 
       Json.obj(
@@ -99,12 +137,7 @@ object RepliesJsonMapping {
             "triggers" -> Json.fromValues(triggersJson)
           )
         ),
-        "reply" -> Json.obj(
-          "MediaReply" -> Json.obj(
-            "mediaFiles" -> Json.fromValues(mediaFilesJson),
-            "replyToMessage" -> Json.fromBoolean(false)
-          )
-        ),
+        "reply" -> replyJson,
         "matcher" -> Json.fromString(e.matcher)
       )
     }

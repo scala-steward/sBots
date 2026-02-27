@@ -170,7 +170,9 @@ object AppView {
       val firstAllowed = allowedFilesVar.now().headOption.getOrElse("")
       val newEntry =
         EditableEntry(
+          replyKind = ReplyKind.Media,
           files = if (firstAllowed.isEmpty) Vector.empty else Vector(firstAllowed),
+          texts = Vector.empty,
           triggers = Vector(TriggerEdit(TriggerKind.PlainString, "", None)),
           matcher = "ContainsOnce"
         )
