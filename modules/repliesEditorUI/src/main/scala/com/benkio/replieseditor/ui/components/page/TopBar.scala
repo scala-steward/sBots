@@ -11,6 +11,7 @@ object TopBar {
     dirty: Signal[Boolean],
     onBotSelected: Option[String] => Unit,
     onReload: () => Unit,
+    onAddNew: () => Unit,
     onSave: () => Unit
   ): Div =
     div(
@@ -34,6 +35,12 @@ object TopBar {
         cls := "btn btn-outline-secondary",
         "Reload",
         onClick --> { _ => onReload() }
+      ),
+      button(
+        cls := "btn btn-outline-secondary",
+        "+ reply",
+        disabled <-- selectedBotVar.signal.map(_.isEmpty),
+        onClick --> { _ => onAddNew() }
       ),
       button(
         cls := "btn btn-primary",

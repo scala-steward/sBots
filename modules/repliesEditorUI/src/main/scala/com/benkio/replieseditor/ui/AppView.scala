@@ -77,9 +77,14 @@ object AppView {
                 setStatus(s"Failed to decode replies page: $err")
             case Right(chunk) =>
               if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId)) {
-                currentPageVar.set(p)
-                setChunk(chunk)
-                clearStatus()
+                val computedOffset = (p - 1) * pageSize
+                if (chunk.items.isEmpty && p > 1 && chunk.total > 0 && computedOffset >= chunk.total)
+                  loadPage(botId, page = p - 1, myToken = myToken)
+                else {
+                  currentPageVar.set(p)
+                  setChunk(chunk)
+                  clearStatus()
+                }
               }
           }
           loadingPageVar.set(false)
@@ -134,6 +139,51 @@ object AppView {
       }
     }
 
+    def deleteEntry(botId: String, index: Int): Unit = {
+      setStatus(s"Deleting reply #${index + 1}…")
+      val payload = Json.obj("index" -> Json.fromInt(index))
+      ApiClient.postJson(s"/api/bot/$botId/replies/delete", payload).onComplete {
+        case Failure(ex) => setStatus(s"Delete failed: ${ex.getMessage}")
+        case Success(Left(err)) => setStatus(s"Delete failed: $err")
+        case Success(Right(_)) =>
+          dirtyVar.set(true)
+          loadPage(botId, page = currentPageVar.now(), myToken = loadTokenVar.now())
+      }
+    }
+
+    def addNewAtCurrentPageTop(botId: String): Unit = {
+      val firstAllowed = allowedFilesVar.now().headOption.getOrElse("")
+      val newEntry =
+        EditableEntry(
+          files = if (firstAllowed.isEmpty) Vector.empty else Vector(firstAllowed),
+          triggers = Vector(TriggerEdit(TriggerKind.PlainString, "", None)),
+          matcher = "ContainsOnce"
+        )
+      RepliesJsonMapping.buildJsonFromEditable(newEntry) match {
+        case Left(err) => setStatus(s"Cannot add: $err")
+        case Right(j) =>
+          setStatus("Adding reply…")
+          val total    = totalVar.now().getOrElse(0)
+          val pageSize = pageSizeVar.now().max(1)
+          val page     = currentPageVar.now().max(1)
+          val offset   = ((page - 1) * pageSize).min(total).max(0)
+          val payload = Json.obj(
+            "index" -> Json.fromInt(offset),
+            "value" -> j
+          )
+          ApiClient.postJson(s"/api/bot/$botId/replies/insert", payload).onComplete {
+            case Failure(ex) => setStatus(s"Add failed: ${ex.getMessage}")
+            case Success(Left(err)) => setStatus(s"Add failed: $err")
+            case Success(Right(respJson)) =>
+              val newTotal =
+                respJson.hcursor.downField("total").as[Int].toOption.orElse(totalVar.now()).getOrElse(total + 1)
+              dirtyVar.set(true)
+              totalVar.set(Some(newTotal))
+              loadPage(botId, page = page, myToken = loadTokenVar.now())
+          }
+      }
+    }
+
     def commit(botId: String): Unit = {
       setStatus("Saving…")
       ApiClient.postJson(s"/api/bot/$botId/replies/commit", Json.obj()).onComplete {
@@ -167,8 +217,10 @@ object AppView {
         botIdOpt.foreach(loadBot)
       },
       onReload = () => selectedBotVar.now().foreach(loadBot),
+      onAddNew = () => selectedBotVar.now().foreach(addNewAtCurrentPageTop),
       onSave = () => selectedBotVar.now().foreach(commit),
       onEditableChanged = (index, e) => selectedBotVar.now().foreach(botId => pushUpdate(botId, index, e)),
+      onDelete = (index: Int) => selectedBotVar.now().foreach(botId => deleteEntry(botId, index)),
       markDirty = () => markDirty()
     )
   }

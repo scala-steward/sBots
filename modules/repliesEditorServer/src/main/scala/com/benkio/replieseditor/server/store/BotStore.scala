@@ -81,6 +81,61 @@ final class BotStore private (ref: Ref[IO, BotStore.State]) {
       }
     }
 
+  def insertAt(botId: String, index: Int, value: Json): IO[Either[ApiError, Int]] =
+    ref.modify { st =>
+      st.byId.get(botId) match {
+        case None => (st, Left(ApiError(s"Unknown botId: $botId")))
+        case Some(b) =>
+          b.repliesEntries match {
+            case Left(err) =>
+              (st, Left(ApiError(s"Replies for $botId are not loaded: $err")))
+            case Right(entries) =>
+              val safeIndex = index.max(0).min(entries.length)
+              val updatedEntries = entries.patch(safeIndex, Vector(value), 0)
+              val updatedBot =
+                b.copy(
+                  repliesEntries = Right(updatedEntries),
+                  repliesJson = Right(Json.fromValues(updatedEntries))
+                )
+              val newState =
+                st.copy(
+                  bots = st.bots.map(x => if (x.files.botId == botId) updatedBot else x),
+                  byId = st.byId.updated(botId, updatedBot)
+                )
+              (newState, Right(updatedEntries.length))
+          }
+      }
+    }
+
+  def deleteAt(botId: String, index: Int): IO[Either[ApiError, Int]] =
+    ref.modify { st =>
+      st.byId.get(botId) match {
+        case None => (st, Left(ApiError(s"Unknown botId: $botId")))
+        case Some(b) =>
+          b.repliesEntries match {
+            case Left(err) =>
+              (st, Left(ApiError(s"Replies for $botId are not loaded: $err")))
+            case Right(entries) =>
+              if (index < 0 || index >= entries.length)
+                (st, Left(ApiError(s"Index out of bounds: $index (size=${entries.length})")))
+              else {
+                val updatedEntries = entries.patch(index, Nil, 1)
+                val updatedBot =
+                  b.copy(
+                    repliesEntries = Right(updatedEntries),
+                    repliesJson = Right(Json.fromValues(updatedEntries))
+                  )
+                val newState =
+                  st.copy(
+                    bots = st.bots.map(x => if (x.files.botId == botId) updatedBot else x),
+                    byId = st.byId.updated(botId, updatedBot)
+                  )
+                (newState, Right(updatedEntries.length))
+              }
+          }
+      }
+    }
+
   def commit(botId: String): IO[Either[ApiError, SaveOk]] =
     ref.get.flatMap { st =>
       st.byId.get(botId) match {

@@ -41,3 +41,13 @@ object UpdateReplyReq {
   given Decoder[UpdateReplyReq] = deriveDecoder
 }
 
+final case class InsertReplyReq(index: Int, value: Json)
+object InsertReplyReq {
+  given Decoder[InsertReplyReq] = deriveDecoder
+}
+
+final case class DeleteReplyReq(index: Int)
+object DeleteReplyReq {
+  given Decoder[DeleteReplyReq] = deriveDecoder
+}
+

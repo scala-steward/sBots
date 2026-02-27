@@ -17,8 +17,10 @@ object AppPage {
     onMount: () => Unit,
     onBotSelected: Option[String] => Unit,
     onReload: () => Unit,
+    onAddNew: () => Unit,
     onSave: () => Unit,
     onEditableChanged: (Int, EditableEntry) => Unit,
+    onDelete: Int => Unit,
     markDirty: () => Unit
   ): Div =
     div(
@@ -29,6 +31,7 @@ object AppPage {
         dirty = dirty,
         onBotSelected = onBotSelected,
         onReload = onReload,
+        onAddNew = onAddNew,
         onSave = onSave
       ),
       StatusBar.render(status),
@@ -37,7 +40,8 @@ object AppPage {
         entriesVar = entriesVar,
         allowedFilesVar = allowedFilesVar,
         markDirty = markDirty,
-        onEditableChanged = onEditableChanged
+        onEditableChanged = onEditableChanged,
+        onDelete = onDelete
       )
     )
 }

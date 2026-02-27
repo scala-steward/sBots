@@ -15,6 +15,8 @@ object HttpAppBuilder {
     val saveRepliesEndpoint  = new SaveRepliesEndpoint(deps.botStore)
     val updateReplyEndpoint  = new UpdateReplyEndpoint(deps.botStore)
     val commitRepliesEndpoint = new CommitRepliesEndpoint(deps.botStore)
+    val insertReplyEndpoint  = new InsertReplyEndpoint(deps.botStore)
+    val deleteReplyEndpoint  = new DeleteReplyEndpoint(deps.botStore)
 
     val routes =
       Router(
@@ -25,7 +27,9 @@ object HttpAppBuilder {
         "/" -> allowedFilesEndpoint.routes,
         "/" -> saveRepliesEndpoint.routes,
         "/" -> updateReplyEndpoint.routes,
-        "/" -> commitRepliesEndpoint.routes
+        "/" -> commitRepliesEndpoint.routes,
+        "/" -> insertReplyEndpoint.routes,
+        "/" -> deleteReplyEndpoint.routes
       )
 
     Logger.httpApp(logHeaders = true, logBody = false)(routes.orNotFound)

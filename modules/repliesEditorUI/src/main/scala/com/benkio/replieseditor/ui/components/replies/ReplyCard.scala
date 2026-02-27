@@ -13,7 +13,8 @@ object ReplyCard {
     entriesVar: Var[Vector[EntryState]],
     allowedFilesVar: Var[Vector[String]],
     markDirty: () => Unit,
-    onEditableChanged: (Int, EditableEntry) => Unit
+    onEditableChanged: (Int, EditableEntry) => Unit,
+    onDelete: Int => Unit
   ): Div =
     div(
       cls := "col-12 col-md-4",
@@ -21,7 +22,19 @@ object ReplyCard {
         cls := "card shadow-sm",
         div(
           cls := "card-body",
-          h6(cls := "card-title", s"Reply #${idx + 1}"),
+          div(
+            cls := "d-flex align-items-start justify-content-between gap-2",
+            h6(cls := "card-title mb-2", s"Reply #${idx + 1}"),
+            div(
+              cls := "btn-group btn-group-sm",
+              button(
+                cls := "btn btn-outline-danger",
+                "Delete",
+                title := "Delete this reply",
+                onClick --> { _ => onDelete(st.index) }
+              )
+            )
+          ),
           st.editable match {
             case None =>
               div(

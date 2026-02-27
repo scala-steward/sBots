@@ -9,7 +9,8 @@ object RepliesGrid {
     entriesVar: Var[Vector[EntryState]],
     allowedFilesVar: Var[Vector[String]],
     markDirty: () => Unit,
-    onEditableChanged: (Int, EditableEntry) => Unit
+    onEditableChanged: (Int, EditableEntry) => Unit,
+    onDelete: Int => Unit
   ): Div =
     div(
       cls := "row g-3",
@@ -20,7 +21,8 @@ object RepliesGrid {
           entriesVar = entriesVar,
           allowedFilesVar = allowedFilesVar,
           markDirty = markDirty,
-          onEditableChanged = onEditableChanged
+          onEditableChanged = onEditableChanged,
+          onDelete = onDelete
         )
       }
     )
