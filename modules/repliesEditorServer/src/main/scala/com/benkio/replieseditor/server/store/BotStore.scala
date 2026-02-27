@@ -4,8 +4,10 @@ import cats.effect.IO
 import cats.effect.Ref
 import cats.syntax.all.*
 import com.benkio.replieseditor.server.jsonio.{ListJsonFile, RepliesJsonFile, TriggersTxtFile}
-import com.benkio.replieseditor.server.module.{ApiBot, ApiError, BotFiles, RepliesChunk, SaveOk}
+import com.benkio.replieseditor.server.module.{ApiBot, ApiError, BotFiles, IndexedReply, RepliesChunk, SaveOk}
 import com.benkio.replieseditor.server.validation.MediaFilesAllowedValidation
+import com.benkio.telegrambotinfrastructure.messagefiltering.MessageMatches
+import com.benkio.telegrambotinfrastructure.model.{LeftMemberTrigger, MessageLengthTrigger, NewMemberTrigger, TextTrigger, TextTriggerValue}
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import io.circe.Json
 import io.circe.syntax.*
@@ -37,10 +39,59 @@ final class BotStore private (ref: Ref[IO, BotStore.State]) {
           case Right(entries) =>
             val safeOffset = offset.max(0).min(entries.length)
             val safeLimit  = limit.max(1).min(500)
-            val items      = entries.slice(safeOffset, (safeOffset + safeLimit).min(entries.length))
+            val items =
+              entries
+                .slice(safeOffset, (safeOffset + safeLimit).min(entries.length))
+                .zipWithIndex
+                .map { case (j, i) => IndexedReply(index = safeOffset + i, value = j) }
             Right(RepliesChunk(total = entries.length, offset = safeOffset, items = items))
         }
     })
+
+  def getFilteredRepliesChunk(
+    botId: String,
+    message: String,
+    offset: Int,
+    limit: Int
+  ): IO[Either[ApiError, RepliesChunk]] =
+    ref.get.map(_.byId.get(botId) match {
+      case None => Left(ApiError(s"Unknown botId: $botId"))
+      case Some(b) =>
+        b.repliesEntries match {
+          case Left(err) => Left(ApiError(s"Failed to load replies for $botId: $err"))
+          case Right(entries) =>
+            val msgLower = message.toLowerCase
+            val matchingIndexes: Vector[Int] =
+              entries.zipWithIndex.flatMap { case (j, idx) =>
+                j.as[ReplyBundleMessage].toOption match {
+                  case None => Vector.empty
+                  case Some(rbm) =>
+                    if matchesMessage(rbm, msgLower) then Vector(idx) else Vector.empty
+                }
+              }
+
+            val safeOffset = offset.max(0).min(matchingIndexes.length)
+            val safeLimit  = limit.max(1).min(500)
+            val pageIdxs   = matchingIndexes.slice(safeOffset, (safeOffset + safeLimit).min(matchingIndexes.length))
+            val items      = pageIdxs.map(i => IndexedReply(index = i, value = entries(i)))
+            Right(RepliesChunk(total = matchingIndexes.length, offset = safeOffset, items = items))
+        }
+    })
+
+  private def matchesMessage(rbm: ReplyBundleMessage, messageLower: String): Boolean =
+    (rbm.matcher, rbm.trigger) match {
+      case (_, MessageLengthTrigger(messageLength)) =>
+        messageLower.length >= messageLength
+      case (_, _: NewMemberTrigger.type)  => false
+      case (_, _: LeftMemberTrigger.type) => false
+      case (MessageMatches.ContainsOnce, TextTrigger(triggers*)) =>
+        triggers
+          .sorted(using TextTriggerValue.orderingInstance.reverse)
+          .exists(TextTriggerValue.matchValue(_, messageLower))
+      case (MessageMatches.ContainsAll, TextTrigger(triggers*)) =>
+        triggers.forall(TextTriggerValue.matchValue(_, messageLower))
+      case _ => false
+    }
 
   def getAllowedFiles(botId: String): IO[Either[ApiError, Vector[String]]] =
     ref.get.map(_.byId.get(botId) match {

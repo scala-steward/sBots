@@ -31,9 +31,19 @@ object ApiError {
   given Encoder[ApiError] = deriveEncoder
 }
 
-final case class RepliesChunk(total: Int, offset: Int, items: Vector[Json])
+final case class RepliesChunk(total: Int, offset: Int, items: Vector[IndexedReply])
 object RepliesChunk {
   given Encoder[RepliesChunk] = deriveEncoder
+}
+
+final case class IndexedReply(index: Int, value: Json)
+object IndexedReply {
+  given Encoder[IndexedReply] = deriveEncoder
+}
+
+final case class FilterReq(message: String)
+object FilterReq {
+  given Decoder[FilterReq] = deriveDecoder
 }
 
 final case class UpdateReplyReq(index: Int, value: Json)

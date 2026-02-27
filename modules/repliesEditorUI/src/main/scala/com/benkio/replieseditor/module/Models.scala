@@ -27,7 +27,12 @@ final case class EntryState(
     editable: Option[EditableEntry]
 )
 
-final case class RepliesChunk(total: Int, offset: Int, items: Vector[Json])
+final case class IndexedReply(index: Int, value: Json)
+object IndexedReply {
+  given Decoder[IndexedReply] = deriveDecoder
+}
+
+final case class RepliesChunk(total: Int, offset: Int, items: Vector[IndexedReply])
 object RepliesChunk {
   given Decoder[RepliesChunk] = deriveDecoder
 }

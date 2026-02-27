@@ -14,6 +14,10 @@ object AppPage {
     entriesVar: Var[Vector[EntryState]],
     allowedFilesVar: Var[Vector[String]],
     paginationBar: HtmlElement,
+    filtersOpenVar: Var[Boolean],
+    filterTextVar: Var[String],
+    isLoading: Signal[Boolean],
+    addDisabled: Signal[Boolean],
     onMount: () => Unit,
     onBotSelected: Option[String] => Unit,
     onReload: () => Unit,
@@ -31,9 +35,12 @@ object AppPage {
         dirty = dirty,
         onBotSelected = onBotSelected,
         onReload = onReload,
+        filtersOpenVar = filtersOpenVar,
         onAddNew = onAddNew,
+        addDisabled = addDisabled,
         onSave = onSave
       ),
+      FiltersPanel.render(isOpen = filtersOpenVar.signal, filterTextVar = filterTextVar, isLoading = isLoading),
       StatusBar.render(status),
       paginationBar,
       RepliesGrid.render(

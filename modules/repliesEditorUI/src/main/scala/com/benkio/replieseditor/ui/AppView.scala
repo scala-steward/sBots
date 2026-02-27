@@ -25,6 +25,8 @@ object AppView {
     val dirtyVar         = Var(false)
     val statusVar        = Var(Option.empty[String])
     val loadTokenVar     = Var(0L)
+    val filtersOpenVar   = Var(false)
+    val filterTextVar    = Var("")
 
     def setStatus(msg: String): Unit = statusVar.set(Some(msg))
     def clearStatus(): Unit          = statusVar.set(None)
@@ -45,10 +47,13 @@ object AppView {
     }
 
     def setChunk(chunk: RepliesChunk): Unit = {
-      val base = chunk.offset
       val states =
-        chunk.items.zipWithIndex.map { case (j, i) =>
-          EntryState(index = base + i, original = j, editable = RepliesJsonMapping.extractEditableEntry(j))
+        chunk.items.map { item =>
+          EntryState(
+            index = item.index,
+            original = item.value,
+            editable = RepliesJsonMapping.extractEditableEntry(item.value)
+          )
         }
       totalVar.set(Some(chunk.total))
       entriesVar.set(states)
@@ -58,9 +63,17 @@ object AppView {
       val p        = page.max(1)
       val pageSize = pageSizeVar.now().max(1)
       val offset   = (p - 1) * pageSize
+      val filterMsg = filterTextVar.now().trim
 
       loadingPageVar.set(true)
-      val repliesChunkF = ApiClient.fetchJson(s"/api/bot/$botId/replies-chunk?offset=$offset&limit=$pageSize")
+      val repliesChunkF =
+        if (filterMsg.isEmpty)
+          ApiClient.fetchJson(s"/api/bot/$botId/replies-chunk?offset=$offset&limit=$pageSize")
+        else
+          ApiClient.postJson(
+            s"/api/bot/$botId/replies-filter-chunk?offset=$offset&limit=$pageSize",
+            Json.obj("message" -> Json.fromString(filterMsg))
+          )
       repliesChunkF.onComplete {
         case Failure(ex) =>
           if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId))
@@ -134,7 +147,9 @@ object AppView {
           ApiClient.postJson(s"/api/bot/$botId/replies/update", payload).onComplete {
             case Failure(ex) => setStatus(s"Update failed: ${ex.getMessage}")
             case Success(Left(err)) => setStatus(s"Update failed: $err")
-            case Success(Right(_))  => ()
+            case Success(Right(_))  =>
+              if (filterTextVar.now().trim.nonEmpty)
+                loadPage(botId, page = currentPageVar.now(), myToken = loadTokenVar.now())
           }
       }
     }
@@ -195,33 +210,45 @@ object AppView {
       }
     }
 
-    AppPage.render(
-      bots = botsVar.signal,
-      selectedBotVar = selectedBotVar,
-      dirty = dirtyVar.signal,
-      status = statusVar.signal,
-      entriesVar = entriesVar,
-      allowedFilesVar = allowedFilesVar,
-      paginationBar = PaginationBar.render(
-        currentPageVar = currentPageVar,
-        totalOpt = totalVar.signal,
-        pageSizeVar = pageSizeVar,
-        isLoading = loadingPageVar.signal,
-        onPageRequested = { page =>
-          selectedBotVar.now().foreach(botId => loadPage(botId, page = page, myToken = loadTokenVar.now()))
+    div(
+      filterTextVar.signal.changes --> { _ =>
+        selectedBotVar.now().foreach { botId =>
+          currentPageVar.set(1)
+          loadPage(botId, page = 1, myToken = loadTokenVar.now())
         }
-      ),
-      onMount = () => loadBots(),
-      onBotSelected = { botIdOpt =>
-        selectedBotVar.set(botIdOpt)
-        botIdOpt.foreach(loadBot)
       },
-      onReload = () => selectedBotVar.now().foreach(loadBot),
-      onAddNew = () => selectedBotVar.now().foreach(addNewAtCurrentPageTop),
-      onSave = () => selectedBotVar.now().foreach(commit),
-      onEditableChanged = (index, e) => selectedBotVar.now().foreach(botId => pushUpdate(botId, index, e)),
-      onDelete = (index: Int) => selectedBotVar.now().foreach(botId => deleteEntry(botId, index)),
-      markDirty = () => markDirty()
+      AppPage.render(
+        bots = botsVar.signal,
+        selectedBotVar = selectedBotVar,
+        dirty = dirtyVar.signal,
+        status = statusVar.signal,
+        entriesVar = entriesVar,
+        allowedFilesVar = allowedFilesVar,
+        paginationBar = PaginationBar.render(
+          currentPageVar = currentPageVar,
+          totalOpt = totalVar.signal,
+          pageSizeVar = pageSizeVar,
+          isLoading = loadingPageVar.signal,
+          onPageRequested = { page =>
+            selectedBotVar.now().foreach(botId => loadPage(botId, page = page, myToken = loadTokenVar.now()))
+          }
+        ),
+        filtersOpenVar = filtersOpenVar,
+        filterTextVar = filterTextVar,
+        isLoading = loadingPageVar.signal,
+        addDisabled = filterTextVar.signal.map(_.trim.nonEmpty),
+        onMount = () => loadBots(),
+        onBotSelected = { botIdOpt =>
+          selectedBotVar.set(botIdOpt)
+          botIdOpt.foreach(loadBot)
+        },
+        onReload = () => selectedBotVar.now().foreach(loadBot),
+        onAddNew = () => selectedBotVar.now().foreach(addNewAtCurrentPageTop),
+        onSave = () => selectedBotVar.now().foreach(commit),
+        onEditableChanged = (index, e) => selectedBotVar.now().foreach(botId => pushUpdate(botId, index, e)),
+        onDelete = (index: Int) => selectedBotVar.now().foreach(botId => deleteEntry(botId, index)),
+        markDirty = () => markDirty()
+      )
     )
   }
 }

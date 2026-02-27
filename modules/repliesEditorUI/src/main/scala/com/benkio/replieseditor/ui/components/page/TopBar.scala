@@ -11,7 +11,9 @@ object TopBar {
     dirty: Signal[Boolean],
     onBotSelected: Option[String] => Unit,
     onReload: () => Unit,
+    filtersOpenVar: Var[Boolean],
     onAddNew: () => Unit,
+    addDisabled: Signal[Boolean],
     onSave: () => Unit
   ): Div =
     div(
@@ -38,8 +40,14 @@ object TopBar {
       ),
       button(
         cls := "btn btn-outline-secondary",
-        "+ reply",
+        "Filters",
         disabled <-- selectedBotVar.signal.map(_.isEmpty),
+        onClick --> { _ => filtersOpenVar.update(b => !b) }
+      ),
+      button(
+        cls := "btn btn-outline-secondary",
+        "+ reply",
+        disabled <-- selectedBotVar.signal.map(_.isEmpty).combineWith(addDisabled).map { case (noBot, dis) => noBot || dis },
         onClick --> { _ => onAddNew() }
       ),
       button(
