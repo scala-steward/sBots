@@ -2,6 +2,7 @@ package com.benkio.replieseditor.module
 
 import io.circe.Decoder
 import io.circe.Json
+import io.circe.generic.semiauto.deriveDecoder
 
 final case class ApiBot(botId: String, botName: String)
 object ApiBot {
@@ -21,7 +22,13 @@ final case class EditableEntry(
 )
 
 final case class EntryState(
+    index: Int,
     original: Json,
     editable: Option[EditableEntry]
 )
+
+final case class RepliesChunk(total: Int, offset: Int, items: Vector[Json])
+object RepliesChunk {
+  given Decoder[RepliesChunk] = deriveDecoder
+}
 

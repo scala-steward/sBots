@@ -8,7 +8,8 @@ object RepliesGrid {
   def render(
     entriesVar: Var[Vector[EntryState]],
     allowedFilesVar: Var[Vector[String]],
-    markDirty: () => Unit
+    markDirty: () => Unit,
+    onEditableChanged: (Int, EditableEntry) => Unit
   ): Div =
     div(
       cls := "row g-3",
@@ -18,7 +19,8 @@ object RepliesGrid {
           st = st,
           entriesVar = entriesVar,
           allowedFilesVar = allowedFilesVar,
-          markDirty = markDirty
+          markDirty = markDirty,
+          onEditableChanged = onEditableChanged
         )
       }
     )

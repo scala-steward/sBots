@@ -13,10 +13,12 @@ object AppPage {
     status: Signal[Option[String]],
     entriesVar: Var[Vector[EntryState]],
     allowedFilesVar: Var[Vector[String]],
+    paginationBar: HtmlElement,
     onMount: () => Unit,
     onBotSelected: Option[String] => Unit,
     onReload: () => Unit,
     onSave: () => Unit,
+    onEditableChanged: (Int, EditableEntry) => Unit,
     markDirty: () => Unit
   ): Div =
     div(
@@ -30,10 +32,12 @@ object AppPage {
         onSave = onSave
       ),
       StatusBar.render(status),
+      paginationBar,
       RepliesGrid.render(
         entriesVar = entriesVar,
         allowedFilesVar = allowedFilesVar,
-        markDirty = markDirty
+        markDirty = markDirty,
+        onEditableChanged = onEditableChanged
       )
     )
 }

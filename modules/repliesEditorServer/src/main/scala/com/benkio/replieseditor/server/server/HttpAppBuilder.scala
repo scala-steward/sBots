@@ -10,16 +10,22 @@ object HttpAppBuilder {
   def build(deps: ServerDeps): HttpApp[IO] = {
     val botsEndpoint         = new BotsEndpoint(deps.botStore)
     val repliesEndpoint      = new RepliesEndpoint(deps.botStore)
+    val repliesChunkEndpoint = new RepliesChunkEndpoint(deps.botStore)
     val allowedFilesEndpoint = new AllowedFilesEndpoint(deps.botStore)
     val saveRepliesEndpoint  = new SaveRepliesEndpoint(deps.botStore)
+    val updateReplyEndpoint  = new UpdateReplyEndpoint(deps.botStore)
+    val commitRepliesEndpoint = new CommitRepliesEndpoint(deps.botStore)
 
     val routes =
       Router(
         "/" -> StaticAssetsEndpoint.routes,
         "/" -> botsEndpoint.routes,
         "/" -> repliesEndpoint.routes,
+        "/" -> repliesChunkEndpoint.routes,
         "/" -> allowedFilesEndpoint.routes,
-        "/" -> saveRepliesEndpoint.routes
+        "/" -> saveRepliesEndpoint.routes,
+        "/" -> updateReplyEndpoint.routes,
+        "/" -> commitRepliesEndpoint.routes
       )
 
     Logger.httpApp(logHeaders = true, logBody = false)(routes.orNotFound)

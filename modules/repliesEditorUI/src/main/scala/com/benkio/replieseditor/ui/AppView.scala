@@ -4,6 +4,7 @@ import com.benkio.replieseditor.load.ApiClient
 import com.benkio.replieseditor.load.RepliesJsonMapping
 import com.benkio.replieseditor.module.*
 import com.benkio.replieseditor.ui.components.page.AppPage
+import com.benkio.replieseditor.ui.components.page.PaginationBar
 import com.raquo.laminar.api.L.*
 import io.circe.Json
 
@@ -17,6 +18,10 @@ object AppView {
     val selectedBotVar   = Var(Option.empty[String])
     val allowedFilesVar  = Var(Vector.empty[String])
     val entriesVar       = Var(Vector.empty[EntryState])
+    val totalVar         = Var(Option.empty[Int])
+    val currentPageVar   = Var(1)
+    val pageSizeVar      = Var(60)
+    val loadingPageVar   = Var(false)
     val dirtyVar         = Var(false)
     val statusVar        = Var(Option.empty[String])
     val loadTokenVar     = Var(0L)
@@ -39,6 +44,48 @@ object AppView {
       }
     }
 
+    def setChunk(chunk: RepliesChunk): Unit = {
+      val base = chunk.offset
+      val states =
+        chunk.items.zipWithIndex.map { case (j, i) =>
+          EntryState(index = base + i, original = j, editable = RepliesJsonMapping.extractEditableEntry(j))
+        }
+      totalVar.set(Some(chunk.total))
+      entriesVar.set(states)
+    }
+
+    def loadPage(botId: String, page: Int, myToken: Long): Unit = {
+      val p        = page.max(1)
+      val pageSize = pageSizeVar.now().max(1)
+      val offset   = (p - 1) * pageSize
+
+      loadingPageVar.set(true)
+      val repliesChunkF = ApiClient.fetchJson(s"/api/bot/$botId/replies-chunk?offset=$offset&limit=$pageSize")
+      repliesChunkF.onComplete {
+        case Failure(ex) =>
+          if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId))
+            setStatus(s"Failed to load replies page: ${ex.getMessage}")
+          loadingPageVar.set(false)
+        case Success(Left(err)) =>
+          if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId))
+            setStatus(s"Failed to load replies page: $err")
+          loadingPageVar.set(false)
+        case Success(Right(json)) =>
+          ApiClient.decodeOrError[RepliesChunk](json) match {
+            case Left(err) =>
+              if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId))
+                setStatus(s"Failed to decode replies page: $err")
+            case Right(chunk) =>
+              if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId)) {
+                currentPageVar.set(p)
+                setChunk(chunk)
+                clearStatus()
+              }
+          }
+          loadingPageVar.set(false)
+      }
+    }
+
     def loadBot(botId: String): Unit = {
       val myToken = loadTokenVar.now() + 1L
       loadTokenVar.set(myToken)
@@ -47,65 +94,54 @@ object AppView {
       dirtyVar.set(false)
       entriesVar.set(Vector.empty)
       allowedFilesVar.set(Vector.empty)
+      totalVar.set(None)
+      currentPageVar.set(1)
+      loadingPageVar.set(false)
 
-      val repliesF = ApiClient.fetchJson(s"/api/bot/$botId/replies")
       val allowedF = ApiClient.fetchJson(s"/api/bot/$botId/allowed-files")
-
-      repliesF.zip(allowedF).onComplete {
+      allowedF.onComplete {
         case Failure(ex) =>
           if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId))
             setStatus(s"Failed to load bot data: ${ex.getMessage}")
-        case Success((Left(err), _)) =>
-          if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId))
-            setStatus(s"Failed to load replies: $err")
-        case Success((_, Left(err))) =>
+        case Success(Left(err)) =>
           if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId))
             setStatus(s"Failed to load allowed files: $err")
-        case Success((Right(repliesJson), Right(allowedJson))) =>
+        case Success(Right(allowedJson)) =>
           if (loadTokenVar.now() == myToken && selectedBotVar.now().contains(botId)) {
             val allowed = ApiClient.decodeOrError[Vector[String]](allowedJson).getOrElse(Vector.empty)
             allowedFilesVar.set(allowed)
-
-            val entries = repliesJson.asArray match {
-              case None => Vector.empty[EntryState]
-              case Some(arr) =>
-                arr.toVector.map { j =>
-                  EntryState(original = j, editable = RepliesJsonMapping.extractEditableEntry(j))
-                }
-            }
-            entriesVar.set(entries)
-            clearStatus()
+            loadPage(botId, page = 1, myToken = myToken)
           }
       }
     }
 
     def markDirty(): Unit = dirtyVar.set(true)
 
-    def save(botId: String): Unit = {
-      val entries = entriesVar.now()
-      val rebuiltE: Either[String, Vector[Json]] =
-        entries.foldLeft(Right(Vector.empty): Either[String, Vector[Json]]) { (accE, st) =>
-          accE.flatMap { acc =>
-            st.editable match {
-              case None => Right(acc :+ st.original)
-              case Some(e) =>
-                RepliesJsonMapping.buildJsonFromEditable(e).map(j => acc :+ j)
-            }
-          }
-        }
-
-      rebuiltE match {
+    def pushUpdate(botId: String, index: Int, e: EditableEntry): Unit = {
+      RepliesJsonMapping.buildJsonFromEditable(e) match {
         case Left(err) =>
-          setStatus(s"Cannot save: $err")
-        case Right(arr) =>
-          setStatus("Saving…")
-          ApiClient.postJson(s"/api/bot/$botId/replies", Json.fromValues(arr)).onComplete {
-            case Failure(ex) => setStatus(s"Save failed: ${ex.getMessage}")
-            case Success(Left(err)) => setStatus(s"Save failed: $err")
-            case Success(Right(_)) =>
-              dirtyVar.set(false)
-              setStatus("Saved.")
+          setStatus(s"Invalid entry #${index + 1}: $err")
+        case Right(j) =>
+          val payload = Json.obj(
+            "index" -> Json.fromInt(index),
+            "value" -> j
+          )
+          ApiClient.postJson(s"/api/bot/$botId/replies/update", payload).onComplete {
+            case Failure(ex) => setStatus(s"Update failed: ${ex.getMessage}")
+            case Success(Left(err)) => setStatus(s"Update failed: $err")
+            case Success(Right(_))  => ()
           }
+      }
+    }
+
+    def commit(botId: String): Unit = {
+      setStatus("Saving…")
+      ApiClient.postJson(s"/api/bot/$botId/replies/commit", Json.obj()).onComplete {
+        case Failure(ex) => setStatus(s"Save failed: ${ex.getMessage}")
+        case Success(Left(err)) => setStatus(s"Save failed: $err")
+        case Success(Right(_)) =>
+          dirtyVar.set(false)
+          setStatus("Saved.")
       }
     }
 
@@ -116,13 +152,23 @@ object AppView {
       status = statusVar.signal,
       entriesVar = entriesVar,
       allowedFilesVar = allowedFilesVar,
+      paginationBar = PaginationBar.render(
+        currentPageVar = currentPageVar,
+        totalOpt = totalVar.signal,
+        pageSizeVar = pageSizeVar,
+        isLoading = loadingPageVar.signal,
+        onPageRequested = { page =>
+          selectedBotVar.now().foreach(botId => loadPage(botId, page = page, myToken = loadTokenVar.now()))
+        }
+      ),
       onMount = () => loadBots(),
       onBotSelected = { botIdOpt =>
         selectedBotVar.set(botIdOpt)
         botIdOpt.foreach(loadBot)
       },
       onReload = () => selectedBotVar.now().foreach(loadBot),
-      onSave = () => selectedBotVar.now().foreach(save),
+      onSave = () => selectedBotVar.now().foreach(commit),
+      onEditableChanged = (index, e) => selectedBotVar.now().foreach(botId => pushUpdate(botId, index, e)),
       markDirty = () => markDirty()
     )
   }

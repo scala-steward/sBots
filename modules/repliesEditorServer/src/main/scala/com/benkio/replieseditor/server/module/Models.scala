@@ -1,8 +1,10 @@
 package com.benkio.replieseditor.server.module
 
 import io.circe.Encoder
+import io.circe.Decoder
 import io.circe.Json
 import io.circe.generic.semiauto.deriveEncoder
+import io.circe.generic.semiauto.deriveDecoder
 
 import java.nio.file.Path
 
@@ -27,5 +29,15 @@ object SaveOk {
 final case class ApiError(error: String, details: Option[Json] = None)
 object ApiError {
   given Encoder[ApiError] = deriveEncoder
+}
+
+final case class RepliesChunk(total: Int, offset: Int, items: Vector[Json])
+object RepliesChunk {
+  given Encoder[RepliesChunk] = deriveEncoder
+}
+
+final case class UpdateReplyReq(index: Int, value: Json)
+object UpdateReplyReq {
+  given Decoder[UpdateReplyReq] = deriveDecoder
 }
 

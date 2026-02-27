@@ -12,7 +12,8 @@ object ReplyCard {
     st: EntryState,
     entriesVar: Var[Vector[EntryState]],
     allowedFilesVar: Var[Vector[String]],
-    markDirty: () => Unit
+    markDirty: () => Unit,
+    onEditableChanged: (Int, EditableEntry) => Unit
   ): Div =
     div(
       cls := "col-12 col-md-4",
@@ -40,6 +41,7 @@ object ReplyCard {
               def update(f: EditableEntry => EditableEntry): Unit = {
                 editableVar.update(f)
                 markDirty()
+                onEditableChanged(st.index, editableVar.now())
               }
 
               div(

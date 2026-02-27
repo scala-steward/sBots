@@ -4,7 +4,7 @@ import cats.effect.IO
 import cats.effect.Ref
 import cats.syntax.all.*
 import com.benkio.replieseditor.server.jsonio.{ListJsonFile, RepliesJsonFile, TriggersTxtFile}
-import com.benkio.replieseditor.server.module.{ApiBot, ApiError, BotFiles, SaveOk}
+import com.benkio.replieseditor.server.module.{ApiBot, ApiError, BotFiles, RepliesChunk, SaveOk}
 import com.benkio.replieseditor.server.validation.MediaFilesAllowedValidation
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import io.circe.Json
@@ -22,9 +22,23 @@ final class BotStore private (ref: Ref[IO, BotStore.State]) {
     ref.get.map(_.byId.get(botId) match {
       case None => Left(ApiError(s"Unknown botId: $botId"))
       case Some(b) =>
-        b.replies match {
+        b.repliesJson match {
           case Left(err)   => Left(ApiError(s"Failed to load replies for $botId: $err"))
           case Right(json) => Right(json)
+        }
+    })
+
+  def getRepliesChunk(botId: String, offset: Int, limit: Int): IO[Either[ApiError, RepliesChunk]] =
+    ref.get.map(_.byId.get(botId) match {
+      case None => Left(ApiError(s"Unknown botId: $botId"))
+      case Some(b) =>
+        b.repliesEntries match {
+          case Left(err) => Left(ApiError(s"Failed to load replies for $botId: $err"))
+          case Right(entries) =>
+            val safeOffset = offset.max(0).min(entries.length)
+            val safeLimit  = limit.max(1).min(500)
+            val items      = entries.slice(safeOffset, (safeOffset + safeLimit).min(entries.length))
+            Right(RepliesChunk(total = entries.length, offset = safeOffset, items = items))
         }
     })
 
@@ -37,6 +51,61 @@ final class BotStore private (ref: Ref[IO, BotStore.State]) {
           case Right(files) => Right(files)
         }
     })
+
+  def updateReplyAt(botId: String, index: Int, value: Json): IO[Either[ApiError, Unit]] =
+    ref.modify { st =>
+      st.byId.get(botId) match {
+        case None => (st, Left(ApiError(s"Unknown botId: $botId")))
+        case Some(b) =>
+          b.repliesEntries match {
+            case Left(err) =>
+              (st, Left(ApiError(s"Replies for $botId are not loaded: $err")))
+            case Right(entries) =>
+              if (index < 0 || index >= entries.length)
+                (st, Left(ApiError(s"Index out of bounds: $index (size=${entries.length})")))
+              else {
+                val updatedEntries = entries.updated(index, value)
+                val updatedBot =
+                  b.copy(
+                    repliesEntries = Right(updatedEntries),
+                    repliesJson = Right(Json.fromValues(updatedEntries))
+                  )
+                val newState =
+                  st.copy(
+                    bots = st.bots.map(x => if (x.files.botId == botId) updatedBot else x),
+                    byId = st.byId.updated(botId, updatedBot)
+                  )
+                (newState, Right(()))
+              }
+          }
+      }
+    }
+
+  def commit(botId: String): IO[Either[ApiError, SaveOk]] =
+    ref.get.flatMap { st =>
+      st.byId.get(botId) match {
+        case None => IO.pure(Left(ApiError(s"Unknown botId: $botId")))
+        case Some(b) =>
+          (b.repliesEntries, b.allowedFiles) match {
+            case (Left(rErr), _) => IO.pure(Left(ApiError(s"Cannot commit, replies not loaded: $rErr")))
+            case (_, Left(aErr)) => IO.pure(Left(ApiError(s"Cannot commit, allowed files not loaded: $aErr")))
+            case (Right(entries), Right(allowedVec)) =>
+              val json = Json.fromValues(entries)
+              json.as[List[ReplyBundleMessage]] match {
+                case Left(df) => IO.pure(Left(ApiError(s"Cannot commit, decode failed: ${df.message}")))
+                case Right(replies) =>
+                  MediaFilesAllowedValidation.validateAllFilesAreAllowed(replies, allowedVec.toSet) match {
+                    case Left(err) => IO.pure(Left(err))
+                    case Right(_) =>
+                      for {
+                        _ <- RepliesJsonFile.writePretty(b.files.repliesJson, json.spaces2)
+                        _ <- TriggersTxtFile.write(b.files.triggersTxt, replies)
+                      } yield Right(SaveOk(botId = botId, repliesCount = replies.length))
+                  }
+              }
+          }
+      }
+    }
 
   def saveReplies(
     botId: String,
@@ -70,7 +139,8 @@ object BotStore {
 
   final case class CachedBot(
     files: BotFiles,
-    replies: Either[String, Json],
+    repliesEntries: Either[String, Vector[Json]],
+    repliesJson: Either[String, Json],
     allowedFiles: Either[String, Vector[String]]
   )
 
@@ -79,7 +149,18 @@ object BotStore {
       byId.get(botId) match {
         case None => this
         case Some(b) =>
-          val updated = b.copy(replies = replies)
+          val entriesE: Either[String, Vector[Json]] =
+            replies.flatMap { j =>
+              j.asArray match {
+                case None      => Left("Replies JSON is not an array")
+                case Some(arr) => Right(arr.toVector)
+              }
+            }
+          val updated =
+            b.copy(
+              repliesEntries = entriesE,
+              repliesJson = replies
+            )
           copy(
             bots = bots.map(x => if (x.files.botId == botId) updated else x),
             byId = byId.updated(botId, updated)
@@ -149,8 +230,15 @@ object BotStore {
         case Right(list) => Right(list.toVector)
       }
 
-    (repliesIO, allowedIO).mapN { (replies, allowed) =>
-      CachedBot(files = files, replies = replies, allowedFiles = allowed)
+    (repliesIO, allowedIO).mapN { (repliesJsonE, allowed) =>
+      val repliesEntriesE: Either[String, Vector[Json]] =
+        repliesJsonE.flatMap { json =>
+          json.asArray match {
+            case None      => Left("Replies JSON is not an array")
+            case Some(arr) => Right(arr.toVector)
+          }
+        }
+      CachedBot(files = files, repliesEntries = repliesEntriesE, repliesJson = repliesJsonE, allowedFiles = allowed)
     }
   }
 }
