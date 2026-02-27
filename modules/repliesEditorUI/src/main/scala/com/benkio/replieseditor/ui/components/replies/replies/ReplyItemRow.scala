@@ -13,7 +13,7 @@ object ReplyItemRow {
     allowedFilesVar: Var[Vector[String]],
     update: (EditableEntry => EditableEntry) => Unit
   ): Div = {
-    val kindSignal  = itemSignal.map(_.kind)
+    val kindSignal  = itemSignal.map(_.kind).distinct
     val valueSignal = itemSignal.map(_.value)
     val datalistId  = s"replies-$entryIdx-$replyIdx"
 
