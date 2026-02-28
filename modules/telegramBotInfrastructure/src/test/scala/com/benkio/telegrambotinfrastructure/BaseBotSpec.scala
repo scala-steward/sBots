@@ -227,7 +227,7 @@ trait BaseBotSpec extends CatsEffectSuite with ScalaCheckEffectSuite {
           instructionMessage(_)
         )
         itaInstructionInputs = List("it", "ita", "italian", "🇮🇹").map(instructionMessage(_))
-        (sBotInfo, ignoreMessagePrefix, commands) <- instructionCommand.reply match {
+        botInfoAndCommands <- instructionCommand.reply match {
           case EffectfulReply(EffectfulKey.Instructions(sBotInfo, ignoreMessagePrefix, commands), _) =>
             IO.pure((sBotInfo, ignoreMessagePrefix, commands))
           case _ =>
@@ -237,6 +237,7 @@ trait BaseBotSpec extends CatsEffectSuite with ScalaCheckEffectSuite {
               )
             )
         }
+        (sBotInfo, ignoreMessagePrefix, commands) = botInfoAndCommands
         engInstructionCommandResult <- engInstructionInputs.traverse(msg =>
           InstructionsCommand.instructionCommandLogic[IO](
             msg = msg,

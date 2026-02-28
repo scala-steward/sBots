@@ -5,14 +5,8 @@
 // future bots continues to work. See docs/adding-a-bot.md.
 // -----------------------------------------------------------------------------
 
-import org.scalajs.sbtplugin.ScalaJSPlugin
-
 import Dependencies.*
 import Settings.*
-
-// TASKS
-
-lazy val runMigrate = taskKey[Unit]("Migrates the database schema.")
 
 lazy val newBot = inputKey[Unit]("Create new bot from template: newBot <BotName> <id> (e.g. newBot MyNewBot mynew)")
 newBot := {
@@ -25,7 +19,7 @@ newBot := {
 
 name                     := "sBots"
 organization             := "com.benkio"
-ThisBuild / scalaVersion := "3.7.4"
+ThisBuild / scalaVersion := "3.3.7"
 ThisBuild / scalacOptions ++= Seq(
   "-java-output-version",
   "21",
@@ -45,7 +39,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 // SCoverage
 coverageEnabled          := true
 coverageFailOnMinimum    := true
-coverageMinimumStmtTotal := 65 // TODO: INCREASE THIS
+coverageMinimumStmtTotal := 70 // TODO: INCREASE THIS
 
 // COMMAND ALIASES
 
@@ -58,7 +52,7 @@ addCommandAlias(
 addCommandAlias("generateTriggerTxt", "main/runMain com.benkio.main.GenerateTriggers")
 addCommandAlias(
   "validate",
-  ";clean; compile; fix; generateTriggerTxt; coverage; test; integration/mUnitTests; coverageAggregate"
+  ";clean; compile; fix; generateTriggerTxt; coverage; test; integration/mUnitTests; coverageAggregate; assembly"
 )
 addCommandAlias("compileAll", "compile; Test/compile; integration/Test/compile");
 addCommandAlias("checkAllLinksTest", "integration/scalaTests")
@@ -150,53 +144,26 @@ lazy val main = project
 
 lazy val botDB =
   Project("botDB", file("modules/botDB"))
+    .disablePlugins(sbtassembly.AssemblyPlugin)
     .settings(Settings.settings *)
     .settings(Settings.BotDBSettings)
-    .settings(
-      fullRunTask(runMigrate, Compile, "com.benkio.botDB.Main"),
-      runMigrate / fork := true
-    )
     .dependsOn(telegramBotInfrastructure % "compile->compile;test->test")
 
 lazy val repliesEditorUI =
   Project("repliesEditorUI", file("modules/repliesEditorUI"))
+    .disablePlugins(sbtassembly.AssemblyPlugin)
     .enablePlugins(ScalaJSPlugin)
     .settings(Settings.settings *)
     .settings(
-      name := "repliesEditorUI",
-      libraryDependencies ++= RepliesEditorUiDependencies.value,
-      libraryDependencies ++= Seq(
-        "org.scalameta" %%% "munit" % versions.munit % Test
-      ),
-      scalaJSUseMainModuleInitializer := true,
-      Test / fork                     := false,
-      // scoverage + Scala.js currently crashes the Scala 3.7.2 JS backend (genSJSIR)
-      coverageEnabled := false
+      Settings.RepliesEditorUI
     )
 
 lazy val repliesEditorServer =
   Project("repliesEditorServer", file("modules/repliesEditorServer"))
+    .disablePlugins(sbtassembly.AssemblyPlugin)
     .settings(Settings.settings *)
     .settings(
-      name                := "repliesEditorServer",
-      libraryDependencies := RepliesEditorServerDependencies,
-      dependencyOverrides ++= RepliesEditorServerDependencies,
-      run / javaOptions += s"-Dsbots.repoRoot=${(ThisBuild / baseDirectory).value.getAbsolutePath}",
-      Compile / resourceGenerators += Def.task {
-        val _        = (repliesEditorUI / Compile / fastLinkJS).value // ensure UI is linked before copying
-        val uiOutDir = (repliesEditorUI / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
-        val jsFiles  = (uiOutDir ** "*.js").get
-        val uiJs     =
-          jsFiles
-            .find(_.getName == "main.js")
-            .orElse(jsFiles.headOption)
-            .getOrElse(sys.error(s"No linked JS file found under: $uiOutDir"))
-        val targetDir = (Compile / resourceManaged).value / "public"
-        val destJs    = targetDir / "app.js"
-        IO.createDirectory(targetDir)
-        IO.copyFile(uiJs, destJs)
-        Seq(destJs)
-      }.taskValue
+      Settings.RepliesEditorServer(repliesEditorUI)
     )
     .dependsOn(telegramBotInfrastructure % "compile->compile;test->test")
 

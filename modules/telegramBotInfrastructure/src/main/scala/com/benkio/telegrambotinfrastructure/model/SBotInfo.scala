@@ -16,8 +16,8 @@ object SBotInfo {
   object SBotName {
     def apply(value: String): SBotName               = value
     extension (sBotName: SBotName) def value: String = sBotName
-    given Encoder[SBotName]                          = Encoder[String].contramap(identity)
-    given Decoder[SBotName]                          = Decoder[String].map(identity)
+    given Encoder[SBotName]                          = Encoder.encodeString.contramap(_.value)
+    given Decoder[SBotName]                          = Decoder.decodeString.map(SBotName(_))
   }
 
   opaque type SBotId = String
@@ -25,8 +25,8 @@ object SBotInfo {
   object SBotId {
     def apply(value: String): SBotId             = value
     extension (sBotId: SBotId) def value: String = sBotId
-    given Encoder[SBotId]                        = Encoder[String].contramap(identity)
-    given Decoder[SBotId]                        = Decoder[String].map(identity)
+    given Encoder[SBotId]                        = Encoder.encodeString.contramap(_.value)
+    given Decoder[SBotId]                        = Decoder.decodeString.map(SBotId(_))
   }
 
 }
