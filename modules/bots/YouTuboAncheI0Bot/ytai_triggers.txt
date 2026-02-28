@@ -1,4 +1,9 @@
 --------------------------------------------------
+ytai_FeliceContinuiSeguirmi.mp3 | non riprendermi
+ytai_FeliceContinuiSeguirmi.mp4 | sono felice
+ytai_FeliceContinuiSeguirmiGif.mp4 | continui a seguirmi
+--------------------------------------------------
+--------------------------------------------------
 ytai_Donazioni.mp3        | non vi costa nulla
 --------------------------------------------------
 --------------------------------------------------
