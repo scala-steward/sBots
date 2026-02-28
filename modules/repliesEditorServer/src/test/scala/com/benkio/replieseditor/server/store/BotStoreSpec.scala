@@ -4,6 +4,10 @@ import cats.effect.IO
 import cats.effect.Resource
 import com.benkio.telegrambotinfrastructure.messagefiltering.MessageMatches
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
+import com.benkio.telegrambotinfrastructure.model.RegexTextTriggerValue
+import com.benkio.telegrambotinfrastructure.model.StringTextTriggerValue
+import com.benkio.telegrambotinfrastructure.model.TextTrigger
+import io.circe.parser.parse
 import io.circe.syntax.*
 import munit.CatsEffectSuite
 
@@ -110,6 +114,57 @@ class BotStoreSpec extends CatsEffectSuite {
 
         assertEquals(c2.total, 1)
         assertEquals(c2.items.map(_.index), Vector(1))
+      }
+    }
+  }
+
+  test("BotStore saveReplies trims triggers before writing replies json") {
+    tempRepo.use { root =>
+      val botDir      = root.resolve("modules").resolve("bots").resolve("TestBot")
+      val botId       = "test"
+      val listJson    = botDir.resolve(s"${botId}_list.json")
+      val repliesJson = botDir.resolve("src").resolve("main").resolve("resources").resolve(s"${botId}_replies.json")
+
+      val listContent =
+        """
+          |[
+          |  { "filename": "test_a.mp3", "sources": ["http://example.com/test_a.mp3"] }
+          |]
+          |""".stripMargin
+
+      val initialReplies = List(ReplyBundleMessage.textToText("hello")("a"))
+
+      val padded =
+        ReplyBundleMessage(
+          trigger = TextTrigger(
+            StringTextTriggerValue("  hello  "),
+            RegexTextTriggerValue("  hi.*  ".r, "  hi.*  ".length)
+          ),
+          reply = initialReplies.head.reply,
+          matcher = MessageMatches.ContainsOnce
+        )
+
+      for {
+        _     <- write(listJson, listContent)
+        _     <- write(repliesJson, initialReplies.asJson.spaces2)
+        store <- BotStore.build(root)
+        saveE <- store.saveReplies(botId, List(padded))
+        _     <- IO.fromEither(saveE.left.map(e => new RuntimeException(e.error))).void
+        raw   <- IO.blocking(Files.readString(repliesJson, StandardCharsets.UTF_8))
+        json  <- IO.fromEither(parse(raw).left.map(e => new RuntimeException(e.message)))
+        rs    <- IO.fromEither(json.as[List[ReplyBundleMessage]].left.map(df => new RuntimeException(df.message)))
+      } yield {
+        val rbm = rs.head
+        rbm.trigger match {
+          case TextTrigger(tvs*) =>
+            val stringTriggers = tvs.toList.collect { case StringTextTriggerValue(t) => t }
+            val regexTriggers  = tvs.toList.collect { case RegexTextTriggerValue(r, _) => r.toString }
+
+            assert(stringTriggers.contains("hello"))
+            assert(regexTriggers.contains("hi.*"))
+          case other =>
+            fail(s"Expected TextTrigger, got: $other")
+        }
       }
     }
   }

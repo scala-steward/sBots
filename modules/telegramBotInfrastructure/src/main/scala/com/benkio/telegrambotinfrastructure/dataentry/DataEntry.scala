@@ -3,6 +3,7 @@ package com.benkio.telegrambotinfrastructure.dataentry
 import cats.effect.IO
 import cats.effect.Resource
 import cats.syntax.all.*
+import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import com.benkio.telegrambotinfrastructure.model.media.MediaFileSource
 import io.circe.parser.*
 import io.circe.syntax.*
@@ -10,7 +11,6 @@ import io.circe.Json
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
-import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import java.nio.file.Paths
 
 object DataEntry {
@@ -23,7 +23,7 @@ object DataEntry {
       Resource.make(IO.delay(scala.io.Source.fromFile(sBotConfig.listJsonFilename)))(bufferedSorce =>
         IO.delay(bufferedSorce.close)
       )
-    val listJsonFilepath = Paths.get(sBotConfig.listJsonFilename)
+    val listJsonFilepath        = Paths.get(sBotConfig.listJsonFilename)
     val repliesJsonFileResource =
       Resource.make(IO.delay(scala.io.Source.fromFile(sBotConfig.repliesJsonFilename)))(bufferedSorce =>
         IO.delay(bufferedSorce.close)
@@ -53,10 +53,10 @@ object DataEntry {
       mediaFileSourceGroups = MediaFileSourceGroup.fromMediaFileSourceList(mediafileSources)
       _ <- IO.println("[DataEntry] convert media file source groups to ReplyBundleMessages")
       newReplyBundleMessages = mediaFileSourceGroups.map(MediaFileSourceGroup.toReplyBundleMessage).asJson
-      _ <- IO.println("[DataEntry] Read the current replies")
+      _                  <- IO.println("[DataEntry] Read the current replies")
       botRepliesFile     <- repliesJsonFileResource.use(_.mkString.pure[IO])
       botRepliesFileJson <- IO.fromEither(parse(botRepliesFile))
-      _               <- IO.println("[DataEntry]] Merge the 2 arrays together replies")
+      _                  <- IO.println("[DataEntry]] Merge the 2 arrays together replies")
       mergedArrayReplies = {
         // Extract the arrays as lists of Json elements
         val elements1 = newReplyBundleMessages.asArray.getOrElse(Vector.empty)

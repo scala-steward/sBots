@@ -18,6 +18,8 @@ import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import com.benkio.telegrambotinfrastructure.model.LeftMemberTrigger
 import com.benkio.telegrambotinfrastructure.model.MessageLengthTrigger
 import com.benkio.telegrambotinfrastructure.model.NewMemberTrigger
+import com.benkio.telegrambotinfrastructure.model.RegexTextTriggerValue
+import com.benkio.telegrambotinfrastructure.model.StringTextTriggerValue
 import com.benkio.telegrambotinfrastructure.model.TextTrigger
 import com.benkio.telegrambotinfrastructure.model.TextTriggerValue
 import io.circe.syntax.*
@@ -28,6 +30,23 @@ import java.nio.file.Path
 import scala.jdk.CollectionConverters.*
 
 final class BotStore private (ref: Ref[IO, BotStore.State]) extends BotStoreApi {
+
+  private def trimTextTriggerValue(tv: TextTriggerValue): TextTriggerValue =
+    tv match {
+      case StringTextTriggerValue(v)             => StringTextTriggerValue(v.trim)
+      case RegexTextTriggerValue(r, regexLength) =>
+        val original = r.toString
+        val trimmed  = original.trim
+        RegexTextTriggerValue(trimmed.r, regexLength)
+    }
+
+  private def trimReplyTriggers(rbm: ReplyBundleMessage): ReplyBundleMessage =
+    rbm.trigger match {
+      case TextTrigger(triggers*) =>
+        val trimmed = triggers.toList.map(trimTextTriggerValue)
+        rbm.copy(trigger = TextTrigger(trimmed*))
+      case _ => rbm
+    }
 
   def listBots: IO[Vector[ApiBot]] =
     ref.get.map(
@@ -220,13 +239,16 @@ final class BotStore private (ref: Ref[IO, BotStore.State]) extends BotStoreApi 
               json.as[List[ReplyBundleMessage]] match {
                 case Left(df)       => IO.pure(Left(ApiError(s"Cannot commit, decode failed: ${df.message}")))
                 case Right(replies) =>
-                  MediaFilesAllowedValidation.validateAllFilesAreAllowed(replies, allowedVec.toSet) match {
+                  val trimmedReplies = replies.map(trimReplyTriggers)
+                  MediaFilesAllowedValidation.validateAllFilesAreAllowed(trimmedReplies, allowedVec.toSet) match {
                     case Left(err) => IO.pure(Left(err))
                     case Right(_)  =>
+                      val trimmedJson = trimmedReplies.asJson
                       for {
-                        _ <- RepliesJsonFile.writePretty(b.files.repliesJson, json.spaces2)
-                        _ <- TriggersTxtFile.write(b.files.triggersTxt, replies)
-                      } yield Right(SaveOk(botId = botId, repliesCount = replies.length))
+                        _ <- RepliesJsonFile.writePretty(b.files.repliesJson, trimmedJson.spaces2)
+                        _ <- TriggersTxtFile.write(b.files.triggersTxt, trimmedReplies)
+                        _ <- ref.update(_.updateReplies(botId, Right(trimmedJson)))
+                      } yield Right(SaveOk(botId = botId, repliesCount = trimmedReplies.length))
                   }
               }
           }
@@ -245,16 +267,17 @@ final class BotStore private (ref: Ref[IO, BotStore.State]) extends BotStoreApi 
             case Left(err) =>
               IO.pure(Left(ApiError(s"Cannot validate files, allowed files not loaded: $err")))
             case Right(allowedVec) =>
-              val allowed = allowedVec.toSet
-              MediaFilesAllowedValidation.validateAllFilesAreAllowed(replies, allowed) match {
+              val trimmedReplies = replies.map(trimReplyTriggers)
+              val allowed        = allowedVec.toSet
+              MediaFilesAllowedValidation.validateAllFilesAreAllowed(trimmedReplies, allowed) match {
                 case Left(err) => IO.pure(Left(err))
                 case Right(_)  =>
-                  val json = replies.asJson
+                  val json = trimmedReplies.asJson
                   for {
                     _ <- RepliesJsonFile.writePretty(bot.files.repliesJson, json.spaces2)
-                    _ <- TriggersTxtFile.write(bot.files.triggersTxt, replies)
+                    _ <- TriggersTxtFile.write(bot.files.triggersTxt, trimmedReplies)
                     _ <- ref.update(_.updateReplies(botId, Right(json)))
-                  } yield Right(SaveOk(botId = botId, repliesCount = replies.length))
+                  } yield Right(SaveOk(botId = botId, repliesCount = trimmedReplies.length))
               }
           }
       }
