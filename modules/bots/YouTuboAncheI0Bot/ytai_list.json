@@ -3926,5 +3926,32 @@
     "sources" : [
       "https://www.dropbox.com/scl/fi/5fage7l20vktj3xwn2a4h/ytai_Calma.mp4?rlkey=n53ep0gkzgzvwk1n6yu1bs60h&dl=1"
     ]
+  },
+  {
+    "filename" : "ytai_FeliceContinuiSeguirmi.mp3",
+    "kinds" : [
+    ],
+    "mime" : "audio/mpeg",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/8j5lvafiozrtttauxzd5g/ytai_FeliceContinuiSeguirmi.mp3?rlkey=btjs8j27qhqd35smje8ihkhvl&dl=1"
+    ]
+  },
+  {
+    "filename" : "ytai_FeliceContinuiSeguirmi.mp4",
+    "kinds" : [
+    ],
+    "mime" : "video/mp4",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/8ane7h9aylea9ykcwgbmz/ytai_FeliceContinuiSeguirmi.mp4?rlkey=s5bq0rrdqwjseq2qn63xkspjf&dl=1"
+    ]
+  },
+  {
+    "filename" : "ytai_FeliceContinuiSeguirmiGif.mp4",
+    "kinds" : [
+    ],
+    "mime" : "image/gif",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/kh9x0q8ul1g9l8ewpl8f1/ytai_FeliceContinuiSeguirmiGif.mp4?rlkey=e7kpm6dfneorxgvjapj9upk6n&dl=1"
+    ]
   }
 ]
