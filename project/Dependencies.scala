@@ -77,7 +77,6 @@ object Dependencies {
     val http4sEmberClient = "org.http4s"             %% "http4s-ember-client"         % versions.http4s
     val http4sServer      = "org.http4s"             %% "http4s-server"               % versions.http4s
     val http4sEmberServer = "org.http4s"             %% "http4s-ember-server"         % versions.http4s
-    val airstream         = Def.setting("com.raquo" %%% "airstream" % versions.laminar)
     val ip4sCore          = "com.comcast"            %% "ip4s-core"                   % versions.ip4s
     val logEffectsCore    = "io.laserdisc"           %% "log-effect-core"             % versions.logEffects
     val logEffectsFs2     = "io.laserdisc"           %% "log-effect-fs2"              % versions.logEffects
@@ -92,7 +91,6 @@ object Dependencies {
     val pureConfigHttp4s = "com.github.pureconfig" %% "pureconfig-http4s"        % versions.pureConfig
     val pureConfigCron4s = "com.github.pureconfig" %% "pureconfig-cron4s"        % versions.pureConfig
     val pureConfigCore   = "com.github.pureconfig" %% "pureconfig-core"          % versions.pureConfig
-    val scalajsDom       = Def.setting("org.scala-js" %%% "scalajs-dom" % versions.scalajsDom)
     val scalacheck       = "org.scalacheck"        %% "scalacheck"               % versions.scalacheck
     val scalacheckEffectMunit = "org.typelevel"         %% "scalacheck-effect-munit" % versions.scalacheckEffectMunit
     val scalacheckGenRegexp   = "io.github.wolfendale"  %% "scalacheck-gen-regexp"   % versions.scalacheckGenRegexp
@@ -101,8 +99,16 @@ object Dependencies {
     val telegramiumCore       = "io.github.apimorphism" %% "telegramium-core"        % versions.telegramiumVersion
     val telegramiumHigh       = "io.github.apimorphism" %% "telegramium-high"        % versions.telegramiumVersion
     val vault                 = "org.typelevel"         %% "vault"                   % versions.vault
-    // val laminar               = Def.setting("com.raquo" %%% "laminar" % versions.laminar)
-    // val tuplezFullLight       = "app.tulz" %%% "tuplez-full-light" % versions.tuplez
+
+    // Explicit _sjs1 module names to satisfy sbt-explicit-dependencies checks.
+    // The replies editor UI is Scala.js-only, so portability isn't needed here.
+    val laminarSjs1         = "com.raquo"    %% "laminar_sjs1"           % versions.laminar
+    val airstreamSjs1       = "com.raquo"    %% "airstream_sjs1"         % versions.laminar
+    val tuplezFullLightSjs1 = "app.tulz"     %% "tuplez-full-light_sjs1" % versions.tuplez
+    val scalajsDomSjs1      = "org.scala-js" %% "scalajs-dom_sjs1"       % versions.scalajsDom
+    val circeCoreSjs1       = "io.circe"     %% "circe-core_sjs1"        % versions.circe
+    val circeGenericSjs1    = "io.circe"     %% "circe-generic_sjs1"     % versions.circe
+    val circeParserSjs1     = "io.circe"     %% "circe-parser_sjs1"      % versions.circe
   }
 
   private val CommonDependencies: Seq[ModuleID] = Seq(
@@ -211,15 +217,13 @@ object Dependencies {
   val RepliesEditorUiDependencies: Def.Initialize[Seq[ModuleID]] =
     Def.setting(
       Seq(
-        // Explicit _sjs1 module names to satisfy sbt-explicit-dependencies checks.
-        // This project is Scala.js-only, so portability isn't needed here.
-        "com.raquo"    %% "laminar_sjs1"           % versions.laminar,
-        "com.raquo"    %% "airstream_sjs1"         % versions.laminar,
-        "app.tulz"     %% "tuplez-full-light_sjs1" % versions.tuplez,
-        "org.scala-js" %% "scalajs-dom_sjs1"       % versions.scalajsDom,
-        "io.circe"     %% "circe-core_sjs1"        % versions.circe,
-        "io.circe"     %% "circe-generic_sjs1"     % versions.circe,
-        "io.circe"     %% "circe-parser_sjs1"      % versions.circe
+        libs.laminarSjs1,
+        libs.airstreamSjs1,
+        libs.tuplezFullLightSjs1,
+        libs.scalajsDomSjs1,
+        libs.circeCoreSjs1,
+        libs.circeGenericSjs1,
+        libs.circeParserSjs1
       )
     )
 
