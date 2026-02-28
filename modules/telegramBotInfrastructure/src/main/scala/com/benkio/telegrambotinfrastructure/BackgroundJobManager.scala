@@ -105,9 +105,10 @@ object BackgroundJobManager {
         _ <- Async[F]
           .raiseError(SubscriptionAlreadyExists(subscription))
           .whenA(scheduleReferences.contains(SubscriptionKey(subscription.id, subscription.chatId)))
-        _                <- dbLayer.dbSubscription.insertSubscription(DBSubscriptionData(subscription))
-        (stream, cancel) <- runSubscription(subscription)
-        cronStream = cronScheduler.awakeEvery(subscription.cron) >> stream
+        _               <- dbLayer.dbSubscription.insertSubscription(DBSubscriptionData(subscription))
+        streamAndCancel <- runSubscription(subscription)
+        (stream, cancel) = streamAndCancel
+        cronStream       = cronScheduler.awakeEvery(subscription.cron) >> stream
         _ <- cronStream.interruptWhen(cancel).compile.drain.start
       } yield scheduleReferences += SubscriptionKey(subscription.id, subscription.chatId) -> cancel
 

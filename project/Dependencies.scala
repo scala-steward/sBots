@@ -1,3 +1,4 @@
+import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport.*
 import sbt.*
 
 import Keys.*
@@ -21,14 +22,16 @@ object Dependencies {
     val googleOauthClient     = "1.39.0"
     val googleYouTubeApi      = "v3-rev20251217-2.0.0"
     val http4s                = "0.23.33"
+    val ip4s                  = "3.7.0"
     val logEffects            = "0.19.9"
     val logbackClassic        = "1.5.32"
     val logbackLogstash       = "9.0"
     val mules                 = "0.7.0"
     val mulesHttp4s           = "0.4.0"
-    val munit                 = "1.2.3"
+    val munit                 = "1.2.0"
     val munitCatsEffect       = "2.1.0"
     val pureConfig            = "0.17.10"
+    val scalajsDom            = "2.8.0"
     val scalacheck            = "1.19.0"
     val scalacheckEffectMunit = "1.0.4"
     val scalacheckGenRegexp   = "1.1.0"
@@ -37,6 +40,8 @@ object Dependencies {
     val sqlite                = "3.41.2.1"
     val telegramiumVersion    = "10.904.0"
     val vault                 = "3.6.0"
+    val laminar               = "17.2.1"
+    val tuplez                = "0.4.0"
   }
 
   lazy val libs = new {
@@ -72,6 +77,7 @@ object Dependencies {
     val http4sEmberClient = "org.http4s"             %% "http4s-ember-client"         % versions.http4s
     val http4sServer      = "org.http4s"             %% "http4s-server"               % versions.http4s
     val http4sEmberServer = "org.http4s"             %% "http4s-ember-server"         % versions.http4s
+    val ip4sCore          = "com.comcast"            %% "ip4s-core"                   % versions.ip4s
     val logEffectsCore    = "io.laserdisc"           %% "log-effect-core"             % versions.logEffects
     val logEffectsFs2     = "io.laserdisc"           %% "log-effect-fs2"              % versions.logEffects
     val logbackClassic   = "ch.qos.logback"         % "logback-classic"          % versions.logbackClassic  % Runtime
@@ -93,6 +99,16 @@ object Dependencies {
     val telegramiumCore       = "io.github.apimorphism" %% "telegramium-core"        % versions.telegramiumVersion
     val telegramiumHigh       = "io.github.apimorphism" %% "telegramium-high"        % versions.telegramiumVersion
     val vault                 = "org.typelevel"         %% "vault"                   % versions.vault
+
+    // Explicit _sjs1 module names to satisfy sbt-explicit-dependencies checks.
+    // The replies editor UI is Scala.js-only, so portability isn't needed here.
+    val laminarSjs1         = "com.raquo"    %% "laminar_sjs1"           % versions.laminar
+    val airstreamSjs1       = "com.raquo"    %% "airstream_sjs1"         % versions.laminar
+    val tuplezFullLightSjs1 = "app.tulz"     %% "tuplez-full-light_sjs1" % versions.tuplez
+    val scalajsDomSjs1      = "org.scala-js" %% "scalajs-dom_sjs1"       % versions.scalajsDom
+    val circeCoreSjs1       = "io.circe"     %% "circe-core_sjs1"        % versions.circe
+    val circeGenericSjs1    = "io.circe"     %% "circe-generic_sjs1"     % versions.circe
+    val circeParserSjs1     = "io.circe"     %% "circe-parser_sjs1"      % versions.circe
   }
 
   private val CommonDependencies: Seq[ModuleID] = Seq(
@@ -187,6 +203,30 @@ object Dependencies {
     libs.munit,
     libs.pureConfigCore
   )
+
+  val RepliesEditorServerDependencies: Seq[ModuleID] =
+    CommonDependencies ++ Seq(
+      libs.catsKernel,
+      libs.caseInsensitive,
+      libs.circeGeneric,
+      libs.http4sDsl,
+      libs.http4sEmberServer,
+      libs.ip4sCore
+    )
+
+  val RepliesEditorUiDependencies: Def.Initialize[Seq[ModuleID]] =
+    Def.setting(
+      Seq(
+        libs.laminarSjs1,
+        libs.airstreamSjs1,
+        libs.tuplezFullLightSjs1,
+        libs.scalajsDomSjs1,
+        libs.circeCoreSjs1,
+        libs.circeGenericSjs1,
+        libs.circeParserSjs1,
+        libs.munit
+      )
+    )
 
   val IntegrationDependencies: Seq[ModuleID] =
     Seq(

@@ -51,6 +51,16 @@
      - Add the file name, Telegram ~file_id~ and/or downloadable link (usually Dropbox), to the json at the root of each bot folder. To get the ~file_id_~ you can take advantage of [[https://t.me/jsoonbot][@jsonbot]] by just sending the file and copy the id from the reply.
      - Modify the scala code to add the type that creates the mappings between the triggers and the files. See planty of examples of any kind throughout the code, especially under RichardPHJBensonBot's data package.
 
+**** GUI tool (Replies Editor)
+
+     To edit a bot’s ~*_replies.json~ via a GUI (and auto-regenerate ~*_triggers.txt~ on save), use the [[modules/repliesEditorServer/README.md][Replies Editor (GUI)]].
+
+#+begin_src sh
+  sbt repliesEditorServer/run
+#+end_src
+
+     Then open ~http://127.0.0.1:8088/~.
+
      The old video guide below refers to a time where also the
      ~trigger.txt~ as to be updated manually. Now it's automatic.
 

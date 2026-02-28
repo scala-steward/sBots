@@ -8,10 +8,6 @@
 import Dependencies.*
 import Settings.*
 
-// TASKS
-
-lazy val runMigrate = taskKey[Unit]("Migrates the database schema.")
-
 lazy val newBot = inputKey[Unit]("Create new bot from template: newBot <BotName> <id> (e.g. newBot MyNewBot mynew)")
 newBot := {
   val args = sbt.complete.Parsers.spaceDelimited("<BotName> <id>").parsed
@@ -23,7 +19,7 @@ newBot := {
 
 name                     := "sBots"
 organization             := "com.benkio"
-ThisBuild / scalaVersion := "3.7.4"
+ThisBuild / scalaVersion := "3.3.7"
 ThisBuild / scalacOptions ++= Seq(
   "-java-output-version",
   "21",
@@ -43,7 +39,7 @@ Global / onChangedBuildSource := ReloadOnSourceChanges
 // SCoverage
 coverageEnabled          := true
 coverageFailOnMinimum    := true
-coverageMinimumStmtTotal := 65 // TODO: INCREASE THIS
+coverageMinimumStmtTotal := 70 // TODO: INCREASE THIS
 
 // COMMAND ALIASES
 
@@ -56,7 +52,7 @@ addCommandAlias(
 addCommandAlias("generateTriggerTxt", "main/runMain com.benkio.main.GenerateTriggers")
 addCommandAlias(
   "validate",
-  ";clean; compile; fix; generateTriggerTxt; coverage; test; integration/mUnitTests; coverageAggregate"
+  ";clean; compile; fix; generateTriggerTxt; coverage; test; integration/mUnitTests; coverageAggregate; assembly"
 )
 addCommandAlias("compileAll", "compile; Test/compile; integration/Test/compile");
 addCommandAlias("checkAllLinksTest", "integration/scalaTests")
@@ -88,7 +84,7 @@ lazy val botProjects: Seq[sbt.ProjectReference] = Seq(
 lazy val sBots =
   Project("sBots", file("."))
     .settings(Settings.settings *)
-    .aggregate(main, botDB, telegramBotInfrastructure)
+    .aggregate(main, botDB, telegramBotInfrastructure, repliesEditorServer, repliesEditorUI)
     .aggregate(botProjects *)
 
 lazy val telegramBotInfrastructure =
@@ -148,11 +144,26 @@ lazy val main = project
 
 lazy val botDB =
   Project("botDB", file("modules/botDB"))
+    .disablePlugins(sbtassembly.AssemblyPlugin)
     .settings(Settings.settings *)
     .settings(Settings.BotDBSettings)
+    .dependsOn(telegramBotInfrastructure % "compile->compile;test->test")
+
+lazy val repliesEditorUI =
+  Project("repliesEditorUI", file("modules/repliesEditorUI"))
+    .disablePlugins(sbtassembly.AssemblyPlugin)
+    .enablePlugins(ScalaJSPlugin)
+    .settings(Settings.settings *)
     .settings(
-      fullRunTask(runMigrate, Compile, "com.benkio.botDB.Main"),
-      runMigrate / fork := true
+      Settings.RepliesEditorUI
+    )
+
+lazy val repliesEditorServer =
+  Project("repliesEditorServer", file("modules/repliesEditorServer"))
+    .disablePlugins(sbtassembly.AssemblyPlugin)
+    .settings(Settings.settings *)
+    .settings(
+      Settings.RepliesEditorServer(repliesEditorUI)
     )
     .dependsOn(telegramBotInfrastructure % "compile->compile;test->test")
 

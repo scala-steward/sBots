@@ -1,0 +1,41 @@
+package com.benkio.replieseditor.server.endpoints
+
+import cats.effect.IO
+import com.benkio.replieseditor.server.module.FilterReq
+import com.benkio.replieseditor.server.store.BotStoreApi
+import io.circe.syntax.*
+import io.circe.Json
+import org.http4s.*
+import org.http4s.circe.CirceEntityCodec.*
+import org.http4s.dsl.io.*
+
+object FilteredRepliesChunkEndpoint {
+  private object OffsetParam extends OptionalQueryParamDecoderMatcher[Int]("offset")
+  private object LimitParam  extends OptionalQueryParamDecoderMatcher[Int]("limit")
+}
+
+final class FilteredRepliesChunkEndpoint(botStore: BotStoreApi) {
+  import FilteredRepliesChunkEndpoint.*
+
+  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
+    case req @ POST -> Root / "api" / "bot" / botId / "replies-filter-chunk" :? OffsetParam(offsetOpt) +& LimitParam(
+          limitOpt
+        ) =>
+      val offset = offsetOpt.getOrElse(0)
+      val limit  = limitOpt.getOrElse(50)
+      for {
+        bodyJson <- req.as[Json]
+        filter   <- bodyJson.as[FilterReq] match {
+          case Left(df) => IO.raiseError(new RuntimeException(df.message))
+          case Right(f) => IO.pure(f)
+        }
+        res <- botStore.getFilteredRepliesChunk(botId, filter.message, offset, limit).flatMap {
+          case Left(err) =>
+            if err.error.startsWith("Unknown botId") then NotFound(err.asJson)
+            else InternalServerError(err.asJson)
+          case Right(chunk) =>
+            Ok(chunk.asJson)
+        }
+      } yield res
+  }
+}
