@@ -1,54 +1,323 @@
 [
   {
-    "trigger": {
-      "TextTrigger": {
-        "triggers": [
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
           {
-            "RegexTextTriggerValue": {
-              "trigger": "(stai|sei) messo male",
-              "regexLength": 14
+            "RegexTextTriggerValue" : {
+              "trigger" : "vaffan(gul|culo)",
+              "regexLength" : 9
             }
           },
           {
-            "StringTextTriggerValue": "spacciatore"
-          },
-          {
-            "StringTextTriggerValue": "merda"
-          },
-          {
-            "StringTextTriggerValue": "droga"
-          },
-          {
-            "StringTextTriggerValue": "ti vende"
+            "StringTextTriggerValue" : "a fare in culo"
           }
         ]
       }
     },
-    "reply": {
-      "MediaReply": {
-        "mediaFiles": [
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
           {
-            "VideoFile": {
-              "filepath": "pino_CambiaSpacciatore.mp4",
-              "replyToMessage": false
+            "Mp3File" : {
+              "filepath" : "pino_AndateAFareInCulo.mp3",
+              "replyToMessage" : false
             }
           },
           {
-            "Mp3File": {
-              "filepath": "pino_CambiaSpacciatore.mp3",
-              "replyToMessage": false
+            "VideoFile" : {
+              "filepath" : "pino_AndateAFareInCulo.mp4",
+              "replyToMessage" : false
             }
           },
           {
-            "GifFile": {
-              "filepath": "pino_CambiaSpacciatoreGif.mp4",
-              "replyToMessage": false
+            "GifFile" : {
+              "filepath" : "pino_AndateAFareInCuloGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "pino_VafangulBastaCagate.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "pino_VafangulBastaCagate.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "pino_VafangulBastaCagateGif.mp4",
+              "replyToMessage" : false
             }
           }
         ],
-        "replyToMessage": false
+        "replyToMessage" : false
       }
     },
-    "matcher": "ContainsOnce"
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "RegexTextTriggerValue" : {
+              "trigger" : "(stai|sei) messo male",
+              "regexLength" : 14
+            }
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "Mp3File" : {
+              "filepath" : "pino_VafangulBastaCagate.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "pino_VafangulBastaCagate.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "pino_VafangulBastaCagateGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "pino_CambiaSpacciatore.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "pino_CambiaSpacciatore.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "pino_CambiaSpacciatoreGif.mp4",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "RegexTextTriggerValue" : {
+              "trigger" : "(35|trentacinque) anni",
+              "regexLength" : 7
+            }
+          },
+          {
+            "StringTextTriggerValue" : "in fabbrica"
+          },
+          {
+            "StringTextTriggerValue" : "pezzo di merda"
+          },
+          {
+            "StringTextTriggerValue" : "sputati in faccia"
+          },
+          {
+            "StringTextTriggerValue" : "datti fuoco"
+          },
+          {
+            "RegexTextTriggerValue" : {
+              "trigger" : "dietro a un (televisore|computer)",
+              "regexLength" : 22
+            }
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "GifFile" : {
+              "filepath" : "pino_35anniPezzoDiMerdaSputatiFacciaDattiFuocoGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "pino_35anniPezzoDiMerdaSputatiFacciaDattiFuoco.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "pino_35anniPezzoDiMerdaSputatiFacciaDattiFuoco.mp4",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "RegexTextTriggerValue" : {
+              "trigger" : "che (cazzo )è sta roba",
+              "regexLength" : 14
+            }
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "Mp3File" : {
+              "filepath" : "pino_AndateAFareInCulo.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "pino_AndateAFareInCuloGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "pino_AndateAFareInCulo.mp4",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "StringTextTriggerValue" : "cazzate"
+          },
+          {
+            "StringTextTriggerValue" : "cagate"
+          },
+          {
+            "StringTextTriggerValue" : "fai pace col cervello"
+          },
+          {
+            "RegexTextTriggerValue" : {
+              "trigger" : "ma (svegliati|quanti anni hai)",
+              "regexLength" : 12
+            }
+          },
+          {
+            "RegexTextTriggerValue" : {
+              "trigger" : "ma come (cazzo )?vivi",
+              "regexLength" : 12
+            }
+          },
+          {
+            "StringTextTriggerValue" : "ciccio benzina"
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "GifFile" : {
+              "filepath" : "pino_VafangulBastaCagateGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "pino_VafangulBastaCagate.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "pino_VafangulBastaCagate.mp3",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "StringTextTriggerValue" : "spacciatore"
+          },
+          {
+            "StringTextTriggerValue" : "merda"
+          },
+          {
+            "StringTextTriggerValue" : "droga"
+          },
+          {
+            "StringTextTriggerValue" : "ti vende"
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "VideoFile" : {
+              "filepath" : "pino_CambiaSpacciatore.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "pino_CambiaSpacciatore.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "pino_CambiaSpacciatoreGif.mp4",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
   }
 ]
