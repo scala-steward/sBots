@@ -22,6 +22,7 @@ object Dependencies {
     val googleOauthClient     = "1.39.0"
     val googleYouTubeApi      = "v3-rev20251217-2.0.0"
     val http4s                = "0.23.33"
+    val ip4s                 = "3.7.0"
     val logEffects            = "0.19.9"
     val logbackClassic        = "1.5.32"
     val logbackLogstash       = "9.0"
@@ -75,6 +76,7 @@ object Dependencies {
     val http4sEmberClient = "org.http4s"             %% "http4s-ember-client"         % versions.http4s
     val http4sServer      = "org.http4s"             %% "http4s-server"               % versions.http4s
     val http4sEmberServer = "org.http4s"             %% "http4s-ember-server"         % versions.http4s
+    val ip4sCore          = "com.comcast"            %% "ip4s-core"                   % versions.ip4s
     val logEffectsCore    = "io.laserdisc"           %% "log-effect-core"             % versions.logEffects
     val logEffectsFs2     = "io.laserdisc"           %% "log-effect-fs2"              % versions.logEffects
     val logbackClassic   = "ch.qos.logback"         % "logback-classic"          % versions.logbackClassic  % Runtime
@@ -195,9 +197,12 @@ object Dependencies {
 
   val RepliesEditorServerDependencies: Seq[ModuleID] =
     CommonDependencies ++ Seq(
+      libs.catsKernel,
+      libs.caseInsensitive,
       libs.circeGeneric,
       libs.http4sDsl,
-      libs.http4sEmberServer
+      libs.http4sEmberServer,
+      libs.ip4sCore
     )
 
   val RepliesEditorUiDependencies: Def.Initialize[Seq[ModuleID]] =
