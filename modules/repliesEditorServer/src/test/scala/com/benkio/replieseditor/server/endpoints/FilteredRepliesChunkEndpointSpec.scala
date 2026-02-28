@@ -2,7 +2,8 @@ package com.benkio.replieseditor.server.endpoints
 
 import cats.effect.IO
 import com.benkio.replieseditor.server.mocks.MockBotStore
-import com.benkio.replieseditor.server.module.{IndexedReply, RepliesChunk}
+import com.benkio.replieseditor.server.module.IndexedReply
+import com.benkio.replieseditor.server.module.RepliesChunk
 import io.circe.Json
 import munit.CatsEffectSuite
 import org.http4s.*
@@ -12,7 +13,7 @@ import org.http4s.implicits.*
 class FilteredRepliesChunkEndpointSpec extends CatsEffectSuite {
 
   test("posts FilterReq and returns chunk") {
-    val bs = new MockBotStore()
+    val bs    = new MockBotStore()
     val chunk =
       RepliesChunk(
         total = 1,
@@ -43,4 +44,3 @@ class FilteredRepliesChunkEndpointSpec extends CatsEffectSuite {
     }
   }
 }
-

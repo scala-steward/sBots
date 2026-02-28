@@ -12,4 +12,3 @@ object AppView {
     AppPage.render(controller)
   }
 }
-

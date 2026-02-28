@@ -29,4 +29,3 @@ class InsertReplyEndpointSpec extends CatsEffectSuite {
     }
   }
 }
-

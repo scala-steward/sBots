@@ -1,6 +1,7 @@
 package com.benkio.replieseditor.server.validation
 
-import com.benkio.telegrambotinfrastructure.model.reply.{PhotoFile, ReplyBundleMessage}
+import com.benkio.telegrambotinfrastructure.model.reply.PhotoFile
+import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import munit.FunSuite
 
 class MediaFilesAllowedValidationSpec extends FunSuite {
@@ -21,4 +22,3 @@ class MediaFilesAllowedValidationSpec extends FunSuite {
     assertEquals(invalid, List("cala_bad.jpg"))
   }
 }
-

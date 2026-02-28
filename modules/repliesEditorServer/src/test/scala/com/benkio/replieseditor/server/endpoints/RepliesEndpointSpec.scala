@@ -26,4 +26,3 @@ class RepliesEndpointSpec extends CatsEffectSuite {
     }
   }
 }
-

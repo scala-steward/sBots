@@ -5,9 +5,10 @@
 // future bots continues to work. See docs/adding-a-bot.md.
 // -----------------------------------------------------------------------------
 
+import org.scalajs.sbtplugin.ScalaJSPlugin
+
 import Dependencies.*
 import Settings.*
-import org.scalajs.sbtplugin.ScalaJSPlugin
 
 // TASKS
 
@@ -162,13 +163,13 @@ lazy val repliesEditorUI =
     .enablePlugins(ScalaJSPlugin)
     .settings(Settings.settings *)
     .settings(
-      name                := "repliesEditorUI",
+      name := "repliesEditorUI",
       libraryDependencies ++= RepliesEditorUiDependencies.value,
       libraryDependencies ++= Seq(
         "org.scalameta" %%% "munit" % versions.munit % Test
       ),
       scalaJSUseMainModuleInitializer := true,
-      Test / fork := false
+      Test / fork                     := false
     )
 
 lazy val repliesEditorServer =
@@ -180,10 +181,10 @@ lazy val repliesEditorServer =
       dependencyOverrides ++= RepliesEditorServerDependencies,
       run / javaOptions += s"-Dsbots.repoRoot=${(ThisBuild / baseDirectory).value.getAbsolutePath}",
       Compile / resourceGenerators += Def.task {
-        val _         = (repliesEditorUI / Compile / fastLinkJS).value // ensure UI is linked before copying
-        val uiOutDir  = (repliesEditorUI / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
-        val jsFiles   = (uiOutDir ** "*.js").get
-        val uiJs      =
+        val _        = (repliesEditorUI / Compile / fastLinkJS).value // ensure UI is linked before copying
+        val uiOutDir = (repliesEditorUI / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
+        val jsFiles  = (uiOutDir ** "*.js").get
+        val uiJs     =
           jsFiles
             .find(_.getName == "main.js")
             .orElse(jsFiles.headOption)

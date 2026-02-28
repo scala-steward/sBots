@@ -22,8 +22,10 @@ class CommitRepliesEndpointSpec extends CatsEffectSuite {
       body <- resp.as[Json]
     } yield {
       assertEquals(resp.status, Status.BadRequest)
-      assertEquals(body.hcursor.downField("error").as[String].toOption, Some("Some media files are not present in *_list.json"))
+      assertEquals(
+        body.hcursor.downField("error").as[String].toOption,
+        Some("Some media files are not present in *_list.json")
+      )
     }
   }
 }
-

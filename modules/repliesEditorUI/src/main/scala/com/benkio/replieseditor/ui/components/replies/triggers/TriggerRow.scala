@@ -6,11 +6,11 @@ import com.raquo.laminar.api.L.*
 object TriggerRow {
 
   def render(
-    triggerSignal: Signal[TriggerEdit],
-    onRemove: () => Unit,
-    onKindChange: TriggerKind => Unit,
-    onValueChange: String => Unit,
-    onRegexLenChange: Option[Int] => Unit
+      triggerSignal: Signal[TriggerEdit],
+      onRemove: () => Unit,
+      onKindChange: TriggerKind => Unit,
+      onValueChange: String => Unit,
+      onRegexLenChange: Option[Int] => Unit
   ): Div = {
     val kindSignal  = triggerSignal.map(_.kind)
     val valueSignal = triggerSignal.map(_.value)
@@ -20,10 +20,10 @@ object TriggerRow {
       cls := "d-flex gap-1 align-items-center mb-1",
       select(
         cls := "form-select form-select-sm",
-        value <-- kindSignal.map(k => if (k == TriggerKind.Regex) "regex" else "string"),
+        value <-- kindSignal.map(k => if k == TriggerKind.Regex then "regex" else "string"),
         inContext { thisNode =>
           onChange.mapTo(thisNode.ref.value) --> { v =>
-            val k = if (v == "regex") TriggerKind.Regex else TriggerKind.PlainString
+            val k = if v == "regex" then TriggerKind.Regex else TriggerKind.PlainString
             onKindChange(k)
           }
         },
@@ -31,7 +31,7 @@ object TriggerRow {
         option(value := "regex", "Regex")
       ),
       input(
-        cls := "form-control form-control-sm",
+        cls         := "form-control form-control-sm",
         placeholder := "trigger",
         controlled(
           value <-- valueSignal,
@@ -39,10 +39,10 @@ object TriggerRow {
         )
       ),
       input(
-        cls := "form-control form-control-sm",
-        width := "6rem",
+        cls         := "form-control form-control-sm",
+        width       := "6rem",
         placeholder := "len",
-        display <-- kindSignal.map(k => if (k == TriggerKind.Regex) "" else "none"),
+        display <-- kindSignal.map(k => if k == TriggerKind.Regex then "" else "none"),
         controlled(
           value <-- lenSignal,
           onInput.mapToValue --> { v =>
@@ -58,4 +58,3 @@ object TriggerRow {
     )
   }
 }
-

@@ -13,4 +13,3 @@ final class RepliesEditorFiltering(store: RepliesEditorStore, loader: RepliesEdi
     }
   }
 }
-

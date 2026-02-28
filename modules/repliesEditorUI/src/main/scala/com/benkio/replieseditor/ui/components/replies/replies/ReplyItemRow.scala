@@ -7,12 +7,12 @@ import com.raquo.laminar.codecs.StringAsIsCodec
 object ReplyItemRow {
 
   def render(
-    entryIdx: Int,
-    replyIdx: Int,
-    itemSignal: Signal[ReplyItem],
-    allowedFiles: Signal[Vector[String]],
-    onValueChange: String => Unit,
-    onRemove: () => Unit
+      entryIdx: Int,
+      replyIdx: Int,
+      itemSignal: Signal[ReplyItem],
+      allowedFiles: Signal[Vector[String]],
+      onValueChange: String => Unit,
+      onRemove: () => Unit
   ): Div = {
     val kindSignal  = itemSignal.map(_.kind).distinct
     val valueSignal = itemSignal.map(_.value)
@@ -23,8 +23,8 @@ object ReplyItemRow {
       child <-- kindSignal.map {
         case ReplyItemKind.File =>
           input(
-            cls := "form-control",
-            typ := "text",
+            cls                               := "form-control",
+            typ                               := "text",
             htmlAttr("list", StringAsIsCodec) := datalistId,
             controlled(
               value <-- valueSignal,
@@ -33,8 +33,8 @@ object ReplyItemRow {
           )
         case ReplyItemKind.Text =>
           input(
-            cls := "form-control",
-            typ := "text",
+            cls         := "form-control",
+            typ         := "text",
             placeholder := "text reply",
             controlled(
               value <-- valueSignal,
@@ -48,7 +48,7 @@ object ReplyItemRow {
             idAttr := datalistId,
             children <-- allowedFiles.combineWith(valueSignal).map { case (allowed, selected) =>
               val options =
-                if (allowed.contains(selected)) allowed
+                if allowed.contains(selected) then allowed
                 else (Vector(selected) ++ allowed).distinct
               options.map(f => option(value := f))
             }
@@ -64,4 +64,3 @@ object ReplyItemRow {
     )
   }
 }
-

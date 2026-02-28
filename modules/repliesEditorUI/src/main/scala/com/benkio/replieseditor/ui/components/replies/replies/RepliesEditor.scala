@@ -6,27 +6,27 @@ import com.raquo.laminar.api.L.*
 object RepliesEditor {
 
   def render(
-    entryIndex: Int,
-    replies: Signal[Vector[ReplyItem]],
-    allowedFiles: Signal[Vector[String]],
-    onAddFile: () => Unit,
-    onAddText: () => Unit,
-    onValueChange: (Int, String) => Unit,
-    onRemove: Int => Unit
+      entryIndex: Int,
+      replies: Signal[Vector[ReplyItem]],
+      allowedFiles: Signal[Vector[String]],
+      onAddFile: () => Unit,
+      onAddText: () => Unit,
+      onValueChange: (Int, String) => Unit,
+      onRemove: Int => Unit
   ): Div =
     div(
       div(cls := "fw-semibold mb-1", "Replies"),
       div(
         children <-- replies.splitByIndex { (replyIdx, _, itemSignal) =>
-            ReplyItemRow.render(
-              entryIdx = entryIndex,
-              replyIdx = replyIdx,
-              itemSignal = itemSignal,
-              allowedFiles = allowedFiles,
-              onValueChange = v => onValueChange(replyIdx, v),
-              onRemove = () => onRemove(replyIdx)
-            )
-          }
+          ReplyItemRow.render(
+            entryIdx = entryIndex,
+            replyIdx = replyIdx,
+            itemSignal = itemSignal,
+            allowedFiles = allowedFiles,
+            onValueChange = v => onValueChange(replyIdx, v),
+            onRemove = () => onRemove(replyIdx)
+          )
+        }
       ),
       div(
         cls := "btn-group mb-3",
@@ -43,4 +43,3 @@ object RepliesEditor {
       )
     )
 }
-

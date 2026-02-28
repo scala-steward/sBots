@@ -1,8 +1,8 @@
 package com.benkio.replieseditor.server.jsonio
 
 import cats.effect.IO
-import io.circe.Json
 import io.circe.parser.parse
+import io.circe.Json
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -12,7 +12,7 @@ object RepliesJsonFile {
   def read(path: Path): IO[Json] =
     IO.blocking(Files.readString(path, StandardCharsets.UTF_8)).flatMap { raw =>
       parse(raw) match {
-        case Left(pf)   => IO.raiseError(new RuntimeException(pf.message))
+        case Left(pf)    => IO.raiseError(new RuntimeException(pf.message))
         case Right(json) => IO.pure(json)
       }
     }
@@ -24,4 +24,3 @@ object RepliesJsonFile {
       ()
     }
 }
-

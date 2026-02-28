@@ -6,15 +6,15 @@ import com.raquo.laminar.api.L.*
 object TopBar {
 
   def render(
-    bots: Signal[Vector[ApiBot]],
-    selectedBotId: Signal[Option[String]],
-    dirty: Signal[Boolean],
-    onBotSelected: Option[String] => Unit,
-    onReload: () => Unit,
-    onToggleFilters: () => Unit,
-    onAddNew: () => Unit,
-    addDisabled: Signal[Boolean],
-    onSave: () => Unit
+      bots: Signal[Vector[ApiBot]],
+      selectedBotId: Signal[Option[String]],
+      dirty: Signal[Boolean],
+      onBotSelected: Option[String] => Unit,
+      onReload: () => Unit,
+      onToggleFilters: () => Unit,
+      onAddNew: () => Unit,
+      addDisabled: Signal[Boolean],
+      onSave: () => Unit
   ): Div =
     div(
       cls := "d-flex align-items-end gap-2 mb-3",
@@ -52,10 +52,9 @@ object TopBar {
       ),
       button(
         cls := "btn btn-primary",
-        child.text <-- dirty.map(d => if (d) "Save (unsaved)" else "Save"),
+        child.text <-- dirty.map(d => if d then "Save (unsaved)" else "Save"),
         disabled <-- selectedBotId.map(_.isEmpty),
         onClick --> { _ => onSave() }
       )
     )
 }
-

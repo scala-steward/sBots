@@ -30,4 +30,3 @@ class RepliesEditorLogicSuite extends FunSuite {
     assertEquals(RepliesEditorLogic.insertOffsetAtPageTop(total = 120, currentPage = 2, pageSize = 60), 60)
   }
 }
-

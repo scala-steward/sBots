@@ -4,14 +4,14 @@ import com.raquo.laminar.api.L.*
 
 object PaginationBar {
   def render(
-    pageSize: Signal[Int],
-    isLoading: Signal[Boolean],
-    canPrev: Signal[Boolean],
-    canNext: Signal[Boolean],
-    label: Signal[String],
-    onPrev: () => Unit,
-    onNext: () => Unit,
-    onPageSizeChange: Int => Unit
+      pageSize: Signal[Int],
+      isLoading: Signal[Boolean],
+      canPrev: Signal[Boolean],
+      canNext: Signal[Boolean],
+      label: Signal[String],
+      onPrev: () => Unit,
+      onNext: () => Unit,
+      onPageSizeChange: Int => Unit
   ): Div =
     div(
       cls := "d-flex align-items-center justify-content-between gap-2 my-3",
@@ -38,7 +38,7 @@ object PaginationBar {
         cls := "d-flex align-items-center gap-2",
         com.raquo.laminar.api.L.label(cls := "text-muted small mb-0", "Page size"),
         select(
-          cls := "form-select form-select-sm",
+          cls   := "form-select form-select-sm",
           width := "6.5rem",
           controlled(
             value <-- pageSize.map(_.max(1).toString),
@@ -55,4 +55,3 @@ object PaginationBar {
       )
     )
 }
-

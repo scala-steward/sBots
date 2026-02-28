@@ -4,7 +4,7 @@ object RepliesEditorLogic {
 
   def totalPages(totalOpt: Option[Int], pageSize: Int): Int =
     totalOpt match {
-      case None => 0
+      case None        => 0
       case Some(total) =>
         val ps = pageSize.max(1)
         ((total + ps - 1) / ps).max(1)
@@ -12,7 +12,7 @@ object RepliesEditorLogic {
 
   def pageLabel(currentPage: Int, totalOpt: Option[Int], pageSize: Int): String = {
     val tp = totalPages(totalOpt, pageSize)
-    if (tp == 0) "" else s"Page ${currentPage.max(1)} / $tp"
+    if tp == 0 then "" else s"Page ${currentPage.max(1)} / $tp"
   }
 
   def pageOffset(currentPage: Int, pageSize: Int): Int =
@@ -21,4 +21,3 @@ object RepliesEditorLogic {
   def insertOffsetAtPageTop(total: Int, currentPage: Int, pageSize: Int): Int =
     pageOffset(currentPage, pageSize).min(total.max(0)).max(0)
 }
-

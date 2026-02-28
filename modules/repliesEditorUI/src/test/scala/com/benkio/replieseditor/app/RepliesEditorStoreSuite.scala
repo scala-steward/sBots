@@ -23,8 +23,12 @@ class RepliesEditorStoreSuite extends FunSuite {
 
   test("setChunk fills entriesVar and totalVar") {
     val store = new RepliesEditorStore()
-    val json1 = parse("""{ "trigger": { "TextTrigger": { "triggers": [ { "StringTextTriggerValue": "a" } ] } }, "reply": { "TextReply": { "text": ["x"], "replyToMessage": false } }, "matcher": "ContainsOnce" }""").toOption.get
-    val json2 = parse("""{ "trigger": { "TextTrigger": { "triggers": [ { "StringTextTriggerValue": "b" } ] } }, "reply": { "TextReply": { "text": ["y"], "replyToMessage": false } }, "matcher": "ContainsOnce" }""").toOption.get
+    val json1 = parse(
+      """{ "trigger": { "TextTrigger": { "triggers": [ { "StringTextTriggerValue": "a" } ] } }, "reply": { "TextReply": { "text": ["x"], "replyToMessage": false } }, "matcher": "ContainsOnce" }"""
+    ).toOption.get
+    val json2 = parse(
+      """{ "trigger": { "TextTrigger": { "triggers": [ { "StringTextTriggerValue": "b" } ] } }, "reply": { "TextReply": { "text": ["y"], "replyToMessage": false } }, "matcher": "ContainsOnce" }"""
+    ).toOption.get
 
     val chunk =
       RepliesChunk(
@@ -42,4 +46,3 @@ class RepliesEditorStoreSuite extends FunSuite {
     assertEquals(store.entriesVar.now().flatMap(_.editable.map(_.matcher)), Vector("ContainsOnce", "ContainsOnce"))
   }
 }
-

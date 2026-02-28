@@ -1,7 +1,8 @@
 package com.benkio.replieseditor.server
 
 import cats.effect.*
-import com.benkio.replieseditor.server.server.{ServerBuilder, ServerDeps}
+import com.benkio.replieseditor.server.server.ServerBuilder
+import com.benkio.replieseditor.server.server.ServerDeps
 
 object Main extends IOApp {
   override def run(args: List[String]): IO[ExitCode] = {
@@ -14,4 +15,3 @@ object Main extends IOApp {
     }
   }
 }
-

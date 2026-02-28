@@ -3,7 +3,8 @@ package com.benkio.replieseditor.server.load
 import munit.CatsEffectSuite
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
+import java.nio.file.Path
 
 class BotScannerSpec extends CatsEffectSuite {
 
@@ -20,7 +21,7 @@ class BotScannerSpec extends CatsEffectSuite {
   test("scanBots finds bots and builds BotFiles") {
     val repoRoot = Files.createTempDirectory("bot-scanner-test-").toAbsolutePath.normalize()
     Files.createDirectories(repoRoot.resolve("modules").resolve("bots"))
-    mkBot(repoRoot, botName = "CalandroBot", botId = "cala")
+    mkBot(repoRoot = repoRoot, botName = "CalandroBot", botId = "cala")
 
     val scanner = BotScanner(repoRoot)
     scanner.scanBots().map { bots =>
@@ -32,4 +33,3 @@ class BotScannerSpec extends CatsEffectSuite {
     }
   }
 }
-

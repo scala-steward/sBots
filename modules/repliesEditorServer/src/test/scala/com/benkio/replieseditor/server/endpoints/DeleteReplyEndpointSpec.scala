@@ -29,4 +29,3 @@ class DeleteReplyEndpointSpec extends CatsEffectSuite {
     }
   }
 }
-

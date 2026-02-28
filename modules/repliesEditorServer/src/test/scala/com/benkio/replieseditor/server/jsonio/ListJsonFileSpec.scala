@@ -3,7 +3,8 @@ package com.benkio.replieseditor.server.jsonio
 import munit.CatsEffectSuite
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
+import java.nio.file.Path
 
 class ListJsonFileSpec extends CatsEffectSuite {
 
@@ -13,7 +14,7 @@ class ListJsonFileSpec extends CatsEffectSuite {
   test("readAllowedFilenames returns filenames set") {
     val dir  = tempDir()
     val path = dir.resolve("list.json")
-    val raw =
+    val raw  =
       """[
         |  { "filename": "cala_a.jpg", "sources": ["https://example.com/cala_a.jpg"] },
         |  { "filename": "cala_b.mp4", "sources": ["https://example.com/cala_b.mp4"] }
@@ -28,7 +29,7 @@ class ListJsonFileSpec extends CatsEffectSuite {
   test("readFilenamesSorted returns sorted list") {
     val dir  = tempDir()
     val path = dir.resolve("list.json")
-    val raw =
+    val raw  =
       """[
         |  { "filename": "cala_z.jpg", "sources": ["https://example.com/cala_z.jpg"] },
         |  { "filename": "cala_a.jpg", "sources": ["https://example.com/cala_a.jpg"] }
@@ -40,4 +41,3 @@ class ListJsonFileSpec extends CatsEffectSuite {
     }
   }
 }
-

@@ -1,11 +1,13 @@
 package com.benkio.replieseditor.server.jsonio
 
 import cats.effect.IO
-import com.benkio.telegrambotinfrastructure.model.reply.{PhotoFile, ReplyBundleMessage}
+import com.benkio.telegrambotinfrastructure.model.reply.PhotoFile
+import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import munit.CatsEffectSuite
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
+import java.nio.file.Path
 
 class TriggersTxtFileSpec extends CatsEffectSuite {
 
@@ -13,8 +15,8 @@ class TriggersTxtFileSpec extends CatsEffectSuite {
     Files.createTempDirectory("triggers-txt-file-test-").toAbsolutePath.normalize()
 
   test("write creates a non-empty triggers file") {
-    val dir  = tempDir()
-    val path = dir.resolve("cala_triggers.txt")
+    val dir     = tempDir()
+    val path    = dir.resolve("cala_triggers.txt")
     val replies =
       List(
         ReplyBundleMessage.textToMedia("hello")(PhotoFile("cala_ok.jpg"))
@@ -26,4 +28,3 @@ class TriggersTxtFileSpec extends CatsEffectSuite {
     } yield assert(raw.trim.nonEmpty)
   }
 }
-

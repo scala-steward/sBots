@@ -25,4 +25,3 @@ class StaticAssetsEndpointSpec extends CatsEffectSuite {
     }
   }
 }
-

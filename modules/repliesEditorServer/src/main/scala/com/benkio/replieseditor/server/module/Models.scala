@@ -1,10 +1,10 @@
 package com.benkio.replieseditor.server.module
 
-import io.circe.Encoder
-import io.circe.Decoder
-import io.circe.Json
-import io.circe.generic.semiauto.deriveEncoder
 import io.circe.generic.semiauto.deriveDecoder
+import io.circe.generic.semiauto.deriveEncoder
+import io.circe.Decoder
+import io.circe.Encoder
+import io.circe.Json
 
 import java.nio.file.Path
 
@@ -60,4 +60,3 @@ final case class DeleteReplyReq(index: Int)
 object DeleteReplyReq {
   given Decoder[DeleteReplyReq] = deriveDecoder
 }
-

@@ -28,4 +28,3 @@ class UpdateReplyEndpointSpec extends CatsEffectSuite {
     }
   }
 }
-

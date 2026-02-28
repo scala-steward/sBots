@@ -2,8 +2,8 @@ package com.benkio.replieseditor.server.validation
 
 import com.benkio.replieseditor.server.module.ApiError
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
-import io.circe.Json
 import io.circe.syntax.*
+import io.circe.Json
 
 object MediaFilesAllowedValidation {
 
@@ -19,13 +19,12 @@ object MediaFilesAllowedValidation {
         .filterNot(allowed.contains)
 
     Either.cond(
-      invalid.isEmpty,
-      (),
-      ApiError(
+      test = invalid.isEmpty,
+      right = (),
+      left = ApiError(
         error = "Some media files are not present in *_list.json",
         details = Some(Json.obj("invalidFiles" -> invalid.asJson))
       )
     )
   }
 }
-

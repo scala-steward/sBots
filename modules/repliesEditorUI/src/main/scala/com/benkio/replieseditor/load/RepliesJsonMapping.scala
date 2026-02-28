@@ -6,12 +6,12 @@ import io.circe.Json
 object RepliesJsonMapping {
 
   def extractEditableEntry(j: Json): Option[EditableEntry] = {
-    val c = j.hcursor
+    val c       = j.hcursor
     val matcher = c.downField("matcher").as[String].getOrElse("ContainsOnce")
 
     val triggers: Option[Vector[TriggerEdit]] =
       for {
-        triggerObj <- c.downField("trigger").focus
+        triggerObj  <- c.downField("trigger").focus
         textTrigger <- triggerObj.hcursor.downField("TextTrigger").focus
         triggersArr <- textTrigger.hcursor.downField("triggers").as[Vector[Json]].toOption
       } yield triggersArr.flatMap { tj =>
@@ -38,10 +38,10 @@ object RepliesJsonMapping {
       replyObjOpt.flatMap { replyObj =>
         val filesOpt: Option[Vector[ReplyItem]] =
           for {
-            mediaReply <- replyObj.hcursor.downField("MediaReply").focus
+            mediaReply    <- replyObj.hcursor.downField("MediaReply").focus
             mediaFilesArr <- mediaReply.hcursor.downField("mediaFiles").as[Vector[Json]].toOption
           } yield mediaFilesArr.flatMap { mf =>
-            val mc = mf.hcursor
+            val mc        = mf.hcursor
             val fileKinds = List("Mp3File", "GifFile", "VideoFile", "PhotoFile", "Document", "Sticker")
             fileKinds.view
               .flatMap(k => mc.downField(k).downField("filepath").as[String].toOption)
@@ -75,11 +75,11 @@ object RepliesJsonMapping {
   }
 
   private def mediaFileWrapper(filename: String): String =
-    if (filename.endsWith(".mp3")) "Mp3File"
-    else if (filename.endsWith(".jpg") || filename.endsWith(".png")) "PhotoFile"
-    else if (filename.endsWith(".mp4") && filename.endsWith("Gif.mp4")) "GifFile"
-    else if (filename.endsWith(".mp4")) "VideoFile"
-    else if (filename.endsWith(".sticker")) "Sticker"
+    if filename.endsWith(".mp3") then "Mp3File"
+    else if filename.endsWith(".jpg") || filename.endsWith(".png") then "PhotoFile"
+    else if filename.endsWith(".mp4") && filename.endsWith("Gif.mp4") then "GifFile"
+    else if filename.endsWith(".mp4") then "VideoFile"
+    else if filename.endsWith(".sticker") then "Sticker"
     else "Document"
 
   def buildJsonFromEditable(e: EditableEntry): Either[String, Json] = {
@@ -94,7 +94,7 @@ object RepliesJsonMapping {
               Right(
                 acc :+ Json.obj(
                   "RegexTextTriggerValue" -> Json.obj(
-                    "trigger" -> Json.fromString(v),
+                    "trigger"     -> Json.fromString(v),
                     "regexLength" -> Json.fromInt(len)
                   )
                 )
@@ -107,14 +107,14 @@ object RepliesJsonMapping {
     }
 
     triggersJsonE.flatMap { triggersJson =>
-      val kinds = e.replies.map(_.kind).distinct
+      val kinds                            = e.replies.map(_.kind).distinct
       val replyJsonE: Either[String, Json] =
         kinds match {
           case Vector() =>
             Right(
               Json.obj(
                 "TextReply" -> Json.obj(
-                  "text" -> Json.fromValues(Vector.empty),
+                  "text"           -> Json.fromValues(Vector.empty),
                   "replyToMessage" -> Json.fromBoolean(false)
                 )
               )
@@ -125,7 +125,7 @@ object RepliesJsonMapping {
                 val wrapper = mediaFileWrapper(f)
                 Json.obj(
                   wrapper -> Json.obj(
-                    "filepath" -> Json.fromString(f),
+                    "filepath"       -> Json.fromString(f),
                     "replyToMessage" -> Json.fromBoolean(false)
                   )
                 )
@@ -133,7 +133,7 @@ object RepliesJsonMapping {
             Right(
               Json.obj(
                 "MediaReply" -> Json.obj(
-                  "mediaFiles" -> Json.fromValues(mediaFilesJson),
+                  "mediaFiles"     -> Json.fromValues(mediaFilesJson),
                   "replyToMessage" -> Json.fromBoolean(false)
                 )
               )
@@ -142,7 +142,7 @@ object RepliesJsonMapping {
             Right(
               Json.obj(
                 "TextReply" -> Json.obj(
-                  "text" -> Json.fromValues(e.replies.map(_.value).map(Json.fromString)),
+                  "text"           -> Json.fromValues(e.replies.map(_.value).map(Json.fromString)),
                   "replyToMessage" -> Json.fromBoolean(false)
                 )
               )
@@ -158,11 +158,10 @@ object RepliesJsonMapping {
               "triggers" -> Json.fromValues(triggersJson)
             )
           ),
-          "reply" -> replyJson,
+          "reply"   -> replyJson,
           "matcher" -> Json.fromString(e.matcher)
         )
       }
     }
   }
 }
-

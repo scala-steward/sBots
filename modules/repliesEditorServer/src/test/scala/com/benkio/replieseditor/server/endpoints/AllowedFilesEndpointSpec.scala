@@ -25,4 +25,3 @@ class AllowedFilesEndpointSpec extends CatsEffectSuite {
     }
   }
 }
-

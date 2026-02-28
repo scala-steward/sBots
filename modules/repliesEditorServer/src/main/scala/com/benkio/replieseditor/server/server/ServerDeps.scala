@@ -17,4 +17,3 @@ object ServerDeps {
     BotStore.build(root).map(store => ServerDeps(repoRoot = root, botStore = store))
   }
 }
-

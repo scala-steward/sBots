@@ -5,21 +5,21 @@ import com.raquo.laminar.api.L.*
 object FiltersPanel {
 
   def render(
-    isOpen: Signal[Boolean],
-    filterText: Signal[String],
-    isLoading: Signal[Boolean],
-    onFilterTextChange: String => Unit
+      isOpen: Signal[Boolean],
+      filterText: Signal[String],
+      isLoading: Signal[Boolean],
+      onFilterTextChange: String => Unit
   ): Div =
     div(
       child <-- isOpen.map {
         case false => emptyNode
-        case true =>
+        case true  =>
           div(
             cls := "mb-3",
             label(cls := "form-label", "Filter by message"),
             textArea(
-              cls := "form-control",
-              rows := 3,
+              cls         := "form-control",
+              rows        := 3,
               placeholder := "Type a message to show only matching replies… (empty = no filter)",
               controlled(
                 value <-- filterText,
@@ -28,10 +28,9 @@ object FiltersPanel {
             ),
             div(
               cls := "form-text",
-              child.text <-- isLoading.map(l => if (l) "Filtering…" else "Filtering uses bot matching logic.")
+              child.text <-- isLoading.map(l => if l then "Filtering…" else "Filtering uses bot matching logic.")
             )
           )
       }
     )
 }
-

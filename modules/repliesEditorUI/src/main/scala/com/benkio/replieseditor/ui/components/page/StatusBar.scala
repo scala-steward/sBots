@@ -8,4 +8,3 @@ object StatusBar {
       child.maybe <-- status.map(_.map(msg => div(cls := "alert alert-info py-2", msg)))
     )
 }
-

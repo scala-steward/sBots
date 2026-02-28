@@ -8,7 +8,8 @@ import io.circe.syntax.*
 import munit.CatsEffectSuite
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
+import java.nio.file.Path
 
 class BotStoreSpec extends CatsEffectSuite {
 
@@ -24,7 +25,7 @@ class BotStoreSpec extends CatsEffectSuite {
       IO.blocking {
         // best-effort cleanup
         def deleteRec(x: Path): Unit = {
-          if (Files.isDirectory(x)) {
+          if Files.isDirectory(x) then {
             val stream = Files.list(x)
             try stream.forEach(deleteRec)
             finally stream.close()
@@ -38,9 +39,9 @@ class BotStoreSpec extends CatsEffectSuite {
 
   test("BotStore getRepliesChunk slices items with correct indexes") {
     tempRepo.use { root =>
-      val botDir     = root.resolve("modules").resolve("bots").resolve("TestBot")
-      val botId      = "test"
-      val listJson   = botDir.resolve(s"${botId}_list.json")
+      val botDir      = root.resolve("modules").resolve("bots").resolve("TestBot")
+      val botId       = "test"
+      val listJson    = botDir.resolve(s"${botId}_list.json")
       val repliesJson = botDir.resolve("src").resolve("main").resolve("resources").resolve(s"${botId}_replies.json")
 
       val listContent =
@@ -60,9 +61,9 @@ class BotStoreSpec extends CatsEffectSuite {
       val repliesContent = replies.asJson.spaces2
 
       for {
-        _ <- write(listJson, listContent)
-        _ <- write(repliesJson, repliesContent)
-        store <- BotStore.build(root)
+        _      <- write(listJson, listContent)
+        _      <- write(repliesJson, repliesContent)
+        store  <- BotStore.build(root)
         chunkE <- store.getRepliesChunk(botId, offset = 1, limit = 1)
         chunk  <- IO.fromEither(chunkE.left.map(e => new RuntimeException(e.error)))
       } yield {
@@ -94,8 +95,8 @@ class BotStoreSpec extends CatsEffectSuite {
       val repliesContent = List(containsOnce, containsAll).asJson.spaces2
 
       for {
-        _ <- write(listJson, listContent)
-        _ <- write(repliesJson, repliesContent)
+        _     <- write(listJson, listContent)
+        _     <- write(repliesJson, repliesContent)
         store <- BotStore.build(root)
         // "hello there" should match first
         c1E <- store.getFilteredRepliesChunk(botId, message = "hello there", offset = 0, limit = 50)
@@ -113,4 +114,3 @@ class BotStoreSpec extends CatsEffectSuite {
     }
   }
 }
-

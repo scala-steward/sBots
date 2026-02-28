@@ -1,10 +1,13 @@
 package com.benkio.replieseditor.load
 
+import io.circe.parser.parse
 import io.circe.Decoder
 import io.circe.Json
-import io.circe.parser.parse
 import org.scalajs.dom
-import org.scalajs.dom.{Headers, HttpMethod, RequestInit, Response}
+import org.scalajs.dom.Headers
+import org.scalajs.dom.HttpMethod
+import org.scalajs.dom.RequestInit
+import org.scalajs.dom.Response
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -17,11 +20,12 @@ object ApiClient {
       .toFuture
       .flatMap((resp: Response) =>
         resp.text().toFuture.map { body =>
-          if (!resp.ok) Left(s"HTTP ${resp.status}: $body")
-          else parse(body) match {
-            case Left(err)   => Left(err.message)
-            case Right(json) => Right(json)
-          }
+          if !resp.ok then Left(s"HTTP ${resp.status}: $body")
+          else
+            parse(body) match {
+              case Left(err)   => Left(err.message)
+              case Right(json) => Right(json)
+            }
         }
       )
 
@@ -42,4 +46,3 @@ object ApiClient {
       case Right(a)  => Right(a)
     }
 }
-

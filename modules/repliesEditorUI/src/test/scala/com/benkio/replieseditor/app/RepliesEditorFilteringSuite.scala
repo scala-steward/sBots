@@ -5,7 +5,7 @@ import munit.FunSuite
 class RepliesEditorFilteringSuite extends FunSuite {
 
   test("toggle flips filtersOpenVar") {
-    val store    = new RepliesEditorStore()
+    val store     = new RepliesEditorStore()
     val filtering = new RepliesEditorFiltering(store, loader = null)
     assertEquals(store.filtersOpenVar.now(), false)
     filtering.toggle()
@@ -14,4 +14,3 @@ class RepliesEditorFilteringSuite extends FunSuite {
     assertEquals(store.filtersOpenVar.now(), false)
   }
 }
-

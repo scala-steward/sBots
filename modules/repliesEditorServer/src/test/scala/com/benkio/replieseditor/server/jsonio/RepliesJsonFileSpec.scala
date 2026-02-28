@@ -4,7 +4,8 @@ import cats.effect.IO
 import munit.CatsEffectSuite
 
 import java.nio.charset.StandardCharsets
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
+import java.nio.file.Path
 
 class RepliesJsonFileSpec extends CatsEffectSuite {
 
@@ -29,4 +30,3 @@ class RepliesJsonFileSpec extends CatsEffectSuite {
     }
   }
 }
-

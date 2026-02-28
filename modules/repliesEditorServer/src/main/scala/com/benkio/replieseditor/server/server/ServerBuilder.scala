@@ -15,4 +15,3 @@ object ServerBuilder {
       .withHttpApp(HttpAppBuilder.build(deps))
       .build
 }
-

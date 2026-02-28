@@ -57,7 +57,14 @@ class RepliesJsonMappingSuite extends FunSuite {
     val c   = out.hcursor
     assert(c.downField("reply").downField("MediaReply").succeeded)
     assertEquals(
-      c.downField("reply").downField("MediaReply").downField("mediaFiles").downArray.downField("Mp3File").downField("filepath").as[String].toOption,
+      c.downField("reply")
+        .downField("MediaReply")
+        .downField("mediaFiles")
+        .downArray
+        .downField("Mp3File")
+        .downField("filepath")
+        .as[String]
+        .toOption,
       Some("bot_a.mp3")
     )
   }
@@ -103,4 +110,3 @@ class RepliesJsonMappingSuite extends FunSuite {
     assert(out.isLeft)
   }
 }
-

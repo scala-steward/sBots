@@ -22,8 +22,10 @@ class BotsEndpointSpec extends CatsEffectSuite {
       body <- resp.as[Json]
     } yield {
       assertEquals(resp.status, Status.Ok)
-      assertEquals(body, Json.arr(Json.obj("botId" -> Json.fromString("cala"), "botName" -> Json.fromString("CalandroBot"))))
+      assertEquals(
+        body,
+        Json.arr(Json.obj("botId" -> Json.fromString("cala"), "botName" -> Json.fromString("CalandroBot")))
+      )
     }
   }
 }
-

@@ -28,4 +28,3 @@ class ModelsSuite extends FunSuite {
     assertEquals(res.toOption.map(_.items.map(_.index)), Some(Vector(10, 11)))
   }
 }
-

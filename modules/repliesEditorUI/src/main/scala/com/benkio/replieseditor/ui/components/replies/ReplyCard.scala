@@ -8,19 +8,19 @@ import com.raquo.laminar.api.L.*
 object ReplyCard {
 
   def render(
-    entryIndex: Int,
-    stSignal: Signal[EntryState],
-    allowedFiles: Signal[Vector[String]],
-    onDelete: Int => Unit,
-    onAddFileReply: Int => Unit,
-    onAddTextReply: Int => Unit,
-    onReplyValueChange: (Int, Int, String) => Unit,
-    onRemoveReplyItem: (Int, Int) => Unit,
-    onAddTrigger: Int => Unit,
-    onRemoveTrigger: (Int, Int) => Unit,
-    onTriggerKindChange: (Int, Int, TriggerKind) => Unit,
-    onTriggerValueChange: (Int, Int, String) => Unit,
-    onTriggerRegexLengthChange: (Int, Int, Option[Int]) => Unit
+      entryIndex: Int,
+      stSignal: Signal[EntryState],
+      allowedFiles: Signal[Vector[String]],
+      onDelete: Int => Unit,
+      onAddFileReply: Int => Unit,
+      onAddTextReply: Int => Unit,
+      onReplyValueChange: (Int, Int, String) => Unit,
+      onRemoveReplyItem: (Int, Int) => Unit,
+      onAddTrigger: Int => Unit,
+      onRemoveTrigger: (Int, Int) => Unit,
+      onTriggerKindChange: (Int, Int, TriggerKind) => Unit,
+      onTriggerValueChange: (Int, Int, String) => Unit,
+      onTriggerRegexLengthChange: (Int, Int, Option[Int]) => Unit
   ): Div =
     div(
       cls := "col-12 col-md-4",
@@ -73,4 +73,3 @@ object ReplyCard {
       )
     )
 }
-

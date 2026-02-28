@@ -1,8 +1,8 @@
 package com.benkio.replieseditor.server.module
 
-import io.circe.Json
-import io.circe.syntax.*
 import io.circe.parser.decode
+import io.circe.syntax.*
+import io.circe.Json
 import munit.FunSuite
 
 class ModelsSpec extends FunSuite {
@@ -18,4 +18,3 @@ class ModelsSpec extends FunSuite {
     assertEquals(res.toOption, Some(FilterReq("hi")))
   }
 }
-

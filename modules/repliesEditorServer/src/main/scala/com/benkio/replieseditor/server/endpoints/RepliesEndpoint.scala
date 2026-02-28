@@ -12,10 +12,9 @@ final class RepliesEndpoint(botStore: BotStoreApi) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / "api" / "bot" / botId / "replies" =>
     botStore.getReplies(botId).flatMap {
       case Left(err) =>
-        if (err.error.startsWith("Unknown botId")) NotFound(err.asJson)
+        if err.error.startsWith("Unknown botId") then NotFound(err.asJson)
         else InternalServerError(err.asJson)
       case Right(json) => Ok(json)
     }
   }
 }
-

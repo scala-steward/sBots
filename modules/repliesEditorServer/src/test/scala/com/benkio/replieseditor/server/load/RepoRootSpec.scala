@@ -2,7 +2,8 @@ package com.benkio.replieseditor.server.load
 
 import munit.FunSuite
 
-import java.nio.file.{Files, Path}
+import java.nio.file.Files
+import java.nio.file.Path
 
 class RepoRootSpec extends FunSuite {
 
@@ -55,4 +56,3 @@ class RepoRootSpec extends FunSuite {
     }
   }
 }
-

@@ -1,8 +1,8 @@
 package com.benkio.replieseditor.module
 
+import io.circe.generic.semiauto.deriveDecoder
 import io.circe.Decoder
 import io.circe.Json
-import io.circe.generic.semiauto.deriveDecoder
 
 final case class ApiBot(botId: String, botName: String)
 object ApiBot {
@@ -42,4 +42,3 @@ final case class RepliesChunk(total: Int, offset: Int, items: Vector[IndexedRepl
 object RepliesChunk {
   given Decoder[RepliesChunk] = deriveDecoder
 }
-

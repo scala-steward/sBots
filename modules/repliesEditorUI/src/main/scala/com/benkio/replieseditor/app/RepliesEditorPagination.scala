@@ -17,12 +17,12 @@ final class RepliesEditorPagination(store: RepliesEditorStore, loader: RepliesEd
 
   val pageLabel: Signal[String] =
     store.currentPage.combineWith(totalPages).map { case (p, tp) =>
-      if (tp == 0) "" else s"Page ${p.max(1)} / $tp"
+      if tp == 0 then "" else s"Page ${p.max(1)} / $tp"
     }
 
   def requestPrev(): Unit = {
     val p = store.currentPageVar.now().max(1)
-    if (p > 1) {
+    if p > 1 then {
       val next = p - 1
       store.currentPageVar.set(next)
       store.selectedBotVar.now().foreach(loader.loadPage(_, next))
@@ -33,12 +33,12 @@ final class RepliesEditorPagination(store: RepliesEditorStore, loader: RepliesEd
     val p  = store.currentPageVar.now().max(1)
     val tp =
       store.totalVar.now() match {
-        case None => 0
+        case None        => 0
         case Some(total) =>
           val ps = store.pageSizeVar.now().max(1)
           ((total + ps - 1) / ps).max(1)
       }
-    if (tp == 0 || p < tp) {
+    if tp == 0 || p < tp then {
       val next = p + 1
       store.currentPageVar.set(next)
       store.selectedBotVar.now().foreach(loader.loadPage(_, next))
@@ -51,4 +51,3 @@ final class RepliesEditorPagination(store: RepliesEditorStore, loader: RepliesEd
     store.selectedBotVar.now().foreach(loader.loadPage(_, 1))
   }
 }
-

@@ -13,4 +13,3 @@ final class BotsEndpoint(botStore: BotStoreApi) {
     botStore.listBots.flatMap(bots => Ok(bots.asJson))
   }
 }
-

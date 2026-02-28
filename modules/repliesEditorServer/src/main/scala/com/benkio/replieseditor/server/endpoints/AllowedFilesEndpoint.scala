@@ -12,10 +12,9 @@ final class AllowedFilesEndpoint(botStore: BotStoreApi) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / "api" / "bot" / botId / "allowed-files" =>
     botStore.getAllowedFiles(botId).flatMap {
       case Left(err) =>
-        if (err.error.startsWith("Unknown botId")) NotFound(err.asJson)
+        if err.error.startsWith("Unknown botId") then NotFound(err.asJson)
         else InternalServerError(err.asJson)
       case Right(files) => Ok(files.asJson)
     }
   }
 }
-

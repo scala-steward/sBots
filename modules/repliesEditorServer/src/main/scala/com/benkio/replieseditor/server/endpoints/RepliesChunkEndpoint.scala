@@ -16,18 +16,18 @@ object RepliesChunkEndpoint {
 final class RepliesChunkEndpoint(botStore: BotStoreApi) {
   import RepliesChunkEndpoint.*
 
-  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / "api" / "bot" / botId / "replies-chunk" :? OffsetParam(
-        offsetOpt
-      ) +& LimitParam(limitOpt) =>
-    val offset = offsetOpt.getOrElse(0)
-    val limit  = limitOpt.getOrElse(50)
-    botStore.getRepliesChunk(botId, offset, limit).flatMap {
-      case Left(err) =>
-        if (err.error.startsWith("Unknown botId")) NotFound(err.asJson)
-        else InternalServerError(err.asJson)
-      case Right(chunk) =>
-        Ok(chunk.asJson)
-    }
+  val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {
+    case GET -> Root / "api" / "bot" / botId / "replies-chunk" :? OffsetParam(
+          offsetOpt
+        ) +& LimitParam(limitOpt) =>
+      val offset = offsetOpt.getOrElse(0)
+      val limit  = limitOpt.getOrElse(50)
+      botStore.getRepliesChunk(botId, offset, limit).flatMap {
+        case Left(err) =>
+          if err.error.startsWith("Unknown botId") then NotFound(err.asJson)
+          else InternalServerError(err.asJson)
+        case Right(chunk) =>
+          Ok(chunk.asJson)
+      }
   }
 }
-

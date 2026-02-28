@@ -1,7 +1,7 @@
+import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport.*
 import sbt.*
 
 import Keys.*
-import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport.*
 
 object Dependencies {
 
@@ -22,7 +22,7 @@ object Dependencies {
     val googleOauthClient     = "1.39.0"
     val googleYouTubeApi      = "v3-rev20251217-2.0.0"
     val http4s                = "0.23.33"
-    val ip4s                 = "3.7.0"
+    val ip4s                  = "3.7.0"
     val logEffects            = "0.19.9"
     val logbackClassic        = "1.5.32"
     val logbackLogstash       = "9.0"
@@ -41,6 +41,7 @@ object Dependencies {
     val telegramiumVersion    = "10.904.0"
     val vault                 = "3.6.0"
     val laminar               = "17.2.1"
+    val tuplez                = "0.4.0"
   }
 
   lazy val libs = new {
@@ -76,6 +77,7 @@ object Dependencies {
     val http4sEmberClient = "org.http4s"             %% "http4s-ember-client"         % versions.http4s
     val http4sServer      = "org.http4s"             %% "http4s-server"               % versions.http4s
     val http4sEmberServer = "org.http4s"             %% "http4s-ember-server"         % versions.http4s
+    val airstream         = Def.setting("com.raquo" %%% "airstream" % versions.laminar)
     val ip4sCore          = "com.comcast"            %% "ip4s-core"                   % versions.ip4s
     val logEffectsCore    = "io.laserdisc"           %% "log-effect-core"             % versions.logEffects
     val logEffectsFs2     = "io.laserdisc"           %% "log-effect-fs2"              % versions.logEffects
@@ -99,7 +101,8 @@ object Dependencies {
     val telegramiumCore       = "io.github.apimorphism" %% "telegramium-core"        % versions.telegramiumVersion
     val telegramiumHigh       = "io.github.apimorphism" %% "telegramium-high"        % versions.telegramiumVersion
     val vault                 = "org.typelevel"         %% "vault"                   % versions.vault
-    val laminar               = Def.setting("com.raquo" %%% "laminar" % versions.laminar)
+    // val laminar               = Def.setting("com.raquo" %%% "laminar" % versions.laminar)
+    // val tuplezFullLight       = "app.tulz" %%% "tuplez-full-light" % versions.tuplez
   }
 
   private val CommonDependencies: Seq[ModuleID] = Seq(
@@ -208,11 +211,15 @@ object Dependencies {
   val RepliesEditorUiDependencies: Def.Initialize[Seq[ModuleID]] =
     Def.setting(
       Seq(
-        libs.laminar.value,
-        libs.scalajsDom.value,
-        "io.circe" %%% "circe-core"    % versions.circe,
-        "io.circe" %%% "circe-generic" % versions.circe,
-        "io.circe" %%% "circe-parser"  % versions.circe
+        // Explicit _sjs1 module names to satisfy sbt-explicit-dependencies checks.
+        // This project is Scala.js-only, so portability isn't needed here.
+        "com.raquo"    %% "laminar_sjs1"           % versions.laminar,
+        "com.raquo"    %% "airstream_sjs1"         % versions.laminar,
+        "app.tulz"     %% "tuplez-full-light_sjs1" % versions.tuplez,
+        "org.scala-js" %% "scalajs-dom_sjs1"       % versions.scalajsDom,
+        "io.circe"     %% "circe-core_sjs1"        % versions.circe,
+        "io.circe"     %% "circe-generic_sjs1"     % versions.circe,
+        "io.circe"     %% "circe-parser_sjs1"      % versions.circe
       )
     )
 

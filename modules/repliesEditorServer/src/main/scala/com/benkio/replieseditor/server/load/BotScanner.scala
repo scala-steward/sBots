@@ -24,7 +24,7 @@ final class BotScanner(repoRoot: Path) {
         .toList
         .filter(Files.isDirectory(_))
         .flatMap { botDir =>
-          val botName = botDir.getFileName.toString
+          val botName   = botDir.getFileName.toString
           val listFiles =
             Files
               .list(botDir)
@@ -35,7 +35,7 @@ final class BotScanner(repoRoot: Path) {
               .sortBy(_.getFileName.toString)
 
           listFiles.headOption.flatMap { listJson =>
-            val botId = listJson.getFileName.toString.stripSuffix("_list.json")
+            val botId       = listJson.getFileName.toString.stripSuffix("_list.json")
             val repliesJson =
               botDir.resolve("src").resolve("main").resolve("resources").resolve(s"${botId}_replies.json")
             val triggersTxt = botDir.resolve(s"${botId}_triggers.txt")
@@ -51,4 +51,3 @@ final class BotScanner(repoRoot: Path) {
   def findBot(botId: String): IO[Option[BotFiles]] =
     scanBots().map(_.find(_.botId == botId))
 }
-

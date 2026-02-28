@@ -1,30 +1,32 @@
 package com.benkio.replieseditor.server.mocks
 
 import cats.effect.IO
-import com.benkio.replieseditor.server.module.{ApiBot, ApiError, RepliesChunk, SaveOk}
+import com.benkio.replieseditor.server.module.ApiBot
+import com.benkio.replieseditor.server.module.ApiError
+import com.benkio.replieseditor.server.module.RepliesChunk
+import com.benkio.replieseditor.server.module.SaveOk
 import com.benkio.replieseditor.server.store.BotStoreApi
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import io.circe.Json
 
 final class MockBotStore(
-  var listBotsF: () => IO[Vector[ApiBot]] = () => IO.pure(Vector.empty),
-  var getRepliesF: String => IO[Either[ApiError, Json]] = _ => IO.pure(Left(ApiError("unconfigured getReplies"))),
-  var getRepliesChunkF: (String, Int, Int) => IO[Either[ApiError, RepliesChunk]] =
-    (_, _, _) => IO.pure(Left(ApiError("unconfigured getRepliesChunk"))),
-  var getFilteredRepliesChunkF: (String, String, Int, Int) => IO[Either[ApiError, RepliesChunk]] =
-    (_, _, _, _) => IO.pure(Left(ApiError("unconfigured getFilteredRepliesChunk"))),
-  var getAllowedFilesF: String => IO[Either[ApiError, Vector[String]]] =
-    _ => IO.pure(Left(ApiError("unconfigured getAllowedFiles"))),
-  var updateReplyAtF: (String, Int, Json) => IO[Either[ApiError, Unit]] =
-    (_, _, _) => IO.pure(Left(ApiError("unconfigured updateReplyAt"))),
-  var insertAtF: (String, Int, Json) => IO[Either[ApiError, Int]] =
-    (_, _, _) => IO.pure(Left(ApiError("unconfigured insertAt"))),
-  var deleteAtF: (String, Int) => IO[Either[ApiError, Int]] =
-    (_, _) => IO.pure(Left(ApiError("unconfigured deleteAt"))),
-  var commitF: String => IO[Either[ApiError, SaveOk]] =
-    _ => IO.pure(Left(ApiError("unconfigured commit"))),
-  var saveRepliesF: (String, List[ReplyBundleMessage]) => IO[Either[ApiError, SaveOk]] =
-    (_, _) => IO.pure(Left(ApiError("unconfigured saveReplies")))
+    var listBotsF: () => IO[Vector[ApiBot]] = () => IO.pure(Vector.empty),
+    var getRepliesF: String => IO[Either[ApiError, Json]] = _ => IO.pure(Left(ApiError("unconfigured getReplies"))),
+    var getRepliesChunkF: (String, Int, Int) => IO[Either[ApiError, RepliesChunk]] = (_, _, _) =>
+      IO.pure(Left(ApiError("unconfigured getRepliesChunk"))),
+    var getFilteredRepliesChunkF: (String, String, Int, Int) => IO[Either[ApiError, RepliesChunk]] = (_, _, _, _) =>
+      IO.pure(Left(ApiError("unconfigured getFilteredRepliesChunk"))),
+    var getAllowedFilesF: String => IO[Either[ApiError, Vector[String]]] = _ =>
+      IO.pure(Left(ApiError("unconfigured getAllowedFiles"))),
+    var updateReplyAtF: (String, Int, Json) => IO[Either[ApiError, Unit]] = (_, _, _) =>
+      IO.pure(Left(ApiError("unconfigured updateReplyAt"))),
+    var insertAtF: (String, Int, Json) => IO[Either[ApiError, Int]] = (_, _, _) =>
+      IO.pure(Left(ApiError("unconfigured insertAt"))),
+    var deleteAtF: (String, Int) => IO[Either[ApiError, Int]] = (_, _) =>
+      IO.pure(Left(ApiError("unconfigured deleteAt"))),
+    var commitF: String => IO[Either[ApiError, SaveOk]] = _ => IO.pure(Left(ApiError("unconfigured commit"))),
+    var saveRepliesF: (String, List[ReplyBundleMessage]) => IO[Either[ApiError, SaveOk]] = (_, _) =>
+      IO.pure(Left(ApiError("unconfigured saveReplies")))
 ) extends BotStoreApi {
 
   override def listBots: IO[Vector[ApiBot]] = listBotsF()
@@ -36,10 +38,10 @@ final class MockBotStore(
     getRepliesChunkF(botId, offset, limit)
 
   override def getFilteredRepliesChunk(
-    botId: String,
-    message: String,
-    offset: Int,
-    limit: Int
+      botId: String,
+      message: String,
+      offset: Int,
+      limit: Int
   ): IO[Either[ApiError, RepliesChunk]] =
     getFilteredRepliesChunkF(botId, message, offset, limit)
 
@@ -61,4 +63,3 @@ final class MockBotStore(
   override def saveReplies(botId: String, replies: List[ReplyBundleMessage]): IO[Either[ApiError, SaveOk]] =
     saveRepliesF(botId, replies)
 }
-

@@ -19,9 +19,8 @@ object ListJsonFile {
   def readFilenamesSorted(path: Path): IO[List[String]] =
     IO.blocking(Files.readString(path, StandardCharsets.UTF_8)).flatMap { raw =>
       io.circe.parser.decode[List[MediaFileSource]](raw) match {
-        case Left(err)  => IO.raiseError(new RuntimeException(err.getMessage))
-        case Right(xs)  => IO.pure(xs.map(_.filename).sorted)
+        case Left(err) => IO.raiseError(new RuntimeException(err.getMessage))
+        case Right(xs) => IO.pure(xs.map(_.filename).sorted)
       }
     }
 }
-

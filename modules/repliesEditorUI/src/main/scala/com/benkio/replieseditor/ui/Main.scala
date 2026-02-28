@@ -10,4 +10,3 @@ object Main {
       AppView.render
     )
 }
-
