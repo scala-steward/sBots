@@ -26,6 +26,8 @@ trait BotStoreApi {
   def insertAt(botId: String, index: Int, value: Json): IO[Either[ApiError, Int]]
   def deleteAt(botId: String, index: Int): IO[Either[ApiError, Int]]
 
+  def reloadBotFromDisk(botId: String): IO[Either[ApiError, Unit]]
+
   def commit(botId: String): IO[Either[ApiError, SaveOk]]
   def saveReplies(botId: String, replies: List[ReplyBundleMessage]): IO[Either[ApiError, SaveOk]]
 }

@@ -13,6 +13,7 @@ object HttpAppBuilder {
     val repliesChunkEndpoint         = new RepliesChunkEndpoint(deps.botStore)
     val filteredRepliesChunkEndpoint = new FilteredRepliesChunkEndpoint(deps.botStore)
     val allowedFilesEndpoint         = new AllowedFilesEndpoint(deps.botStore)
+    val reloadBotEndpoint            = new ReloadBotEndpoint(deps.botStore)
     val saveRepliesEndpoint          = new SaveRepliesEndpoint(deps.botStore)
     val updateReplyEndpoint          = new UpdateReplyEndpoint(deps.botStore)
     val commitRepliesEndpoint        = new CommitRepliesEndpoint(deps.botStore)
@@ -27,6 +28,7 @@ object HttpAppBuilder {
         "/" -> repliesChunkEndpoint.routes,
         "/" -> filteredRepliesChunkEndpoint.routes,
         "/" -> allowedFilesEndpoint.routes,
+        "/" -> reloadBotEndpoint.routes,
         "/" -> saveRepliesEndpoint.routes,
         "/" -> updateReplyEndpoint.routes,
         "/" -> commitRepliesEndpoint.routes,

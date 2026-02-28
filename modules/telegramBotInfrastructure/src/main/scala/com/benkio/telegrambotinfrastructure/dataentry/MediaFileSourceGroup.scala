@@ -19,7 +19,7 @@ object MediaFileSourceGroup {
       .toList
 
   def toReplyBundleMessage(mediaFileSourceGroup: MediaFileSourceGroup): ReplyBundleMessage =
-    ReplyBundleMessage.textToMedia("")(
+    ReplyBundleMessage.textToMedia("new data")(
       mediaFileSourceGroup.mediaFileSources.map(mediaFileSource => MediaFile.fromString(mediaFileSource.filename))*
     )
 } // end MediaFileSourceGroup
