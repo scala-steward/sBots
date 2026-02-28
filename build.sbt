@@ -5,6 +5,8 @@
 // future bots continues to work. See docs/adding-a-bot.md.
 // -----------------------------------------------------------------------------
 
+import org.scalajs.sbtplugin.ScalaJSPlugin
+
 import Dependencies.*
 import Settings.*
 
@@ -88,7 +90,7 @@ lazy val botProjects: Seq[sbt.ProjectReference] = Seq(
 lazy val sBots =
   Project("sBots", file("."))
     .settings(Settings.settings *)
-    .aggregate(main, botDB, telegramBotInfrastructure)
+    .aggregate(main, botDB, telegramBotInfrastructure, repliesEditorServer, repliesEditorUI)
     .aggregate(botProjects *)
 
 lazy val telegramBotInfrastructure =
@@ -153,6 +155,48 @@ lazy val botDB =
     .settings(
       fullRunTask(runMigrate, Compile, "com.benkio.botDB.Main"),
       runMigrate / fork := true
+    )
+    .dependsOn(telegramBotInfrastructure % "compile->compile;test->test")
+
+lazy val repliesEditorUI =
+  Project("repliesEditorUI", file("modules/repliesEditorUI"))
+    .enablePlugins(ScalaJSPlugin)
+    .settings(Settings.settings *)
+    .settings(
+      name := "repliesEditorUI",
+      libraryDependencies ++= RepliesEditorUiDependencies.value,
+      libraryDependencies ++= Seq(
+        "org.scalameta" %%% "munit" % versions.munit % Test
+      ),
+      scalaJSUseMainModuleInitializer := true,
+      Test / fork                     := false,
+      // scoverage + Scala.js currently crashes the Scala 3.7.2 JS backend (genSJSIR)
+      coverageEnabled := false
+    )
+
+lazy val repliesEditorServer =
+  Project("repliesEditorServer", file("modules/repliesEditorServer"))
+    .settings(Settings.settings *)
+    .settings(
+      name                := "repliesEditorServer",
+      libraryDependencies := RepliesEditorServerDependencies,
+      dependencyOverrides ++= RepliesEditorServerDependencies,
+      run / javaOptions += s"-Dsbots.repoRoot=${(ThisBuild / baseDirectory).value.getAbsolutePath}",
+      Compile / resourceGenerators += Def.task {
+        val _        = (repliesEditorUI / Compile / fastLinkJS).value // ensure UI is linked before copying
+        val uiOutDir = (repliesEditorUI / Compile / fastLinkJS / scalaJSLinkerOutputDirectory).value
+        val jsFiles  = (uiOutDir ** "*.js").get
+        val uiJs     =
+          jsFiles
+            .find(_.getName == "main.js")
+            .orElse(jsFiles.headOption)
+            .getOrElse(sys.error(s"No linked JS file found under: $uiOutDir"))
+        val targetDir = (Compile / resourceManaged).value / "public"
+        val destJs    = targetDir / "app.js"
+        IO.createDirectory(targetDir)
+        IO.copyFile(uiJs, destJs)
+        Seq(destJs)
+      }.taskValue
     )
     .dependsOn(telegramBotInfrastructure % "compile->compile;test->test")
 

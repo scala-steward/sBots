@@ -49,7 +49,7 @@ class MediaFileSourceGroupSpec extends FunSuite {
                      |    "TextTrigger" : {
                      |      "triggers" : [
                      |        {
-                     |          "StringTextTriggerValue" : ""
+                     |          "StringTextTriggerValue" : "new data"
                      |        }
                      |      ]
                      |    }
