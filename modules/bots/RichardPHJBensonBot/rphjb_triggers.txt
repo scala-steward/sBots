@@ -4051,8 +4051,8 @@ rphjb_LabbraTruccatriceNuovaUltimaDelleDonneViaZaraGif.mp4 | non vali niente
 --------------------------------------------------
 --------------------------------------------------
 rphjb_ParteDiRomeo.mp4    | faccio la parte
-rphjb_DaHollywood.mp4     |  recit
-rphjb_DaHollywood.mp3     |  fing
+rphjb_DaHollywood.mp4     | \brecit
+rphjb_DaHollywood.mp3     | \bfing
 rphjb_FaccioLaParteGif.mp4 | attrice
 rphjb_GaioInGiallo.mp4    | \bat[t]+[o]+re\b
 rphjb_GrandeMelGibsonRinunciaATutto.mp4 | 
@@ -4767,6 +4767,7 @@ rphjb_CuoreAffogatoNelMetalloRicercaCanzoneFeriscaNelCervello.mp4 |
 rphjb_CuoreIntrisoMetalloCanzoneFeriscaCervello.mp4 | 
 rphjb_CuoreIntrisoMetalloCanzoneFeriscaCervelloGif.mp4 | 
 rphjb_CuoreIntrisoMetalloCanzoneFeriscaCervello.mp3 | 
+rphjb_CuoreAffogatoNelMetallo2.mp3 | 
 --------------------------------------------------
 --------------------------------------------------
 rphjb_CuoreAffogatoNelMetalloGif.mp4 | in cerca
@@ -6038,7 +6039,7 @@ rphjb_GiustoSbagliato.mp4 | viene naturale
 rphjb_GiustoSbagliato.mp3 | (sar[aà]|cos'[eè]) (sbagliato|giusto)
                           | una parolaccia
                           | arriva uno nuovo
-                          |  e cambia tutto
+                          | e cambia tutto
 --------------------------------------------------
 --------------------------------------------------
 rphjb_GerarcaPianoSuperioreGif.mp4 | gerarca
