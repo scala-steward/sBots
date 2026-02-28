@@ -4,6 +4,221 @@
       "TextTrigger" : {
         "triggers" : [
           {
+            "RegexTextTriggerValue" : {
+              "trigger" : "(falla|fatela) finita",
+              "regexLength" : 12
+            }
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosiGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp4",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "StringTextTriggerValue" : "meretrici"
+          },
+          {
+            "StringTextTriggerValue" : "affidiamo"
+          },
+          {
+            "StringTextTriggerValue" : "queste domande"
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_DomandeAlleMeretrici.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_DomandeAlleMeretriciGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_DomandeAlleMeretrici.mp4",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "StringTextTriggerValue" : "vogliono sapere"
+          },
+          {
+            "StringTextTriggerValue" : "il mio io selvaggio"
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_VoglionoSapereIlMioIoSelvaggio.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_VoglionoSapereIlMioIoSelvaggioGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_VoglionoSapereIlMioIoSelvaggio.mp4",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "StringTextTriggerValue" : "vieni con me"
+          },
+          {
+            "StringTextTriggerValue" : "aneddoto"
+          },
+          {
+            "StringTextTriggerValue" : "storia del rock"
+          },
+          {
+            "StringTextTriggerValue" : "ultimo"
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_AneddotoStoriaRockGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_AneddotoStoriaRock.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_AneddotoStoriaRock.mp3",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
+            "StringTextTriggerValue" : "tenere le cose dentro"
+          },
+          {
+            "StringTextTriggerValue" : "qualcosa che non va"
+          },
+          {
+            "StringTextTriggerValue" : "le devo dire"
+          },
+          {
+            "StringTextTriggerValue" : "io la dico"
+          }
+        ]
+      }
+    },
+    "reply" : {
+      "MediaReply" : {
+        "mediaFiles" : [
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_TenereLeCoseDentroGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_TenereLeCoseDentro.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_TenereLeCoseDentro.mp3",
+              "replyToMessage" : false
+            }
+          }
+        ],
+        "replyToMessage" : false
+      }
+    },
+    "matcher" : "ContainsOnce"
+  },
+  {
+    "trigger" : {
+      "TextTrigger" : {
+        "triggers" : [
+          {
             "StringTextTriggerValue" : "caprette"
           },
           {
@@ -15385,6 +15600,24 @@
               "filepath" : "rphjb_OttavaNotaRobaVecchiaSchifosi.mp3",
               "replyToMessage" : false
             }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosiGif.mp4",
+              "replyToMessage" : false
+            }
           }
         ],
         "replyToMessage" : false
@@ -16767,6 +17000,24 @@
           {
             "GifFile" : {
               "filepath" : "rphjb_PigliandoPerIlCuloGif.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_AneddotoStoriaRock.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_AneddotoStoriaRock.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_AneddotoStoriaRockGif.mp4",
               "replyToMessage" : false
             }
           }
@@ -18505,6 +18756,24 @@
               "filepath" : "rphjb_OttavaNotaRobaVecchiaSchifosi.mp3",
               "replyToMessage" : false
             }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_MaFatelaFinitaVoiUltimiSchifosiGif.mp4",
+              "replyToMessage" : false
+            }
           }
         ],
         "replyToMessage" : false
@@ -18579,6 +18848,24 @@
           {
             "Mp3File" : {
               "filepath" : "rphjb_DiventoViolento.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "Mp3File" : {
+              "filepath" : "rphjb_AneddotoStoriaRock.mp3",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "VideoFile" : {
+              "filepath" : "rphjb_AneddotoStoriaRock.mp4",
+              "replyToMessage" : false
+            }
+          },
+          {
+            "GifFile" : {
+              "filepath" : "rphjb_AneddotoStoriaRockGif.mp4",
               "replyToMessage" : false
             }
           }

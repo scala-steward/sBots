@@ -1,4 +1,31 @@
 --------------------------------------------------
+rphjb_MaFatelaFinitaVoiUltimiSchifosiGif.mp4 | (falla|fatela) finita
+rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp3 | 
+rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp4 | 
+--------------------------------------------------
+--------------------------------------------------
+rphjb_DomandeAlleMeretrici.mp3 | meretrici
+rphjb_DomandeAlleMeretriciGif.mp4 | affidiamo
+rphjb_DomandeAlleMeretrici.mp4 | queste domande
+--------------------------------------------------
+--------------------------------------------------
+rphjb_VoglionoSapereIlMioIoSelvaggio.mp3 | vogliono sapere
+rphjb_VoglionoSapereIlMioIoSelvaggioGif.mp4 | il mio io selvaggio
+rphjb_VoglionoSapereIlMioIoSelvaggio.mp4 | 
+--------------------------------------------------
+--------------------------------------------------
+rphjb_AneddotoStoriaRockGif.mp4 | vieni con me
+rphjb_AneddotoStoriaRock.mp4 | aneddoto
+rphjb_AneddotoStoriaRock.mp3 | storia del rock
+                          | ultimo
+--------------------------------------------------
+--------------------------------------------------
+rphjb_TenereLeCoseDentroGif.mp4 | tenere le cose dentro
+rphjb_TenereLeCoseDentro.mp4 | qualcosa che non va
+rphjb_TenereLeCoseDentro.mp3 | le devo dire
+                          | io la dico
+--------------------------------------------------
+--------------------------------------------------
 rphjb_ListaMaleCollo.mp3  | caprette
                           | acidi
                           | pomodori
@@ -2220,6 +2247,9 @@ rphjb_Ultimi2Gif.mp4      |
 rphjb_Ultimi.mp3          | 
 rphjb_OttavaNotaRobaVecchiaSchifosi.mp4 | 
 rphjb_OttavaNotaRobaVecchiaSchifosi.mp3 | 
+rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp3 | 
+rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp4 | 
+rphjb_MaFatelaFinitaVoiUltimiSchifosiGif.mp4 | 
 --------------------------------------------------
 --------------------------------------------------
 rphjb_CheCazzoEraQuellaRoba.mp3 | che (cazzo )?era quella roba
@@ -2408,6 +2438,9 @@ rphjb_StacchiDiBatteriaMikeTerranaInfernali.mp4 |
 --------------------------------------------------
 rphjb_PigliandoPerIlCulo.mp3 | per il culo
 rphjb_PigliandoPerIlCuloGif.mp4 | 
+rphjb_AneddotoStoriaRock.mp3 | 
+rphjb_AneddotoStoriaRock.mp4 | 
+rphjb_AneddotoStoriaRockGif.mp4 | 
 --------------------------------------------------
 --------------------------------------------------
 rphjb_Risata.mp3          | sorriso
@@ -2665,6 +2698,9 @@ rphjb_SchifosiNonMeCeFaPensaGif.mp4 |
 rphjb_SchifosiNonMeCeFaPensa.mp4 | 
 rphjb_OttavaNotaRobaVecchiaSchifosi.mp4 | 
 rphjb_OttavaNotaRobaVecchiaSchifosi.mp3 | 
+rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp3 | 
+rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp4 | 
+rphjb_MaFatelaFinitaVoiUltimiSchifosiGif.mp4 | 
 --------------------------------------------------
 --------------------------------------------------
 rphjb_SchifosoGif.mp4     | schifos(o)+(!)*
@@ -2676,6 +2712,9 @@ rphjb_BruttoSquallidoSchifosoGif.mp4 |
 rphjb_DanzaMacabra.mp4    | 
 rphjb_DiventoViolento.mp4 | 
 rphjb_DiventoViolento.mp3 | 
+rphjb_AneddotoStoriaRock.mp3 | 
+rphjb_AneddotoStoriaRock.mp4 | 
+rphjb_AneddotoStoriaRockGif.mp4 | 
 --------------------------------------------------
 --------------------------------------------------
 rphjb_MortacciVostriGif.mp4 | mortacci vostri

@@ -3585,25 +3585,6 @@
     ]
   },
   {
-    "filename" : "rphjb_TiDeviSpaventare.mp3",
-    "sources" : [
-      "https://www.dropbox.com/scl/fi/yhstfa2b1nak7mzi8ioqs/rphjb_TiDeviSpaventare.mp3?rlkey=nidawwczri52zcdki90yp12tp&dl=1"
-    ]
-  },
-  {
-    "filename" : "rphjb_TiDeviSpaventare.mp4",
-    "sources" : [
-      "https://www.dropbox.com/scl/fi/rdmstp306q925v4rp1j9k/rphjb_TiDeviSpaventare.mp4?rlkey=8a3d7mo0j47wwbetfuxaxq128&dl=1"
-    ]
-  },
-  {
-    "filename" : "rphjb_TiDeviSpaventareGif.mp4",
-    "mime" : "image/gif",
-    "sources" : [
-      "https://www.dropbox.com/scl/fi/ps4cn7dg6b9y4faw931e4/rphjb_TiDeviSpaventareGif.mp4?rlkey=96bphrchx8rhqr9czo9j7qfly&dl=1"
-    ]
-  },
-  {
     "filename" : "rphjb_TiDistruggoGif.mp4",
     "mime" : "image/gif",
     "sources" : [
@@ -12565,6 +12546,168 @@
     "mime" : "audio/mpeg",
     "sources" : [
       "https://www.dropbox.com/scl/fi/idjmd6v6wpmcy5rh0az6h/rphjb_CuoreAffogatoNelMetallo2.mp3?rlkey=k81zcorl7xcmy25ewgzwirpwt&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_TiDeviSpaventare.mp3",
+    "kinds" : [
+    ],
+    "mime" : "audio/mpeg",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/tblr8lwt5sygpwax759r4/rphjb_TiDeviSpaventare.mp3?rlkey=gl0uluqfwfgb6iz6d6mtflgfd&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_TiDeviSpaventareGif.mp4",
+    "kinds" : [
+    ],
+    "mime" : "image/gif",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/1r4n25qe8wvruch30lrgk/rphjb_TiDeviSpaventareGif.mp4?rlkey=l8rlp2hhmh0a4eo1eo3bc97ow&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_TiDeviSpaventare.mp4",
+    "kinds" : [
+    ],
+    "mime" : "video/mp4",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/v8g19zuqadmk5y0o6rw18/rphjb_TiDeviSpaventare.mp4?rlkey=w6rse2dg57x30xl95ou0ef6ab&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_TenereLeCoseDentroGif.mp4",
+    "kinds" : [
+    ],
+    "mime" : "image/gif",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/rwq4wp0ya2pkgkti82p9e/rphjb_TenereLeCoseDentroGif.mp4?rlkey=xfzrzn3y2xq640rymi3qhjeu7&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_TenereLeCoseDentro.mp4",
+    "kinds" : [
+    ],
+    "mime" : "video/mp4",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/vaubkhxktayolv1w9orgw/rphjb_TenereLeCoseDentro.mp4?rlkey=mwld9txyd7n30m8n34fejyiq7&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_TenereLeCoseDentro.mp3",
+    "kinds" : [
+    ],
+    "mime" : "audio/mpeg",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/gbcwd2a5ezjd0w7u9qh8v/rphjb_TenereLeCoseDentro.mp3?rlkey=3wbsk99qs7uhn7jlagtapkizz&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_AneddotoStoriaRockGif.mp4",
+    "kinds" : [
+    ],
+    "mime" : "image/gif",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/4i2spriihirp02v0inz4p/rphjb_AneddotoStoriaRockGif.mp4?rlkey=g233uo82rhvzi8oekjqvf6m7i&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_AneddotoStoriaRock.mp4",
+    "kinds" : [
+    ],
+    "mime" : "video/mp4",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/y2lmkogk1309kojn2hhow/rphjb_AneddotoStoriaRock.mp4?rlkey=8lttdxm16trs44suz9lthlzc3&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_AneddotoStoriaRock.mp3",
+    "kinds" : [
+    ],
+    "mime" : "audio/mpeg",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/c8fybvezlz7i7vmab0y2h/rphjb_AneddotoStoriaRock.mp3?rlkey=7ywbxb0cvlyvp2k38hf42z8jw&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_MaFatelaFinitaVoiUltimiSchifosiGif.mp4",
+    "kinds" : [
+    ],
+    "mime" : "image/gif",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/nrwe94r1isw1aisktxnow/rphjb_MaFatelaFinitaVoiUltimiSchifosiGif.mp4?rlkey=qvwrz0dd6scf22c15l44a2sf3&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp3",
+    "kinds" : [
+    ],
+    "mime" : "audio/mpeg",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/01s7gt6mdxra7zpi0p6ug/rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp3?rlkey=q1kwx0ip8j8jl72olzjfwg2qr&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp4",
+    "kinds" : [
+    ],
+    "mime" : "video/mp4",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/vth65nl9o3mfekktmzdb2/rphjb_MaFatelaFinitaVoiUltimiSchifosi.mp4?rlkey=9b9sriduqvf6vwn315pm44y5s&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_VoglionoSapereIlMioIoSelvaggio.mp3",
+    "kinds" : [
+    ],
+    "mime" : "audio/mpeg",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/43fuhqp4wt8rcxnbavk5t/rphjb_VoglionoSapereIlMioIoSelvaggio.mp3?rlkey=mqf3nrzmxwnhekpe1hxymckx1&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_VoglionoSapereIlMioIoSelvaggioGif.mp4",
+    "kinds" : [
+    ],
+    "mime" : "image/gif",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/6avj7sr4d1ovbz94hwbc5/rphjb_VoglionoSapereIlMioIoSelvaggioGif.mp4?rlkey=u108fe6x71r6u4geq4r9nns3u&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_VoglionoSapereIlMioIoSelvaggio.mp4",
+    "kinds" : [
+    ],
+    "mime" : "video/mp4",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/uhfll8ue8qr4faqw1pbfd/rphjb_VoglionoSapereIlMioIoSelvaggio.mp4?rlkey=2zn40kpvvn0re91zt4qyopugt&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_DomandeAlleMeretrici.mp3",
+    "kinds" : [
+    ],
+    "mime" : "audio/mpeg",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/bd16r7euloq6dtb5c8awv/rphjb_DomandeAlleMeretrici.mp3?rlkey=bd6s55o2v4owzfo02r1cv1sfk&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_DomandeAlleMeretriciGif.mp4",
+    "kinds" : [
+    ],
+    "mime" : "image/gif",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/g4kg3cemn50b5a8m9pfd4/rphjb_DomandeAlleMeretriciGif.mp4?rlkey=oj3f8lff5y9gt5et4p1xj1nbc&dl=1"
+    ]
+  },
+  {
+    "filename" : "rphjb_DomandeAlleMeretrici.mp4",
+    "kinds" : [
+    ],
+    "mime" : "video/mp4",
+    "sources" : [
+      "https://www.dropbox.com/scl/fi/1lz6usfcqmksw74ru21o7/rphjb_DomandeAlleMeretrici.mp4?rlkey=t5kky964fb1qhu1ee7a7islej&dl=1"
     ]
   }
 ]
