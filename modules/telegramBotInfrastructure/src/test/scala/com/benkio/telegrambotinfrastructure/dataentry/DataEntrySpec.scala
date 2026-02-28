@@ -3,13 +3,14 @@ package com.benkio.telegrambotinfrastructure.dataentry
 import cats.effect.IO
 import cats.effect.Resource
 import com.benkio.telegrambotinfrastructure.config.SBotConfig
+import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
 import com.benkio.telegrambotinfrastructure.model.SBotInfo
 import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotId
 import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotName
-import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
-import io.circe.syntax.*
 import io.circe.parser.parse
+import io.circe.syntax.*
 import munit.CatsEffectSuite
+import org.http4s.syntax.literals.*
 import org.http4s.Uri
 
 import java.nio.charset.StandardCharsets
@@ -62,7 +63,7 @@ class DataEntrySpec extends CatsEffectSuite {
           messageTimeToLive = Some(5.seconds),
           sBotInfo = SBotInfo(SBotId("rphjb"), SBotName("RichardPHJBensonBot")),
           triggerFilename = "x",
-          triggerListUri = Uri.unsafeFromString("http://example.com"),
+          triggerListUri = uri"http://example.com",
           listJsonFilename = listPath.toString,
           showFilename = "x",
           repliesJsonFilename = repliesPath.toString,
@@ -76,9 +77,9 @@ class DataEntrySpec extends CatsEffectSuite {
       )
 
       for {
-        _ <- write(listPath, initialList)
-        _ <- write(repliesPath, initialReplies)
-        _ <- DataEntry.dataEntryLogic(input, config)
+        _          <- write(listPath, initialList)
+        _          <- write(repliesPath, initialReplies)
+        _          <- DataEntry.dataEntryLogic(input, config)
         outListRaw <- IO.blocking(Files.readString(listPath, StandardCharsets.UTF_8))
         outRepRaw  <- IO.blocking(Files.readString(repliesPath, StandardCharsets.UTF_8))
         outListJ   <- IO.fromEither(parse(outListRaw).left.map(e => new RuntimeException(e.message)))

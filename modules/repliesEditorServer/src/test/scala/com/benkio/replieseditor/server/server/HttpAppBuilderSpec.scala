@@ -4,14 +4,14 @@ import cats.effect.IO
 import cats.effect.Resource
 import com.benkio.replieseditor.server.store.BotStore
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
-import io.circe.Json
 import io.circe.syntax.*
+import io.circe.Json
 import munit.CatsEffectSuite
+import org.http4s.circe.CirceEntityCodec.*
+import org.http4s.implicits.*
 import org.http4s.Method
 import org.http4s.Request
 import org.http4s.Status
-import org.http4s.circe.CirceEntityCodec.*
-import org.http4s.implicits.*
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -69,4 +69,3 @@ class HttpAppBuilderSpec extends CatsEffectSuite {
     }
   }
 }
-

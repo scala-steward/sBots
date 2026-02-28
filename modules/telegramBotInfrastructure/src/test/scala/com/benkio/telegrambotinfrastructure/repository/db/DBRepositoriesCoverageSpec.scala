@@ -3,15 +3,15 @@ package com.benkio.telegrambotinfrastructure.repository.db
 import cats.effect.IO
 import cats.effect.Resource
 import cats.syntax.all.*
-import com.benkio.telegrambotinfrastructure.Logger.given
+import com.benkio.telegrambotinfrastructure.model.show.*
+import com.benkio.telegrambotinfrastructure.model.ChatId
 import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotId
 import com.benkio.telegrambotinfrastructure.model.Timeout
-import com.benkio.telegrambotinfrastructure.model.ChatId
-import com.benkio.telegrambotinfrastructure.model.show.*
-import doobie.Transactor
+import com.benkio.telegrambotinfrastructure.Logger.given
 import doobie.implicits.*
-import io.circe.Json
+import doobie.Transactor
 import io.circe.syntax.*
+import io.circe.Json
 import munit.CatsEffectSuite
 
 import java.nio.file.Files
@@ -101,10 +101,10 @@ class DBRepositoriesCoverageSpec extends CatsEffectSuite {
         db <- DBMedia[IO](xa)
         _  <- db.insertMedia(media)
         // conflict path (UPDATE)
-        _  <- db.insertMedia(media.copy(kinds = List("k1").asJson.noSpaces))
-        m1 <- db.getMedia("bot_test.mp3")
-        _  <- db.incrementMediaCount("bot_test.mp3")
-        _  <- db.decrementMediaCount("bot_test.mp3")
+        _      <- db.insertMedia(media.copy(kinds = List("k1").asJson.noSpaces))
+        m1     <- db.getMedia("bot_test.mp3")
+        _      <- db.incrementMediaCount("bot_test.mp3")
+        _      <- db.decrementMediaCount("bot_test.mp3")
         byKind <- db.getMediaByKind(kind = "k1", botId = botId, cache = false)
         top    <- db.getMediaByMediaCount(limit = 10, botId = Some(botId))
         rnd    <- db.getRandomMedia(botId)
@@ -120,7 +120,7 @@ class DBRepositoriesCoverageSpec extends CatsEffectSuite {
   test("DBShow insert/query paths execute") {
     tempDb.use { xa =>
       val botId = SBotId("bot")
-      val row =
+      val row   =
         DBShowData(
           show_id = "s1",
           bot_id = botId.value,
@@ -133,16 +133,16 @@ class DBRepositoriesCoverageSpec extends CatsEffectSuite {
         )
 
       for {
-        _    <- setupSchema(xa)
-        db    = DBShow[IO](xa)
-        _    <- db.insertShow(row)
+        _ <- setupSchema(xa)
+        db = DBShow[IO](xa)
+        _ <- db.insertShow(row)
         // conflict path (UPDATE)
-        _    <- db.insertShow(row.copy(show_title = "Hello updated"))
-        all  <- db.getShows(botId)
-        rnd  <- db.getRandomShow(botId)
-        q1   <- db.getShowBySimpleShowQuery(SimpleShowQuery("hello", "", ""), botId)
-        q2   <- db.getShowByShowQuery(ShowQueryKeyword(Some(List("updated")), None, None, None, None, None, None), botId)
-        _    <- db.deleteShow(row)
+        _   <- db.insertShow(row.copy(show_title = "Hello updated"))
+        all <- db.getShows(botId)
+        rnd <- db.getRandomShow(botId)
+        q1  <- db.getShowBySimpleShowQuery(SimpleShowQuery("hello", "", ""), botId)
+        q2  <- db.getShowByShowQuery(ShowQueryKeyword(Some(List("updated")), None, None, None, None, None, None), botId)
+        _   <- db.deleteShow(row)
         post <- db.getShows(botId)
       } yield {
         assert(all.nonEmpty)
@@ -163,13 +163,13 @@ class DBRepositoriesCoverageSpec extends CatsEffectSuite {
       val row    = DBTimeoutData(t0)
 
       for {
-        _   <- setupSchema(xa)
-        d0  <- impl.getOrDefault(chatId.value, botId)
-        _   <- impl.setTimeout(row)
-        d1  <- impl.getOrDefault(chatId.value, botId)
-        _   <- impl.logLastInteraction(chatId.value, botId)
-        _   <- impl.removeTimeout(chatId.value, botId)
-        d2  <- impl.getOrDefault(chatId.value, botId)
+        _  <- setupSchema(xa)
+        d0 <- impl.getOrDefault(chatId.value, botId)
+        _  <- impl.setTimeout(row)
+        d1 <- impl.getOrDefault(chatId.value, botId)
+        _  <- impl.logLastInteraction(chatId.value, botId)
+        _  <- impl.removeTimeout(chatId.value, botId)
+        d2 <- impl.getOrDefault(chatId.value, botId)
       } yield {
         assertEquals(d0.chat_id, chatId.value)
         assertEquals(d1.chat_id, chatId.value)
@@ -178,4 +178,3 @@ class DBRepositoriesCoverageSpec extends CatsEffectSuite {
     }
   }
 }
-

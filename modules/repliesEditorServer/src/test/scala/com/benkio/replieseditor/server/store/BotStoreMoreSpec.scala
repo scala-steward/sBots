@@ -3,8 +3,8 @@ package com.benkio.replieseditor.server.store
 import cats.effect.IO
 import cats.effect.Resource
 import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
-import io.circe.Json
 import io.circe.syntax.*
+import io.circe.Json
 import munit.CatsEffectSuite
 
 import java.nio.charset.StandardCharsets
@@ -95,8 +95,8 @@ class BotStoreMoreSpec extends CatsEffectSuite {
         _     <- store
           .reloadBotFromDisk(botId)
           .flatMap(e => IO.fromEither(e.left.map(err => new RuntimeException(err.error))))
-        c2E   <- store.getRepliesChunk(botId, offset = 0, limit = 50)
-        c2    <- IO.fromEither(c2E.left.map(e => new RuntimeException(e.error)))
+        c2E <- store.getRepliesChunk(botId, offset = 0, limit = 50)
+        c2  <- IO.fromEither(c2E.left.map(e => new RuntimeException(e.error)))
       } yield {
         assertEquals(c1.total, 1)
         assertEquals(c2.total, 2)
@@ -124,13 +124,16 @@ class BotStoreMoreSpec extends CatsEffectSuite {
         store <- BotStore.build(root)
         badE  <- store.updateReplyAt(botId, index = 99, value = Json.obj("x" -> Json.fromInt(1)))
         _ = assert(badE.isLeft)
-        okE <- store.updateReplyAt(botId, index = 0, value = Json.obj("updated" -> Json.fromBoolean(true)))
-        _   <- IO.fromEither(okE.left.map(e => new RuntimeException(e.error)))
+        okE  <- store.updateReplyAt(botId, index = 0, value = Json.obj("updated" -> Json.fromBoolean(true)))
+        _    <- IO.fromEither(okE.left.map(e => new RuntimeException(e.error)))
         repE <- store.getReplies(botId)
         rep  <- IO.fromEither(repE.left.map(e => new RuntimeException(e.error)))
       } yield {
         assertEquals(rep.asArray.map(_.length), Some(1))
-        assertEquals(rep.asArray.flatMap(_.headOption).flatMap(_.hcursor.downField("updated").as[Boolean].toOption), Some(true))
+        assertEquals(
+          rep.asArray.flatMap(_.headOption).flatMap(_.hcursor.downField("updated").as[Boolean].toOption),
+          Some(true)
+        )
       }
     }
   }
@@ -172,9 +175,9 @@ class BotStoreMoreSpec extends CatsEffectSuite {
       val repliesJson = botDir.resolve("src").resolve("main").resolve("resources").resolve(s"${botId}_replies.json")
 
       for {
-        _     <- write(listJson, "{ not json")
-        _     <- write(repliesJson, "{ not json")
-        store <- BotStore.build(root)
+        _        <- write(listJson, "{ not json")
+        _        <- write(repliesJson, "{ not json")
+        store    <- BotStore.build(root)
         allowedE <- store.getAllowedFiles(botId)
         repliesE <- store.getReplies(botId)
       } yield {
@@ -184,4 +187,3 @@ class BotStoreMoreSpec extends CatsEffectSuite {
     }
   }
 }
-
