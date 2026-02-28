@@ -144,8 +144,9 @@ class ITBackgroundJobManagerSpec extends CatsEffectSuite with DBFixture {
           ttl = sBotConfig.messageTimeToLive
         )
       )
-      (mainStream, cancelSignal) <- Resource.eval(backgroundJobManager.runSubscription(testSubscription))
-      mainStreamWithCron = cronScheduler.awakeEvery(testSubscription.cron) >> mainStream
+      streamAndCancel <- Resource.eval(backgroundJobManager.runSubscription(testSubscription))
+      (mainStream, cancelSignal) = streamAndCancel
+      mainStreamWithCron         = cronScheduler.awakeEvery(testSubscription.cron) >> mainStream
       // if I don't do that the scheduler will keep emitting values and the test will go timeout
       mainStreamWithCronWithCancel = mainStreamWithCron.interruptWhen(cancelSignal)
     } yield (mainStreamWithCronWithCancel, cancelSignal)
@@ -204,7 +205,8 @@ class ITBackgroundJobManagerSpec extends CatsEffectSuite with DBFixture {
           ttl = sBotConfig.messageTimeToLive
         )
       )
-      (mainStream, _) <- Resource.eval(backgroundJobManager.runSubscription(testSubscription))
+      streamAndCancel <- Resource.eval(backgroundJobManager.runSubscription(testSubscription))
+      (mainStream, _) = streamAndCancel
     } yield cronScheduler.awakeEvery(testSubscription.cron) >>
       Stream
         .eval(IO.realTimeInstant)

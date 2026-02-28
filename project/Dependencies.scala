@@ -223,7 +223,8 @@ object Dependencies {
         libs.scalajsDomSjs1,
         libs.circeCoreSjs1,
         libs.circeGenericSjs1,
-        libs.circeParserSjs1
+        libs.circeParserSjs1,
+        libs.munit
       )
     )
 

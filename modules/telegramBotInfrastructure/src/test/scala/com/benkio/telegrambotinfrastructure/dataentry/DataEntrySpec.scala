@@ -1,61 +1,92 @@
 package com.benkio.telegrambotinfrastructure.dataentry
-import com.benkio.telegrambotinfrastructure.model.media.MediaFileSource
-import com.benkio.telegrambotinfrastructure.model.MimeType
-import munit.*
-import org.http4s.syntax.literals.*
+
+import cats.effect.IO
+import cats.effect.Resource
+import com.benkio.telegrambotinfrastructure.config.SBotConfig
+import com.benkio.telegrambotinfrastructure.model.SBotInfo
+import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotId
+import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotName
+import com.benkio.telegrambotinfrastructure.model.reply.ReplyBundleMessage
+import io.circe.syntax.*
+import io.circe.parser.parse
+import munit.CatsEffectSuite
 import org.http4s.Uri
 
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Path
+import scala.concurrent.duration.*
+
 class DataEntrySpec extends CatsEffectSuite {
-  test("parseInput should successfully parse a valid input") {
-    val input = List(
-      "https://www.dropbox.com/scl/fi/kdebzm75zf9qobugzbf3v/rphjb_5DitaRivolta.mp3?rlkey=9sr3dhbbt0ntqh29280sjmyqo&dl=1",
-      "https://www.dropbox.com/scl/fi/x65f1r5qvxl27090yu8il/rphjb_5DitaRivolta.mp4?rlkey=imii04m83xnn27zm5qf08s350&dl=1",
-      "https://www.dropbox.com/scl/fi/1uo9npnlupdk5jhykd8zt/rphjb_5DitaRivoltaGif.mp4?rlkey=2nzrxid175oik5m5fva1z54kr&dl=1",
-      "https://www.dropbox.com/scl/fi/o6unllv17028yx059mdpl/rphjb_AdolfHitlerGif.mp4?rlkey=750bdh4zud1j1eier6q7pr7rh&dl=1"
+
+  private def write(path: Path, content: String): IO[Unit] =
+    IO.blocking {
+      Files.createDirectories(path.getParent)
+      Files.writeString(path, content, StandardCharsets.UTF_8)
+      ()
+    }
+
+  private def tempDir: Resource[IO, Path] =
+    Resource.make(IO.blocking(Files.createTempDirectory("sbots-data-entry-test")))(p =>
+      IO.blocking {
+        def deleteRec(x: Path): Unit = {
+          if Files.isDirectory(x) then {
+            val stream = Files.list(x)
+            try stream.forEach(deleteRec)
+            finally stream.close()
+          }
+          Files.deleteIfExists(x)
+          ()
+        }
+        deleteRec(p)
+      }
     )
-    val actual   = DataEntry.parseInput(input)
-    val expected = List(
-      MediaFileSource(
-        filename = "rphjb_5DitaRivolta.mp3",
-        kinds = List.empty,
-        mime = MimeType.MPEG,
-        sources = List(
-          Right(
-            uri"https://www.dropbox.com/scl/fi/kdebzm75zf9qobugzbf3v/rphjb_5DitaRivolta.mp3?rlkey=9sr3dhbbt0ntqh29280sjmyqo&dl=1"
-          )
+
+  test("DataEntry merges list + replies json and writes back") {
+    tempDir.use { dir =>
+      val listPath    = dir.resolve("rphjb_list.json")
+      val repliesPath = dir.resolve("rphjb_replies.json")
+
+      val initialList =
+        """[
+          |  { "filename": "rphjb_existing.mp3", "sources": ["http://example.com/rphjb_existing.mp3"] }
+          |]""".stripMargin
+
+      val initialReplies =
+        List(ReplyBundleMessage.textToText("hello")("existing")).asJson.spaces2
+
+      val config =
+        SBotConfig(
+          disableForward = true,
+          ignoreMessagePrefix = Some("!"),
+          messageTimeToLive = Some(5.seconds),
+          sBotInfo = SBotInfo(SBotId("rphjb"), SBotName("RichardPHJBensonBot")),
+          triggerFilename = "x",
+          triggerListUri = Uri.unsafeFromString("http://example.com"),
+          listJsonFilename = listPath.toString,
+          showFilename = "x",
+          repliesJsonFilename = repliesPath.toString,
+          commandsJsonFilename = "x",
+          token = "x"
         )
-      ),
-      MediaFileSource(
-        filename = "rphjb_5DitaRivolta.mp4",
-        kinds = List.empty,
-        mime = MimeType.MP4,
-        sources = List(
-          Right(
-            uri"https://www.dropbox.com/scl/fi/x65f1r5qvxl27090yu8il/rphjb_5DitaRivolta.mp4?rlkey=imii04m83xnn27zm5qf08s350&dl=1"
-          )
-        )
-      ),
-      MediaFileSource(
-        filename = "rphjb_5DitaRivoltaGif.mp4",
-        kinds = List.empty,
-        mime = MimeType.GIF,
-        sources = List(
-          Right(
-            uri"https://www.dropbox.com/scl/fi/1uo9npnlupdk5jhykd8zt/rphjb_5DitaRivoltaGif.mp4?rlkey=2nzrxid175oik5m5fva1z54kr&dl=1"
-          )
-        )
-      ),
-      MediaFileSource(
-        filename = "rphjb_AdolfHitlerGif.mp4",
-        kinds = List.empty,
-        mime = MimeType.GIF,
-        sources = List(
-          Right(
-            uri"https://www.dropbox.com/scl/fi/o6unllv17028yx059mdpl/rphjb_AdolfHitlerGif.mp4?rlkey=750bdh4zud1j1eier6q7pr7rh&dl=1"
-          )
-        )
+
+      val input = List(
+        "https://example.com/rphjb_new_a.mp3?dl=0",
+        "https://example.com/rphjb_new_b.mp3?dl=0"
       )
-    )
-    assertIO(actual, expected)
+
+      for {
+        _ <- write(listPath, initialList)
+        _ <- write(repliesPath, initialReplies)
+        _ <- DataEntry.dataEntryLogic(input, config)
+        outListRaw <- IO.blocking(Files.readString(listPath, StandardCharsets.UTF_8))
+        outRepRaw  <- IO.blocking(Files.readString(repliesPath, StandardCharsets.UTF_8))
+        outListJ   <- IO.fromEither(parse(outListRaw).left.map(e => new RuntimeException(e.message)))
+        outRepJ    <- IO.fromEither(parse(outRepRaw).left.map(e => new RuntimeException(e.message)))
+      } yield {
+        assertEquals(outListJ.asArray.map(_.size), Some(3))
+        assertEquals(outRepJ.asArray.map(_.size), Some(3))
+      }
+    }
   }
 }

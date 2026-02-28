@@ -34,8 +34,8 @@ final case class YouTubeBotDBShowDatas(
 )
 
 object YouTubeBotDBShowDatas {
-  given Semigroup[YouTubeBotDBShowDatas] {
-    def combine(d1: YouTubeBotDBShowDatas, d2: YouTubeBotDBShowDatas) =
+  given Semigroup[YouTubeBotDBShowDatas] with {
+    def combine(d1: YouTubeBotDBShowDatas, d2: YouTubeBotDBShowDatas): YouTubeBotDBShowDatas =
       YouTubeBotDBShowDatas(
         botId = d1.botId,
         outputFilePath = d1.outputFilePath,

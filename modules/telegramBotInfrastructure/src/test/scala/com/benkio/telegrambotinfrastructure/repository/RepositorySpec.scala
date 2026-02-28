@@ -136,7 +136,7 @@ class DBRepositorySpec extends CatsEffectSuite {
       .getResourcesByKind(criteria = "testkind", botId = botId)
       .use(result =>
         result match {
-          case Left(RepositoryError.NoResourcesFoundKind(criteria = criteria, botId = botId)) =>
+          case Left(RepositoryError.NoResourcesFoundKind(criteria, _)) =>
             (criteria == "testkind").pure
           case _ => false.pure
         }

@@ -43,11 +43,6 @@ object Reply {
   given replyDecoder: Decoder[Reply] = deriveDecoder[Reply]
   given replyEncoder: Encoder[Reply] = deriveEncoder[Reply]
 
-  given mediaFileListDecoder: Decoder[List[MediaFile]] =
-    Decoder[List[MediaFile]]
-  given mediaFileListEncoder: Encoder[List[MediaFile]] =
-    Encoder[List[MediaFile]]
-
   extension (r: Reply) {
     def prettyPrint: List[String] = r match {
       case TextReply(txt, _)         => txt.map(_.show)
