@@ -6,9 +6,11 @@ import com.raquo.laminar.api.L.*
 object TriggerRow {
 
   def render(
-    triggerIdx: Int,
     triggerSignal: Signal[TriggerEdit],
-    update: (EditableEntry => EditableEntry) => Unit
+    onRemove: () => Unit,
+    onKindChange: TriggerKind => Unit,
+    onValueChange: String => Unit,
+    onRegexLenChange: Option[Int] => Unit
   ): Div = {
     val kindSignal  = triggerSignal.map(_.kind)
     val valueSignal = triggerSignal.map(_.value)
@@ -22,20 +24,7 @@ object TriggerRow {
         inContext { thisNode =>
           onChange.mapTo(thisNode.ref.value) --> { v =>
             val k = if (v == "regex") TriggerKind.Regex else TriggerKind.PlainString
-            update(e0 =>
-              e0.copy(triggers =
-                e0.triggers.updated(
-                  triggerIdx,
-                  e0.triggers(triggerIdx).copy(
-                    kind = k,
-                    regexLength =
-                      if (k == TriggerKind.Regex)
-                        e0.triggers(triggerIdx).regexLength.orElse(Some(e0.triggers(triggerIdx).value.length))
-                      else None
-                  )
-                )
-              )
-            )
+            onKindChange(k)
           }
         },
         option(value := "string", "String"),
@@ -46,13 +35,7 @@ object TriggerRow {
         placeholder := "trigger",
         controlled(
           value <-- valueSignal,
-          onInput.mapToValue --> { v =>
-            update(e0 =>
-              e0.copy(triggers =
-                e0.triggers.updated(triggerIdx, e0.triggers(triggerIdx).copy(value = v))
-              )
-            )
-          }
+          onInput.mapToValue --> onValueChange
         )
       ),
       input(
@@ -63,21 +46,14 @@ object TriggerRow {
         controlled(
           value <-- lenSignal,
           onInput.mapToValue --> { v =>
-            val parsed = v.toIntOption
-            update(e0 =>
-              e0.copy(triggers =
-                e0.triggers.updated(triggerIdx, e0.triggers(triggerIdx).copy(regexLength = parsed))
-              )
-            )
+            onRegexLenChange(v.toIntOption)
           }
         )
       ),
       button(
         cls := "btn btn-sm btn-outline-danger",
         "−",
-        onClick --> { _ =>
-          update(e0 => e0.copy(triggers = e0.triggers.patch(triggerIdx, Nil, 1)))
-        }
+        onClick --> { _ => onRemove() }
       )
     )
   }

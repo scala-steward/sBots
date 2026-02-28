@@ -7,11 +7,11 @@ object TopBar {
 
   def render(
     bots: Signal[Vector[ApiBot]],
-    selectedBotVar: Var[Option[String]],
+    selectedBotId: Signal[Option[String]],
     dirty: Signal[Boolean],
     onBotSelected: Option[String] => Unit,
     onReload: () => Unit,
-    filtersOpenVar: Var[Boolean],
+    onToggleFilters: () => Unit,
     onAddNew: () => Unit,
     addDisabled: Signal[Boolean],
     onSave: () => Unit
@@ -23,7 +23,7 @@ object TopBar {
         label(cls := "form-label", "Bot replies file"),
         select(
           cls := "form-select",
-          value <-- selectedBotVar.signal.map(_.getOrElse("")),
+          value <-- selectedBotId.map(_.getOrElse("")),
           inContext { thisNode =>
             onChange.mapTo(thisNode.ref.value) --> { v =>
               onBotSelected(Option(v).filter(_.nonEmpty))
@@ -41,19 +41,19 @@ object TopBar {
       button(
         cls := "btn btn-outline-secondary",
         "Filters",
-        disabled <-- selectedBotVar.signal.map(_.isEmpty),
-        onClick --> { _ => filtersOpenVar.update(b => !b) }
+        disabled <-- selectedBotId.map(_.isEmpty),
+        onClick --> { _ => onToggleFilters() }
       ),
       button(
         cls := "btn btn-outline-secondary",
         "+ reply",
-        disabled <-- selectedBotVar.signal.map(_.isEmpty).combineWith(addDisabled).map { case (noBot, dis) => noBot || dis },
+        disabled <-- selectedBotId.map(_.isEmpty).combineWith(addDisabled).map { case (noBot, dis) => noBot || dis },
         onClick --> { _ => onAddNew() }
       ),
       button(
         cls := "btn btn-primary",
         child.text <-- dirty.map(d => if (d) "Save (unsaved)" else "Save"),
-        disabled <-- selectedBotVar.signal.map(_.isEmpty),
+        disabled <-- selectedBotId.map(_.isEmpty),
         onClick --> { _ => onSave() }
       )
     )

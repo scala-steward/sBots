@@ -1,54 +1,55 @@
 package com.benkio.replieseditor.ui.components.page
 
-import com.benkio.replieseditor.module.*
+import com.benkio.replieseditor.app.RepliesEditorController
 import com.benkio.replieseditor.ui.components.replies.RepliesGrid
 import com.raquo.laminar.api.L.*
 
 object AppPage {
 
-  def render(
-    bots: Signal[Vector[ApiBot]],
-    selectedBotVar: Var[Option[String]],
-    dirty: Signal[Boolean],
-    status: Signal[Option[String]],
-    entriesVar: Var[Vector[EntryState]],
-    allowedFilesVar: Var[Vector[String]],
-    paginationBar: HtmlElement,
-    filtersOpenVar: Var[Boolean],
-    filterTextVar: Var[String],
-    isLoading: Signal[Boolean],
-    addDisabled: Signal[Boolean],
-    onMount: () => Unit,
-    onBotSelected: Option[String] => Unit,
-    onReload: () => Unit,
-    onAddNew: () => Unit,
-    onSave: () => Unit,
-    onEditableChanged: (Int, EditableEntry) => Unit,
-    onDelete: Int => Unit,
-    markDirty: () => Unit
-  ): Div =
+  def render(controller: RepliesEditorController): Div =
     div(
-      onMountCallback(_ => onMount()),
+      onMountCallback(_ => controller.init()),
       TopBar.render(
-        bots = bots,
-        selectedBotVar = selectedBotVar,
-        dirty = dirty,
-        onBotSelected = onBotSelected,
-        onReload = onReload,
-        filtersOpenVar = filtersOpenVar,
-        onAddNew = onAddNew,
-        addDisabled = addDisabled,
-        onSave = onSave
+        bots = controller.bots,
+        selectedBotId = controller.selectedBotId,
+        dirty = controller.dirty,
+        onBotSelected = controller.selectBot,
+        onReload = controller.reloadSelectedBot,
+        onToggleFilters = controller.toggleFilters,
+        onAddNew = controller.addNewReplyAtCurrentPageTop,
+        addDisabled = controller.addDisabled,
+        onSave = controller.commit
       ),
-      FiltersPanel.render(isOpen = filtersOpenVar.signal, filterTextVar = filterTextVar, isLoading = isLoading),
-      StatusBar.render(status),
-      paginationBar,
+      FiltersPanel.render(
+        isOpen = controller.filtersOpen,
+        filterText = controller.filterText,
+        isLoading = controller.isLoading,
+        onFilterTextChange = controller.setFilterText
+      ),
+      StatusBar.render(controller.status),
+      PaginationBar.render(
+        pageSize = controller.pageSize,
+        isLoading = controller.isLoading,
+        canPrev = controller.canPrev,
+        canNext = controller.canNext,
+        label = controller.pageLabel,
+        onPrev = controller.requestPrevPage,
+        onNext = controller.requestNextPage,
+        onPageSizeChange = controller.setPageSize
+      ),
       RepliesGrid.render(
-        entriesVar = entriesVar,
-        allowedFilesVar = allowedFilesVar,
-        markDirty = markDirty,
-        onEditableChanged = onEditableChanged,
-        onDelete = onDelete
+        entries = controller.entries,
+        allowedFiles = controller.allowedFiles,
+        onDelete = controller.deleteEntry,
+        onAddFileReply = controller.addFileReplyItem,
+        onAddTextReply = controller.addTextReplyItem,
+        onReplyValueChange = controller.setReplyItemValue,
+        onRemoveReplyItem = controller.removeReplyItem,
+        onAddTrigger = controller.addTrigger,
+        onRemoveTrigger = controller.removeTrigger,
+        onTriggerKindChange = controller.setTriggerKind,
+        onTriggerValueChange = controller.setTriggerValue,
+        onTriggerRegexLengthChange = controller.setTriggerRegexLength
       )
     )
 }

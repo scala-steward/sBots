@@ -6,23 +6,36 @@ import com.raquo.laminar.api.L.*
 object RepliesGrid {
 
   def render(
-    entriesVar: Var[Vector[EntryState]],
-    allowedFilesVar: Var[Vector[String]],
-    markDirty: () => Unit,
-    onEditableChanged: (Int, EditableEntry) => Unit,
-    onDelete: Int => Unit
+    entries: Signal[Vector[EntryState]],
+    allowedFiles: Signal[Vector[String]],
+    onDelete: Int => Unit,
+    onAddFileReply: Int => Unit,
+    onAddTextReply: Int => Unit,
+    onReplyValueChange: (Int, Int, String) => Unit,
+    onRemoveReplyItem: (Int, Int) => Unit,
+    onAddTrigger: Int => Unit,
+    onRemoveTrigger: (Int, Int) => Unit,
+    onTriggerKindChange: (Int, Int, TriggerKind) => Unit,
+    onTriggerValueChange: (Int, Int, String) => Unit,
+    onTriggerRegexLengthChange: (Int, Int, Option[Int]) => Unit
   ): Div =
     div(
       cls := "row g-3",
-      children <-- entriesVar.signal.splitByIndex { (idx, st, _) =>
+      children <-- entries.split(_.index) { (entryIndex, _, stSignal) =>
         ReplyCard.render(
-          idx = idx,
-          st = st,
-          entriesVar = entriesVar,
-          allowedFilesVar = allowedFilesVar,
-          markDirty = markDirty,
-          onEditableChanged = onEditableChanged,
-          onDelete = onDelete
+          entryIndex = entryIndex,
+          stSignal = stSignal,
+          allowedFiles = allowedFiles,
+          onDelete = onDelete,
+          onAddFileReply = onAddFileReply,
+          onAddTextReply = onAddTextReply,
+          onReplyValueChange = onReplyValueChange,
+          onRemoveReplyItem = onRemoveReplyItem,
+          onAddTrigger = onAddTrigger,
+          onRemoveTrigger = onRemoveTrigger,
+          onTriggerKindChange = onTriggerKindChange,
+          onTriggerValueChange = onTriggerValueChange,
+          onTriggerRegexLengthChange = onTriggerRegexLengthChange
         )
       }
     )

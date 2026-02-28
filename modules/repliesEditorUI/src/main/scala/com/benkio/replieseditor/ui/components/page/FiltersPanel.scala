@@ -6,8 +6,9 @@ object FiltersPanel {
 
   def render(
     isOpen: Signal[Boolean],
-    filterTextVar: Var[String],
-    isLoading: Signal[Boolean]
+    filterText: Signal[String],
+    isLoading: Signal[Boolean],
+    onFilterTextChange: String => Unit
   ): Div =
     div(
       child <-- isOpen.map {
@@ -21,8 +22,8 @@ object FiltersPanel {
               rows := 3,
               placeholder := "Type a message to show only matching replies… (empty = no filter)",
               controlled(
-                value <-- filterTextVar.signal,
-                onInput.mapToValue --> filterTextVar
+                value <-- filterText,
+                onInput.mapToValue --> onFilterTextChange
               )
             ),
             div(

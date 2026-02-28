@@ -10,8 +10,9 @@ object ReplyItemRow {
     entryIdx: Int,
     replyIdx: Int,
     itemSignal: Signal[ReplyItem],
-    allowedFilesVar: Var[Vector[String]],
-    update: (EditableEntry => EditableEntry) => Unit
+    allowedFiles: Signal[Vector[String]],
+    onValueChange: String => Unit,
+    onRemove: () => Unit
   ): Div = {
     val kindSignal  = itemSignal.map(_.kind).distinct
     val valueSignal = itemSignal.map(_.value)
@@ -27,13 +28,7 @@ object ReplyItemRow {
             htmlAttr("list", StringAsIsCodec) := datalistId,
             controlled(
               value <-- valueSignal,
-              onInput.mapToValue --> { v =>
-                update(e0 =>
-                  e0.copy(replies =
-                    e0.replies.updated(replyIdx, ReplyItem(ReplyItemKind.File, v))
-                  )
-                )
-              }
+              onInput.mapToValue --> onValueChange
             )
           )
         case ReplyItemKind.Text =>
@@ -43,13 +38,7 @@ object ReplyItemRow {
             placeholder := "text reply",
             controlled(
               value <-- valueSignal,
-              onInput.mapToValue --> { v =>
-                update(e0 =>
-                  e0.copy(replies =
-                    e0.replies.updated(replyIdx, ReplyItem(ReplyItemKind.Text, v))
-                  )
-                )
-              }
+              onInput.mapToValue --> onValueChange
             )
           )
       },
@@ -57,7 +46,7 @@ object ReplyItemRow {
         case ReplyItemKind.File =>
           dataList(
             idAttr := datalistId,
-            children <-- allowedFilesVar.signal.combineWith(valueSignal).map { case (allowed, selected) =>
+            children <-- allowedFiles.combineWith(valueSignal).map { case (allowed, selected) =>
               val options =
                 if (allowed.contains(selected)) allowed
                 else (Vector(selected) ++ allowed).distinct
@@ -70,9 +59,7 @@ object ReplyItemRow {
       button(
         cls := "btn btn-outline-danger",
         "−",
-        onClick --> { _ =>
-          update(e0 => e0.copy(replies = e0.replies.patch(replyIdx, Nil, 1)))
-        }
+        onClick --> { _ => onRemove() }
       )
     )
   }

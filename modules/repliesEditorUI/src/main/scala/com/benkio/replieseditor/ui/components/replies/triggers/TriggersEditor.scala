@@ -6,30 +6,30 @@ import com.raquo.laminar.api.L.*
 object TriggersEditor {
 
   def render(
-    editableVar: Var[EditableEntry],
-    update: (EditableEntry => EditableEntry) => Unit
+    triggers: Signal[Vector[TriggerEdit]],
+    onAddTrigger: () => Unit,
+    onRemoveTrigger: Int => Unit,
+    onKindChange: (Int, TriggerKind) => Unit,
+    onValueChange: (Int, String) => Unit,
+    onRegexLenChange: (Int, Option[Int]) => Unit
   ): Div =
     div(
       div(cls := "fw-semibold mb-1", "Triggers"),
       div(
-        children <-- editableVar.signal
-          .map(_.triggers)
-          .splitByIndex { (triggerIdx, _, triggerSignal) =>
+        children <-- triggers.splitByIndex { (triggerIdx, _, triggerSignal) =>
             TriggerRow.render(
-              triggerIdx = triggerIdx,
               triggerSignal = triggerSignal,
-              update = update
+              onRemove = () => onRemoveTrigger(triggerIdx),
+              onKindChange = k => onKindChange(triggerIdx, k),
+              onValueChange = v => onValueChange(triggerIdx, v),
+              onRegexLenChange = v => onRegexLenChange(triggerIdx, v)
             )
           }
       ),
       button(
         cls := "btn btn-sm btn-outline-secondary",
         "+ trigger",
-        onClick --> { _ =>
-          update(e0 =>
-            e0.copy(triggers = e0.triggers :+ TriggerEdit(TriggerKind.PlainString, "", None))
-          )
-        }
+        onClick --> { _ => onAddTrigger() }
       )
     )
 }

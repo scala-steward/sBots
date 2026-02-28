@@ -8,13 +8,19 @@ import com.raquo.laminar.api.L.*
 object ReplyCard {
 
   def render(
-    idx: Int,
-    st: EntryState,
-    entriesVar: Var[Vector[EntryState]],
-    allowedFilesVar: Var[Vector[String]],
-    markDirty: () => Unit,
-    onEditableChanged: (Int, EditableEntry) => Unit,
-    onDelete: Int => Unit
+    entryIndex: Int,
+    stSignal: Signal[EntryState],
+    allowedFiles: Signal[Vector[String]],
+    onDelete: Int => Unit,
+    onAddFileReply: Int => Unit,
+    onAddTextReply: Int => Unit,
+    onReplyValueChange: (Int, Int, String) => Unit,
+    onRemoveReplyItem: (Int, Int) => Unit,
+    onAddTrigger: Int => Unit,
+    onRemoveTrigger: (Int, Int) => Unit,
+    onTriggerKindChange: (Int, Int, TriggerKind) => Unit,
+    onTriggerValueChange: (Int, Int, String) => Unit,
+    onTriggerRegexLengthChange: (Int, Int, Option[Int]) => Unit
   ): Div =
     div(
       cls := "col-12 col-md-4",
@@ -24,50 +30,42 @@ object ReplyCard {
           cls := "card-body",
           div(
             cls := "d-flex align-items-start justify-content-between gap-2",
-            h6(cls := "card-title mb-2", s"Reply #${idx + 1}"),
+            h6(cls := "card-title mb-2", s"Reply #${entryIndex + 1}"),
             div(
               cls := "btn-group btn-group-sm",
               button(
                 cls := "btn btn-outline-danger",
                 "Delete",
                 title := "Delete this reply",
-                onClick --> { _ => onDelete(st.index) }
+                onClick --> { _ => onDelete(entryIndex) }
               )
             )
           ),
-          st.editable match {
-            case None =>
+          child <-- stSignal.map(_.editable.isDefined).distinct.map {
+            case false =>
               div(
                 cls := "text-muted small",
                 "Non-editable entry (kept as-is on save)."
               )
-            case Some(editable0) =>
-              val editableVar = Var(editable0)
-
-              val syncEditableToOuter: Binder[HtmlElement] =
-                editableVar.signal --> { e =>
-                  val current = entriesVar.now()
-                  val updated = current.updated(idx, current(idx).copy(editable = Some(e)))
-                  entriesVar.set(updated)
-                }
-
-              def update(f: EditableEntry => EditableEntry): Unit = {
-                editableVar.update(f)
-                markDirty()
-                onEditableChanged(st.index, editableVar.now())
-              }
-
+            case true =>
+              val editableSignal = stSignal.map(_.editable).map(_.get)
               div(
-                syncEditableToOuter,
                 RepliesEditor.render(
-                  entryIdx = idx,
-                  editableVar = editableVar,
-                  allowedFilesVar = allowedFilesVar,
-                  update = update
+                  entryIndex = entryIndex,
+                  replies = editableSignal.map(_.replies),
+                  allowedFiles = allowedFiles,
+                  onAddFile = () => onAddFileReply(entryIndex),
+                  onAddText = () => onAddTextReply(entryIndex),
+                  onValueChange = (replyIdx, v) => onReplyValueChange(entryIndex, replyIdx, v),
+                  onRemove = replyIdx => onRemoveReplyItem(entryIndex, replyIdx)
                 ),
                 TriggersEditor.render(
-                  editableVar = editableVar,
-                  update = update
+                  triggers = editableSignal.map(_.triggers),
+                  onAddTrigger = () => onAddTrigger(entryIndex),
+                  onRemoveTrigger = ti => onRemoveTrigger(entryIndex, ti),
+                  onKindChange = (ti, k) => onTriggerKindChange(entryIndex, ti, k),
+                  onValueChange = (ti, v) => onTriggerValueChange(entryIndex, ti, v),
+                  onRegexLenChange = (ti, v) => onTriggerRegexLengthChange(entryIndex, ti, v)
                 )
               )
           }
