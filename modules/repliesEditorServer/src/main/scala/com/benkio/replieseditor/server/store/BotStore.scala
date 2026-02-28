@@ -239,11 +239,10 @@ final class BotStore private (ref: Ref[IO, BotStore.State]) extends BotStoreApi 
                 IO.pure(Left(ApiError(s"Failed to reload bot $botId: ${ex.getMessage}")))
               case Right(reloaded) =>
                 ref.update { st2 =>
-                  if st2.byId.contains(botId) then
-                    st2.copy(
-                      bots = st2.bots.map(x => if x.files.botId == botId then reloaded else x),
-                      byId = st2.byId.updated(botId, reloaded)
-                    )
+                  if st2.byId.contains(botId) then st2.copy(
+                    bots = st2.bots.map(x => if x.files.botId == botId then reloaded else x),
+                    byId = st2.byId.updated(botId, reloaded)
+                  )
                   else st2
                 } *> IO.pure(Right(()))
             }

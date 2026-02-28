@@ -56,4 +56,3 @@ class ReloadBotEndpointSpec extends CatsEffectSuite {
     }
   }
 }
-

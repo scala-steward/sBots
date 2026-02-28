@@ -28,7 +28,7 @@ object DataEntry {
 
   def dataEntryLogic(input: List[String], sBotConfig: SBotConfig) = {
     for {
-      botName <- IO.pure(sBotConfig.sBotInfo.botName.value)
+      botName          <- IO.pure(sBotConfig.sBotInfo.botName.value)
       listJsonFilepath <- resolvePath(
         List(
           Paths.get(sBotConfig.listJsonFilename),
@@ -53,8 +53,8 @@ object DataEntry {
       jsonListFileResource = Resource.make(IO.delay(scala.io.Source.fromFile(listJsonFilepath.toFile)))(bufferedSorce =>
         IO.delay(bufferedSorce.close)
       )
-      repliesJsonFileResource = Resource.make(IO.delay(scala.io.Source.fromFile(repliesJsonFilepath.toFile)))(bufferedSorce =>
-        IO.delay(bufferedSorce.close)
+      repliesJsonFileResource = Resource.make(IO.delay(scala.io.Source.fromFile(repliesJsonFilepath.toFile)))(
+        bufferedSorce => IO.delay(bufferedSorce.close)
       )
       _ <- IO.println(
         s"[DataEntry:22:42]] Read the input ${input.length} links & parse them to Json"
