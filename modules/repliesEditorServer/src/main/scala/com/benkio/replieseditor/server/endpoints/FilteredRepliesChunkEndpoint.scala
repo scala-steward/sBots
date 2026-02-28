@@ -2,7 +2,7 @@ package com.benkio.replieseditor.server.endpoints
 
 import cats.effect.IO
 import com.benkio.replieseditor.server.module.FilterReq
-import com.benkio.replieseditor.server.store.BotStore
+import com.benkio.replieseditor.server.store.BotStoreApi
 import io.circe.Json
 import io.circe.syntax.*
 import org.http4s.*
@@ -14,7 +14,7 @@ object FilteredRepliesChunkEndpoint {
   private object LimitParam  extends OptionalQueryParamDecoderMatcher[Int]("limit")
 }
 
-final class FilteredRepliesChunkEndpoint(botStore: BotStore) {
+final class FilteredRepliesChunkEndpoint(botStore: BotStoreApi) {
   import FilteredRepliesChunkEndpoint.*
 
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] {

@@ -2,7 +2,7 @@ package com.benkio.replieseditor.server.endpoints
 
 import cats.effect.IO
 import com.benkio.replieseditor.server.module.ApiError
-import com.benkio.replieseditor.server.store.BotStore
+import com.benkio.replieseditor.server.store.BotStoreApi
 import io.circe.syntax.*
 import org.http4s.*
 import org.http4s.circe.CirceEntityCodec.*
@@ -13,7 +13,7 @@ object RepliesChunkEndpoint {
   private object LimitParam  extends OptionalQueryParamDecoderMatcher[Int]("limit")
 }
 
-final class RepliesChunkEndpoint(botStore: BotStore) {
+final class RepliesChunkEndpoint(botStore: BotStoreApi) {
   import RepliesChunkEndpoint.*
 
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / "api" / "bot" / botId / "replies-chunk" :? OffsetParam(

@@ -164,7 +164,11 @@ lazy val repliesEditorUI =
     .settings(
       name                := "repliesEditorUI",
       libraryDependencies ++= RepliesEditorUiDependencies.value,
-      scalaJSUseMainModuleInitializer := true
+      libraryDependencies ++= Seq(
+        "org.scalameta" %%% "munit" % versions.munit % Test
+      ),
+      scalaJSUseMainModuleInitializer := true,
+      Test / fork := false
     )
 
 lazy val repliesEditorServer =

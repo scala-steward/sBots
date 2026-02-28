@@ -15,7 +15,7 @@ import io.circe.syntax.*
 import java.nio.file.{Files, Path}
 import scala.jdk.CollectionConverters.*
 
-final class BotStore private (ref: Ref[IO, BotStore.State]) {
+final class BotStore private (ref: Ref[IO, BotStore.State]) extends BotStoreApi {
 
   def listBots: IO[Vector[ApiBot]] =
     ref.get.map(

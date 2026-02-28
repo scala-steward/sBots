@@ -8,13 +8,8 @@ final class RepliesEditorPagination(store: RepliesEditorStore, loader: RepliesEd
     store.currentPage.map(_ > 1)
 
   private val totalPages: Signal[Int] =
-    store.totalOpt.combineWith(store.pageSize).map { case (tOpt, ps0) =>
-      tOpt match {
-        case None => 0
-        case Some(total) =>
-          val ps = ps0.max(1)
-          ((total + ps - 1) / ps).max(1)
-      }
+    store.totalOpt.combineWith(store.pageSize).map { case (tOpt, ps) =>
+      RepliesEditorLogic.totalPages(tOpt, ps)
     }
 
   val canNext: Signal[Boolean] =

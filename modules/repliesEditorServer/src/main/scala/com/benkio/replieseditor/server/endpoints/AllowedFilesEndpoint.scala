@@ -2,13 +2,13 @@ package com.benkio.replieseditor.server.endpoints
 
 import cats.effect.IO
 import com.benkio.replieseditor.server.module.ApiError
-import com.benkio.replieseditor.server.store.BotStore
+import com.benkio.replieseditor.server.store.BotStoreApi
 import io.circe.syntax.*
 import org.http4s.*
 import org.http4s.circe.CirceEntityCodec.*
 import org.http4s.dsl.io.*
 
-final class AllowedFilesEndpoint(botStore: BotStore) {
+final class AllowedFilesEndpoint(botStore: BotStoreApi) {
   val routes: HttpRoutes[IO] = HttpRoutes.of[IO] { case GET -> Root / "api" / "bot" / botId / "allowed-files" =>
     botStore.getAllowedFiles(botId).flatMap {
       case Left(err) =>
