@@ -24,6 +24,8 @@ final class MockBotStore(
       IO.pure(Left(ApiError("unconfigured insertAt"))),
     var deleteAtF: (String, Int) => IO[Either[ApiError, Int]] = (_, _) =>
       IO.pure(Left(ApiError("unconfigured deleteAt"))),
+    var reloadBotFromDiskF: String => IO[Either[ApiError, Unit]] = _ =>
+      IO.pure(Left(ApiError("unconfigured reloadBotFromDisk"))),
     var commitF: String => IO[Either[ApiError, SaveOk]] = _ => IO.pure(Left(ApiError("unconfigured commit"))),
     var saveRepliesF: (String, List[ReplyBundleMessage]) => IO[Either[ApiError, SaveOk]] = (_, _) =>
       IO.pure(Left(ApiError("unconfigured saveReplies")))
@@ -56,6 +58,9 @@ final class MockBotStore(
 
   override def deleteAt(botId: String, index: Int): IO[Either[ApiError, Int]] =
     deleteAtF(botId, index)
+
+  override def reloadBotFromDisk(botId: String): IO[Either[ApiError, Unit]] =
+    reloadBotFromDiskF(botId)
 
   override def commit(botId: String): IO[Either[ApiError, SaveOk]] =
     commitF(botId)

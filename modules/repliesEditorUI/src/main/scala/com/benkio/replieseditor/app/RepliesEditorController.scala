@@ -38,7 +38,7 @@ final class RepliesEditorController {
   }
 
   def reloadSelectedBot(): Unit =
-    store.selectedBotVar.now().foreach(loader.loadBot)
+    store.selectedBotVar.now().foreach(loader.reloadBotFromDisk)
 
   def toggleFilters(): Unit             = filtering.toggle()
   def setFilterText(text: String): Unit = filtering.setFilterText(text)

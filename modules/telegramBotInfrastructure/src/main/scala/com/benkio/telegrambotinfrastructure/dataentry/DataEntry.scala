@@ -5,12 +5,14 @@ import cats.effect.Resource
 import cats.syntax.all.*
 import com.benkio.telegrambotinfrastructure.config.SBotConfig
 import com.benkio.telegrambotinfrastructure.model.media.MediaFileSource
+import com.benkio.telegrambotinfrastructure.model.SBotInfo.SBotName
 import io.circe.parser.*
 import io.circe.syntax.*
 import io.circe.Json
 
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 
 object DataEntry {
@@ -18,18 +20,42 @@ object DataEntry {
   private[dataentry] def parseInput(links: List[String]): IO[List[MediaFileSource]] =
     links.traverse(link => MediaFileSource.fromUriString(link.replace("dl=0", "dl=1")))
 
+  private def resolvePath(candidates: List[Path]): IO[Path] =
+    candidates
+      .find(p => Files.exists(p) && !Files.isDirectory(p))
+      .orElse(candidates.headOption)
+      .liftTo[IO](new IllegalArgumentException("[DataEntry] No path candidates provided"))
+
   def dataEntryLogic(input: List[String], sBotConfig: SBotConfig) = {
-    val jsonListFileResource =
-      Resource.make(IO.delay(scala.io.Source.fromFile(sBotConfig.listJsonFilename)))(bufferedSorce =>
-        IO.delay(bufferedSorce.close)
-      )
-    val listJsonFilepath        = Paths.get(sBotConfig.listJsonFilename)
-    val repliesJsonFileResource =
-      Resource.make(IO.delay(scala.io.Source.fromFile(sBotConfig.repliesJsonFilename)))(bufferedSorce =>
-        IO.delay(bufferedSorce.close)
-      )
-    val repliesJsonFilepath = Paths.get(sBotConfig.repliesJsonFilename)
     for {
+      botName <- IO.pure(sBotConfig.sBotInfo.botName.value)
+      listJsonFilepath <- resolvePath(
+        List(
+          Paths.get(sBotConfig.listJsonFilename),
+          Paths.get("modules", "bots", botName, sBotConfig.listJsonFilename)
+        )
+      )
+      repliesJsonFilepath <- resolvePath(
+        List(
+          Paths.get(sBotConfig.repliesJsonFilename),
+          Paths.get("src", "main", "resources", sBotConfig.repliesJsonFilename),
+          Paths.get(
+            "modules",
+            "bots",
+            botName,
+            "src",
+            "main",
+            "resources",
+            sBotConfig.repliesJsonFilename
+          )
+        )
+      )
+      jsonListFileResource = Resource.make(IO.delay(scala.io.Source.fromFile(listJsonFilepath.toFile)))(bufferedSorce =>
+        IO.delay(bufferedSorce.close)
+      )
+      repliesJsonFileResource = Resource.make(IO.delay(scala.io.Source.fromFile(repliesJsonFilepath.toFile)))(bufferedSorce =>
+        IO.delay(bufferedSorce.close)
+      )
       _ <- IO.println(
         s"[DataEntry:22:42]] Read the input ${input.length} links & parse them to Json"
       )

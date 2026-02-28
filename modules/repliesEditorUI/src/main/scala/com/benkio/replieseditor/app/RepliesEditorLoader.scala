@@ -58,6 +58,24 @@ final class RepliesEditorLoader(store: RepliesEditorStore) {
     }
   }
 
+  def reloadBotFromDisk(botId: String): Unit = {
+    val myToken = store.loadTokenVar.now()
+    store.setStatus(s"Reloading $botId from disk…")
+
+    ApiClient.postJson(s"/api/bot/$botId/reload", Json.obj()).onComplete {
+      case Failure(ex) =>
+        if store.loadTokenVar.now() == myToken && store.selectedBotVar.now().contains(botId) then store.setStatus(
+          s"Failed to reload bot: ${ex.getMessage}"
+        )
+      case Success(Left(err)) =>
+        if store.loadTokenVar.now() == myToken && store.selectedBotVar.now().contains(botId) then store.setStatus(
+          s"Failed to reload bot: $err"
+        )
+      case Success(Right(_)) =>
+        if store.loadTokenVar.now() == myToken && store.selectedBotVar.now().contains(botId) then loadBot(botId)
+    }
+  }
+
   def loadPage(botId: String, page: Int): Unit = {
     val myToken   = store.loadTokenVar.now()
     val p         = page.max(1)

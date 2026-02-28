@@ -226,6 +226,30 @@ final class BotStore private (ref: Ref[IO, BotStore.State]) extends BotStoreApi 
       }
     }
 
+  def reloadBotFromDisk(botId: String): IO[Either[ApiError, Unit]] =
+    ref.get.flatMap { st =>
+      st.byId.get(botId) match {
+        case None    => IO.pure(Left(ApiError(s"Unknown botId: $botId")))
+        case Some(b) =>
+          BotStore
+            .loadCached(b.files)
+            .attempt
+            .flatMap {
+              case Left(ex) =>
+                IO.pure(Left(ApiError(s"Failed to reload bot $botId: ${ex.getMessage}")))
+              case Right(reloaded) =>
+                ref.update { st2 =>
+                  if st2.byId.contains(botId) then
+                    st2.copy(
+                      bots = st2.bots.map(x => if x.files.botId == botId then reloaded else x),
+                      byId = st2.byId.updated(botId, reloaded)
+                    )
+                  else st2
+                } *> IO.pure(Right(()))
+            }
+      }
+    }
+
   def commit(botId: String): IO[Either[ApiError, SaveOk]] =
     ref.get.flatMap { st =>
       st.byId.get(botId) match {
