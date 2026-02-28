@@ -169,7 +169,9 @@ lazy val repliesEditorUI =
         "org.scalameta" %%% "munit" % versions.munit % Test
       ),
       scalaJSUseMainModuleInitializer := true,
-      Test / fork                     := false
+      Test / fork                     := false,
+      // scoverage + Scala.js currently crashes the Scala 3.7.2 JS backend (genSJSIR)
+      coverageEnabled := false
     )
 
 lazy val repliesEditorServer =

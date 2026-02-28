@@ -14,20 +14,21 @@ import scala.concurrent.Future
 
 object ApiClient {
 
-  def fetchJson(url: String, init: RequestInit = new RequestInit {}): Future[Either[String, Json]] =
-    dom
-      .fetch(url, init)
-      .toFuture
-      .flatMap((resp: Response) =>
-        resp.text().toFuture.map { body =>
-          if !resp.ok then Left(s"HTTP ${resp.status}: $body")
-          else
-            parse(body) match {
-              case Left(err)   => Left(err.message)
-              case Right(json) => Right(json)
-            }
+  private def decodeResponse(resp: Response): Future[Either[String, Json]] =
+    resp.text().toFuture.map { body =>
+      if !resp.ok then Left(s"HTTP ${resp.status}: $body")
+      else
+        parse(body) match {
+          case Left(err)   => Left(err.message)
+          case Right(json) => Right(json)
         }
-      )
+    }
+
+  def fetchJson(url: String): Future[Either[String, Json]] =
+    dom.fetch(url).toFuture.flatMap(decodeResponse)
+
+  def fetchJson(url: String, init: RequestInit): Future[Either[String, Json]] =
+    dom.fetch(url, init).toFuture.flatMap(decodeResponse)
 
   def postJson(url: String, json: Json): Future[Either[String, Json]] = {
     val hdrs = new Headers()
